@@ -46,3 +46,13 @@ monopole_stationary_dt.png
 monopole_stationary_dx.png
 single_dipole_new.gif
 single_dipole_old.gif
+FWH_grid_con.dat
+FWH_grid_coor.dat
+FWH_grid_normal.dat
+FWH_grid.dat
+FWH_grid.szplt
+FWH_observer_time_01_validation.dat
+input_config.txt
+input_observer.txt
+input_post.txt
+input_source.txt
