@@ -1,0 +1,19 @@
+# Example FW-H calculation config file
+# Far-field speed of sound [m/s] and air density [kg/m^3]
+340.0 1.2
+# FW-H surface grid type
+Sphere
+# FW-H control surface grid radius [m] and number of grid lines (latitude and longitudinal) [-]
+150.0, 882, 882
+# FW-H control surface grid motion
+Source
+# FW-H surface data type
+Source
+# FW-H integration method
+Retarded_Time Time_Domain
+# FW-H integration time levels [-] and time step [s]
+796 0.003142
+# Post-processing options
+F
+# Debugging level (0: no output, 1: basic info, 2: detailed info)
+0
