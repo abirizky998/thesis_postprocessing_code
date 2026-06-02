@@ -6,7 +6,7 @@ Scatter
 # Number of observers in this set
 1
 # Observer initial location [m]
-200.0 200.0 0.0
+50.0 50.0 0.0
 # Observer motion type and duration [s]
 General 1000.0
 # Observer motion directions

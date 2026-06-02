@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import re
 import os
 from pathlib import Path
+import scipy
 
 class FWHDataset:
     X_TARGET = 20.0
@@ -112,134 +113,199 @@ class FWHDataset:
             abs_error = np.linalg.norm(ref_df[col].to_numpy() - self.data[col].to_numpy())
 
         return abs_error / (np.linalg.norm(ref_df[col]) + 1e-15)
-
-class FWHPlotter:
+    
     @staticmethod
-    def plot_pressure(reference, *comparisons, labels=None, title=None, scale=1.0,
-                      ref_col='P_analytical', comp_col='P_obs'):
+    def compile_fwh_batch(directory, use_doppler=True):
+        import re
+        from pathlib import Path
         
-        fig, ax = plt.subplots(figsize=(8,5))
-        ref_df = reference.data if hasattr(reference, 'data') else reference
-        ax.plot(ref_df['Time'], ref_df[ref_col] * scale, ls='-', c='black', label=f'Reference ({ref_col})')
-
-        if not labels or len(labels) != len(comparisons):
-            labels = [f'Dataset {i+1}' for i in range(len(comparisons))]
-
-        styles = [':', '-.', '--']
-        colors = ['red', 'blue', 'green', 'orange', 'purple', 'cyan']
-
-        for i, comp in enumerate(comparisons):
-            comp_df = comp.data if hasattr(comp, 'data') else comp
-
-            error = comp.l2_error(reference, col=comp_col)
-            ls = styles[i % len(styles)]
-            c = colors[i % len(colors)]
-
-            full_label = f'{labels[i]} (Error: {error * 100:.2f}%)'
-            ax.plot(comp_df['Time'], comp_df[comp_col] * scale, ls=ls, c=c, label=full_label)
-
-        ax.set_xlabel('Time (s)')
-
-        if scale == 1.0:
-            ax.set_ylabel("Pressure (Pa)")
-        else:
-            scale_str = f"x10^{{{int(np.log10(scale))}}}" if scale >= 10 else f"x{scale}"
-            ax.set_ylabel(f'Pressure ({scale_str} Pa)')
-
-        if title:
-            ax.set_title(title)
-
-        ax.grid(True, linestyle='--', alpha=0.7)
-        ax.legend(loc='upper right', bbox_to_anchor=(1.35, 1))
-        plt.tight_layout()
-        plt.show()
-
-    @staticmethod
-    def plot_cfl_convergence(directory, analytical_refs, use_doppler=True):
-        """
-        Plots L2 Error vs Points Per Period (PPP) for the CFL batch dataset.
-        Lines connect constant CFL values. Markers differentiate Mach numbers.
-        """
-        from matplotlib.lines import Line2D
+        folder_path = Path(directory)
         
-        # Group data by CFL value
-        cfl_data = {}
-        
-        for filepath in Path(directory).glob("cfl*.dat"):
+        # 1. Load local analytical references for THIS folder
+        local_refs = {}
+        for ana_file in folder_path.glob("ana_M*.dat"):
+            m_match = re.search(r"ana_M(\d+)", ana_file.name)
+            if m_match:
+                local_refs[m_match.group(1)] = FWHDataset(filepath=ana_file)
+                
+        # 2. Process all CFL files in the folder
+        folder_data = []
+        for filepath in folder_path.glob("cfl*.dat"):
             case = FWHDataset(filepath=filepath)
             meta = case.metadata
             
-            if meta['cfl'] is None:
+            if meta.get('cfl') is None:
                 continue
-            
-            ref_key = str(meta['mach']).replace('.', '')
-            ref_df = analytical_refs[ref_key]
-
-            # ref_df = analytical_refs[meta['mach_str']]
+                
+            ref_key = meta['mach_str']
+            if ref_key not in local_refs:
+                continue 
+                
+            # Calculate Error
+            ref_df = local_refs[ref_key]
             error = case.l2_error(ref_df, col='P_obs')
             
-            # PPP = X / CFL
-            points_per_period = case.X_TARGET / meta['cfl']
-            
-            if meta['cfl'] not in cfl_data:
-                cfl_data[meta['cfl']] = []
+            # Calculate true dt and dx
+            if len(case.data) > 1:
+                actual_dt = case.data['Time'].iloc[1] - case.data['Time'].iloc[0]
+            else:
+                actual_dt = meta['dt'] 
                 
-            cfl_data[meta['cfl']].append((points_per_period, error, meta['mach'], meta['mach_str']))
+            actual_dx = (case.C * actual_dt) / meta['cfl']
+            
+            # FIXED: Calculate the true grid dimensions using actual_dx
+            import numpy as np
+            true_N = int(np.round((2 * np.pi * case.R) / actual_dx))
+            true_elements = true_N * true_N
+            
+            # Calculate Spatial (X) and Temporal (P) resolutions
+            if use_doppler:
+                p_val = (1.0 / actual_dt) / (case.F_SOURCE / (1 - meta['mach']))
+                x_val = (case.LAMBDA_SOURCE * (1 - meta['mach'])) / actual_dx
+            else:
+                p_val = (1.0 / actual_dt) / case.F_SOURCE
+                x_val = case.LAMBDA_SOURCE / actual_dx
+                
+            folder_data.append({
+                'mach': meta['mach'],
+                'cfl': meta['cfl'],
+                'dt': actual_dt,            # Added dt to the output
+                'P': p_val,
+                'X': x_val,
+                'error': error,
+                'elements': true_elements,  # Using dynamically calculated elements
+                'batch_name': folder_path.name
+            })
+            
+        return folder_data
 
-        # Setup Plot
-        fig, ax = plt.subplots(figsize=(10, 7))
+class FWHPlotter:
+    # @staticmethod
+    # def plot_pressure(reference, *comparisons, labels=None, title=None, scale=1.0,
+    #                   ref_col='P_analytical', comp_col='P_obs'):
         
-        mach_keys = sorted(list(set([m for c in cfl_data.values() for _, _, _, m in c])))
-        markers = ['o', 's', '^', 'D', 'v', 'p', '*', 'X', '<', '>']
-        mach_marker_map = {m: markers[i % len(markers)] for i, m in enumerate(mach_keys)}
-        
-        # Color mapping for lines based on CFL
-        import matplotlib.cm as cm
-        sorted_cfls = sorted(cfl_data.keys())
-        colors = cm.viridis(np.linspace(0, 0.9, len(sorted_cfls)))
+    #     fig, ax = plt.subplots(figsize=(8,5))
+    #     ref_df = reference.data if hasattr(reference, 'data') else reference
+    #     ax.plot(ref_df['Time'], ref_df[ref_col] * scale, ls='-', c='black', label=f'Reference ({ref_col})')
 
-        # Plotting
-        for idx, cfl in enumerate(sorted_cfls):
-            data = cfl_data[cfl]
-            data.sort(key=lambda x: x[2]) # Sort by Mach to draw logical lines
-            
-            cfl_color = colors[idx]
-            
-            x_vals = [p[0] for p in data]
-            y_vals = [p[1] for p in data]
-            
-            # Connect the points of the same CFL
-            ax.plot(x_vals, y_vals, linestyle='-', color=cfl_color, zorder=1)
-            
-            # Add Mach markers
-            for p in data:
-                x, y, mach_val, m_str = p
-                ax.scatter(x, y, marker=mach_marker_map[m_str], 
-                           color=cfl_color, s=70, zorder=2, edgecolor='black', linewidth=0.5)
+    #     if not labels or len(labels) != len(comparisons):
+    #         labels = [f'Dataset {i+1}' for i in range(len(comparisons))]
 
-        # Custom Legend
-        legend_elements = [Line2D([0], [0], color='w', label=r'$\bf{CFL\ Targets}$', lw=0)]
-        for idx, cfl in enumerate(sorted_cfls):
-            legend_elements.append(Line2D([0], [0], color=colors[idx], lw=2, label=f"CFL = {cfl}"))
-            
-        legend_elements.append(Line2D([0], [0], color='w', label='', lw=0)) 
-        
-        legend_elements.append(Line2D([0], [0], color='w', label=r'$\bf{Mach\ Numbers}$', lw=0))
-        for m_str in mach_keys:
-            legend_elements.append(Line2D([0], [0], marker=mach_marker_map[m_str], color='w', 
-                                          markerfacecolor='gray', markeredgecolor='black', 
-                                          markersize=8, label=f"M = {float(m_str)/100:.2f}"))
+    #     styles = [':', '-.', '--']
+    #     colors = ['red', 'blue', 'green', 'orange', 'purple', 'cyan']
 
-        title_shift = "Doppler-Shifted " if use_doppler else "Source "
-        ax.set_title(f"Time Convergence: L2 Error vs Points Per Period (Spatial PPW = {FWHDataset.X_TARGET})")
-        ax.set_xlabel(f"Points Per Period ({title_shift}Frequency)")
-        ax.set_ylabel("Log Error")
-        ax.set_yscale('log')
-        ax.grid(True, which="both", linestyle='--', alpha=0.6)
+    #     for i, comp in enumerate(comparisons):
+    #         comp_df = comp.data if hasattr(comp, 'data') else comp
+
+    #         error = comp.l2_error(reference, col=comp_col)
+    #         ls = styles[i % len(styles)]
+    #         c = colors[i % len(colors)]
+
+    #         full_label = f'{labels[i]} (Error: {error * 100:.2f}%)'
+    #         ax.plot(comp_df['Time'], comp_df[comp_col] * scale, ls=ls, c=c, label=full_label)
+
+    #     ax.set_xlabel('Time (s)')
+
+    #     if scale == 1.0:
+    #         ax.set_ylabel("Pressure (Pa)")
+    #     else:
+    #         scale_str = f"x10^{{{int(np.log10(scale))}}}" if scale >= 10 else f"x{scale}"
+    #         ax.set_ylabel(f'Pressure ({scale_str} Pa)')
+
+    #     if title:
+    #         ax.set_title(title)
+
+    #     ax.grid(True, linestyle='--', alpha=0.7)
+    #     ax.legend(loc='upper right', bbox_to_anchor=(1.35, 1))
+    #     plt.tight_layout()
+    #     plt.show()
+
+    # @staticmethod
+    # def plot_cfl_convergence(directory, analytical_refs, use_doppler=True):
+    #     """
+    #     Plots L2 Error vs Points Per Period (PPP) for the CFL batch dataset.
+    #     Lines connect constant CFL values. Markers differentiate Mach numbers.
+    #     """
+    #     from matplotlib.lines import Line2D
         
-        ax.legend(handles=legend_elements, bbox_to_anchor=(1.05, 1), loc='upper left')
-        plt.tight_layout()
-        plt.show()
+    #     # Group data by CFL value
+    #     cfl_data = {}
+        
+    #     for filepath in Path(directory).glob("cfl*.dat"):
+    #         case = FWHDataset(filepath=filepath)
+    #         meta = case.metadata
+            
+    #         if meta['cfl'] is None:
+    #             continue
+            
+    #         ref_key = str(meta['mach']).replace('.', '')
+    #         ref_df = analytical_refs[ref_key]
+
+    #         # ref_df = analytical_refs[meta['mach_str']]
+    #         error = case.l2_error(ref_df, col='P_obs')
+            
+    #         # PPP = X / CFL
+    #         points_per_period = case.X_TARGET / meta['cfl']
+            
+    #         if meta['cfl'] not in cfl_data:
+    #             cfl_data[meta['cfl']] = []
+                
+    #         cfl_data[meta['cfl']].append((points_per_period, error, meta['mach'], meta['mach_str']))
+
+    #     # Setup Plot
+    #     fig, ax = plt.subplots(figsize=(10, 7))
+        
+    #     mach_keys = sorted(list(set([m for c in cfl_data.values() for _, _, _, m in c])))
+    #     markers = ['o', 's', '^', 'D', 'v', 'p', '*', 'X', '<', '>']
+    #     mach_marker_map = {m: markers[i % len(markers)] for i, m in enumerate(mach_keys)}
+        
+    #     # Color mapping for lines based on CFL
+    #     import matplotlib.cm as cm
+    #     sorted_cfls = sorted(cfl_data.keys())
+    #     colors = cm.viridis(np.linspace(0, 0.9, len(sorted_cfls)))
+
+    #     # Plotting
+    #     for idx, cfl in enumerate(sorted_cfls):
+    #         data = cfl_data[cfl]
+    #         data.sort(key=lambda x: x[2]) # Sort by Mach to draw logical lines
+            
+    #         cfl_color = colors[idx]
+            
+    #         x_vals = [p[0] for p in data]
+    #         y_vals = [p[1] for p in data]
+            
+    #         # Connect the points of the same CFL
+    #         ax.plot(x_vals, y_vals, linestyle='-', color=cfl_color, zorder=1)
+            
+    #         # Add Mach markers
+    #         for p in data:
+    #             x, y, mach_val, m_str = p
+    #             ax.scatter(x, y, marker=mach_marker_map[m_str], 
+    #                        color=cfl_color, s=70, zorder=2, edgecolor='black', linewidth=0.5)
+
+    #     # Custom Legend
+    #     legend_elements = [Line2D([0], [0], color='w', label=r'$\bf{CFL\ Targets}$', lw=0)]
+    #     for idx, cfl in enumerate(sorted_cfls):
+    #         legend_elements.append(Line2D([0], [0], color=colors[idx], lw=2, label=f"CFL = {cfl}"))
+            
+    #     legend_elements.append(Line2D([0], [0], color='w', label='', lw=0)) 
+        
+    #     legend_elements.append(Line2D([0], [0], color='w', label=r'$\bf{Mach\ Numbers}$', lw=0))
+    #     for m_str in mach_keys:
+    #         legend_elements.append(Line2D([0], [0], marker=mach_marker_map[m_str], color='w', 
+    #                                       markerfacecolor='gray', markeredgecolor='black', 
+    #                                       markersize=8, label=f"M = {float(m_str)/100:.2f}"))
+
+    #     title_shift = "Doppler-Shifted " if use_doppler else "Source "
+    #     ax.set_title(f"Time Convergence: L2 Error vs Points Per Period (Spatial PPW = {FWHDataset.X_TARGET})")
+    #     ax.set_xlabel(f"Points Per Period ({title_shift}Frequency)")
+    #     ax.set_ylabel("Log Error")
+    #     ax.set_yscale('log')
+    #     ax.grid(True, which="both", linestyle='--', alpha=0.6)
+        
+    #     ax.legend(handles=legend_elements, bbox_to_anchor=(1.05, 1), loc='upper left')
+    #     plt.tight_layout()
+    #     plt.show()
 
     @staticmethod
     def plot_cfl_convergence_by_mach(directory, analysis, analytical_refs, ref_val, use_doppler=True):
@@ -265,15 +331,30 @@ class FWHPlotter:
                 continue
             ref_df = analytical_refs[ref_key]
             error = case.l2_error(ref_df, col='P_obs')
-            
+
+            actual_dt = case.data['Time'].iloc[1] - case.data['Time'].iloc[0]
+            actual_dx = (case.C * actual_dt) / meta['cfl']
+
             if analysis == 'dt':
-                x_val = case.X_TARGET / meta['cfl']
+                if use_doppler:
+                    x_val = (1.0 / actual_dt) / (case.F_SOURCE / (1 - meta['mach']))
+                else:   
+                    x_val = (1.0 / actual_dt) / case.F_SOURCE
                 marker_val = meta['cfl']
+
             elif analysis == 'dx':
-                x_val = case.P_TARGET * meta['cfl']
+                if use_doppler:
+                    x_val = (case.LAMBDA_SOURCE * (1 - meta['mach'])) / actual_dx
+                else:
+                    x_val = case.LAMBDA_SOURCE / actual_dx
                 marker_val = meta['cfl']
+
             elif analysis == 'r':
-                x_val = meta['radius'] / case.LAMBDA_SOURCE
+                if use_doppler:
+                    x_val = meta['radius'] / (case.LAMBDA_SOURCE * (1 - meta['mach']))
+                else:
+                    x_val = meta['radius'] / case.LAMBDA_SOURCE
+                # x_val = case.LAMBDA_SOURCE / meta['radius']
                 marker_val = meta['radius']
 
             if meta['mach'] not in mach_data:
@@ -337,12 +418,273 @@ class FWHPlotter:
             ax.set_title(f"Error vs {title_shift}Points Per Wavelength\n(Temporal Resolution Fixed at {ref_val[0]} PPP and CS Radius at {ref_val[1]} m)")
             ax.set_xlabel(f"Spatial Resolution ($\lambda / d$)")
         if analysis == 'r':
-            ax.set_title(f"Error vs {title_shift} meter\n(Spatial Grid Fixed at {ref_val[0]} PPW and CFL={ref_val[1]})")
+            ax.set_title(f"Error vs Normalised CS Radius\n(Spatial Grid Fixed at {ref_val[0]} PPW and CFL={ref_val[1]})")
             ax.set_xlabel(f"Normalised Radius ($R / \lambda$)")
         ax.set_ylabel("Log L2 Error (%)")
         ax.set_yscale('log')
         ax.grid(True, which="both", linestyle='--', alpha=0.6)
         
         ax.legend(handles=legend_elements, bbox_to_anchor=(1.05, 1), loc='upper left')
+        plt.tight_layout()
+        plt.show()
+
+    @staticmethod
+    def plot_px_parameter_space(compiled_data, use_doppler=True, shape_by='elements', draw_mach_lines=False):
+        import matplotlib.cm as cm
+        import matplotlib.colors as mcolors
+        from matplotlib.lines import Line2D
+        import matplotlib.pyplot as plt
+
+        if not compiled_data:
+            print("No data provided to plot.")
+            return
+
+        fig, ax = plt.subplots(figsize=(12, 8))
+        
+        errors = [d['error'] for d in compiled_data]
+        
+        # Color Mapping (Log Scale Error)
+        norm = mcolors.LogNorm(vmin=min(errors), vmax=max(errors))
+        cmap = cm.coolwarm
+        
+        # Dynamic Marker Shapes based on the toggle
+        def get_marker(d, mode):
+            if mode == 'elements':
+                val = d['elements']
+                if val < 50000: return 'o'       
+                elif val < 250000: return 's'    
+                elif val < 1000000: return '^'   
+                else: return 'D'
+            elif mode == 'dt':
+                val = d['dt']
+                if val > 5e-3: return 'o'        
+                elif val > 1e-3: return 's'      
+                elif val > 1e-4: return '^'      
+                else: return 'D'                 
+
+        # 1. Draw Mach Lines (if toggled)
+        if draw_mach_lines:
+            mach_groups = {}
+            for d in compiled_data:
+                m = d['mach']
+                if m not in mach_groups:
+                    mach_groups[m] = []
+                mach_groups[m].append(d)
+                
+            for m, points in mach_groups.items():
+                points.sort(key=lambda item: item['X'])
+                xs = [p['X'] for p in points]
+                ps = [p['P'] for p in points]
+                ax.plot(xs, ps, color='gray', linestyle='-', linewidth=1.0, alpha=0.5, zorder=1)
+                ax.text(xs[-1], ps[-1], f" M={m:.2f}", fontsize=8, color='dimgray', verticalalignment='center')
+
+        # 2. Scatter Plotting
+        for d in compiled_data:
+            color_val = cmap(norm(d['error']))
+            marker_shape = get_marker(d, shape_by)
+            ax.scatter(d['X'], d['P'], marker=marker_shape, color=color_val, 
+                       edgecolor='black', s=80, linewidth=0.5, alpha=0.8, zorder=2)
+
+        # 3. Formatting
+        title_prefix = "Doppler-Shifted " if use_doppler else "Source "
+        ax.set_title(f"Acoustic Resolution Space: Temporal ({title_prefix}PPP) vs Spatial ({title_prefix}PPW)\nColored by L2 Error, Shaped by {shape_by.upper()}")
+        ax.set_xlabel(f"Spatial Resolution, X ({title_prefix}Points Per Wavelength)")
+        ax.set_ylabel(f"Temporal Resolution, P ({title_prefix}Points Per Period)")
+        
+        # ax.set_xscale('log')
+        # ax.set_yscale('log')
+        ax.grid(True, which='both', linestyle='--', alpha=0.4)
+        
+        # Colorbar
+        sm = plt.cm.ScalarMappable(cmap=cmap, norm=norm)
+        sm.set_array([])
+        cbar = fig.colorbar(sm, ax=ax)
+        cbar.set_label('Log L2 Error (%)')
+        
+        # Dynamic Legend
+        legend_title = r'$\bf{Element\ Count}$' if shape_by == 'elements' else r'$\bf{Time\ Step\ (\Delta t)}$'
+        lbls = ['< 50k', '50k - 250k', '250k - 1M', '> 1M'] if shape_by == 'elements' else ['> 5e-3 s', '1e-3 to 5e-3 s', '1e-4 to 1e-3 s', '< 1e-4 s']
+        
+        legend_elements = [
+            Line2D([0], [0], color='w', label=legend_title, lw=0),
+            Line2D([0], [0], marker='o', color='w', markerfacecolor='gray', markeredgecolor='black', markersize=8, label=lbls[0]),
+            Line2D([0], [0], marker='s', color='w', markerfacecolor='gray', markeredgecolor='black', markersize=8, label=lbls[1]),
+            Line2D([0], [0], marker='^', color='w', markerfacecolor='gray', markeredgecolor='black', markersize=8, label=lbls[2]),
+            Line2D([0], [0], marker='D', color='w', markerfacecolor='gray', markeredgecolor='black', markersize=8, label=lbls[3])
+        ]
+        ax.legend(handles=legend_elements, loc='upper left', bbox_to_anchor=(1.0, 1.0))
+
+        plt.tight_layout()
+        plt.show()
+
+    @staticmethod
+    def plot_px_contour_space(compiled_data, use_doppler=True, shape_by='elements', draw_mach_lines=False):
+        import matplotlib.cm as cm
+        import matplotlib.colors as mcolors
+        from matplotlib.lines import Line2D
+        import matplotlib.pyplot as plt
+        import numpy as np
+        from scipy.interpolate import griddata
+
+        if not compiled_data:
+            print("No data provided to plot.")
+            return
+
+        fig, ax = plt.subplots(figsize=(12, 8))
+        
+        X_coords = np.array([d['X'] for d in compiled_data])
+        P_coords = np.array([d['P'] for d in compiled_data])
+        errors = np.array([d['error'] for d in compiled_data])
+        
+        norm = mcolors.LogNorm(vmin=min(errors), vmax=max(errors))
+        cmap = cm.coolwarm
+        
+        # 1. Generate the Contour Mesh (in Log Space for accurate scaling)
+        # We create a fine 100x100 grid spanning the min and max of your data
+        xi = np.logspace(np.log10(X_coords.min()), np.log10(X_coords.max()), 100)
+        pi = np.logspace(np.log10(P_coords.min()), np.log10(P_coords.max()), 100)
+        XI, PI = np.meshgrid(xi, pi)
+        
+        # Interpolate the error data onto the grid using linear triangulation
+        ZI = griddata((X_coords, P_coords), errors, (XI, PI), method='linear')
+        
+        # Plot the background contour (levels map to the log scale)
+        contour = ax.contourf(XI, PI, ZI, levels=np.logspace(np.log10(errors.min()), np.log10(errors.max()), 20), 
+                              norm=norm, cmap=cmap, alpha=0.6, zorder=0)
+
+        # Dynamic Marker Shapes based on the toggle
+        def get_marker(d, mode):
+            if mode == 'elements':
+                val = d['elements']
+                if val < 50000: return 'o'       
+                elif val < 250000: return 's'    
+                elif val < 1000000: return '^'   
+                else: return 'D'
+            elif mode == 'dt':
+                val = d['dt']
+                if val > 5e-3: return 'o'        
+                elif val > 1e-3: return 's'      
+                elif val > 1e-4: return '^'      
+                else: return 'D'                 
+
+        # 2. Draw Mach Lines (if toggled)
+        if draw_mach_lines:
+            mach_groups = {}
+            for d in compiled_data:
+                m = d['mach']
+                if m not in mach_groups:
+                    mach_groups[m] = []
+                mach_groups[m].append(d)
+                
+            for m, points in mach_groups.items():
+                points.sort(key=lambda item: item['X'])
+                xs = [p['X'] for p in points]
+                ps = [p['P'] for p in points]
+                ax.plot(xs, ps, color='black', linestyle='-', linewidth=1.5, alpha=0.5, zorder=1)
+                ax.text(xs[-1], ps[-1], f" M={m:.2f}", fontsize=8, color='black', verticalalignment='center', zorder=2)
+
+        # 3. Scatter Plotting (Overlaying the actual anchor points)
+        for d in compiled_data:
+            # We color the edge black and fill with the exact error color so it blends but remains visible
+            color_val = cmap(norm(d['error']))
+            marker_shape = get_marker(d, shape_by)
+            ax.scatter(d['X'], d['P'], marker=marker_shape, color=color_val, 
+                       edgecolor='black', s=50, linewidth=0.8, zorder=3)
+
+        # 4. Formatting
+        title_prefix = "Doppler-Shifted " if use_doppler else "Source "
+        ax.set_title(f"Acoustic Error Contour Map: Temporal ({title_prefix}PPP) vs Spatial ({title_prefix}PPW)\nShaped by {shape_by.upper()}")
+        ax.set_xlabel(f"Spatial Resolution, X ({title_prefix}Points Per Wavelength)")
+        ax.set_ylabel(f"Temporal Resolution, P ({title_prefix}Points Per Period)")
+        
+        # ax.set_xscale('log')
+        # ax.set_yscale('log')
+        
+        # Colorbar
+        cbar = fig.colorbar(contour, ax=ax)
+        cbar.set_label('Log L2 Error (%)')
+        
+        # Dynamic Legend
+        legend_title = r'$\bf{Element\ Count}$' if shape_by == 'elements' else r'$\bf{Time\ Step\ (\Delta t)}$'
+        lbls = ['< 50k', '50k - 250k', '250k - 1M', '> 1M'] if shape_by == 'elements' else ['> 5e-3 s', '1e-3 to 5e-3 s', '1e-4 to 1e-3 s', '< 1e-4 s']
+        
+        legend_elements = [
+            Line2D([0], [0], color='w', label=legend_title, lw=0),
+            Line2D([0], [0], marker='o', color='w', markerfacecolor='gray', markeredgecolor='black', markersize=8, label=lbls[0]),
+            Line2D([0], [0], marker='s', color='w', markerfacecolor='gray', markeredgecolor='black', markersize=8, label=lbls[1]),
+            Line2D([0], [0], marker='^', color='w', markerfacecolor='gray', markeredgecolor='black', markersize=8, label=lbls[2]),
+            Line2D([0], [0], marker='D', color='w', markerfacecolor='gray', markeredgecolor='black', markersize=8, label=lbls[3])
+        ]
+        ax.legend(handles=legend_elements, loc='upper left', bbox_to_anchor=(1.0, 1.0))
+
+        plt.tight_layout()
+        plt.show()
+
+    @staticmethod
+    def plot_3d_parameter_surface(compiled_data, use_doppler=True, shape_by='elements'):
+        import matplotlib.pyplot as plt
+        import matplotlib.cm as cm
+        import matplotlib.colors as mcolors
+        import numpy as np
+        
+        if not compiled_data:
+            print("No data provided to plot.")
+            return
+
+        # Create a wider figure to fit two colorbars
+        fig = plt.figure(figsize=(14, 9))
+        ax = fig.add_subplot(111, projection='3d')
+        
+        # Extract data
+        X_coords = np.array([d['X'] for d in compiled_data])
+        P_coords = np.array([d['P'] for d in compiled_data])
+        errors = np.array([d['error'] for d in compiled_data])
+        
+        # Extract the cost metric for the dots
+        costs = np.array([d[shape_by] for d in compiled_data])
+        
+        # We pass the raw error values to Z to keep the axis readable, 
+        # but tell matplotlib to treat the Z-axis logarithmically
+        Z_coords = errors
+        
+        # 1. Plot the Surface (Colored by Error using coolwarm)
+        # norm_error = mcolors.LogNorm(vmin=errors.min(), vmax=errors.max())
+        # surf = ax.plot_trisurf(X_coords, P_coords, Z_coords, 
+        #                        cmap=cm.coolwarm, norm=norm_error, 
+        #                        edgecolor='none', alpha=0.6, linewidth=0.2)
+        # 1. Plot the Surface (Colored by Error using coolwarm)
+        norm_error = mcolors.LogNorm(vmin=errors.min(), vmax=errors.max())
+        surf = ax.plot_trisurf(X_coords, P_coords, Z_coords, 
+                               cmap=cm.coolwarm, norm=norm_error, 
+                               edgecolor='none',  # Ensures no chaotic mesh lines are drawn
+                               antialiased=True,  # Smooths the surface rendering
+                               alpha=0.6)
+        
+        # 2. Plot the Dots (Colored by Cost using viridis to contrast the surface)
+        norm_cost = mcolors.LogNorm(vmin=costs.min(), vmax=costs.max())
+        scatter = ax.scatter(X_coords, P_coords, Z_coords, 
+                             c=costs, cmap=cm.viridis, norm=norm_cost, 
+                             s=40, edgecolor='black', linewidth=0.5, zorder=3)
+
+        # Formatting
+        title_prefix = "Doppler-Shifted " if use_doppler else "Source "
+        ax.set_title(f"3D Acoustic Error Topography\nSurface: L2 Error | Dots: {shape_by.upper()}")
+        ax.set_xlabel(f"Spatial Resolution, X ({title_prefix}PPW)")
+        ax.set_ylabel(f"Temporal Resolution, P ({title_prefix}PPP)")
+        ax.set_zlabel("L2 Error (%)")
+        
+        # Force the Z-axis to behave logarithmically 
+        ax.set_zscale('log')
+        
+        # Adjust viewing angle
+        ax.view_init(elev=30, azim=225) 
+        
+        # Add two distinct colorbars so Fan can read both metrics
+        cbar_error = fig.colorbar(surf, ax=ax, shrink=0.5, aspect=15, pad=0.05)
+        cbar_error.set_label('Surface: L2 Error (%)')
+        
+        cbar_cost = fig.colorbar(scatter, ax=ax, shrink=0.5, aspect=15, pad=0.1)
+        cbar_cost.set_label(f'Dots: {shape_by.upper()} Cost')
+        
         plt.tight_layout()
         plt.show()

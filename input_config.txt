@@ -4,7 +4,7 @@
 # FW-H surface grid type
 Sphere
 # FW-H control surface grid radius [m] and number of grid lines (latitude and longitudinal) [-]
-150.0, 1765, 1765
+20.0, 221, 221
 # FW-H control surface grid motion
 Source
 # FW-H surface data type
@@ -12,7 +12,7 @@ Source
 # FW-H integration method
 Retarded_Time Time_Domain
 # FW-H integration time levels [-] and time step [s]
-1592 0.001571
+995, 0.002513
 # Post-processing options
 F
 # Debugging level (0: no output, 1: basic info, 2: detailed info)
