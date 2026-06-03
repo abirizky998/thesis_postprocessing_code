@@ -45,15 +45,7 @@ class FWHDataset:
             'dx': dx, 'dt': None
         }
         
-        # cfl_mach_match = re.search(r"cfl(?P<cfl>\d+)_M(?P<mach>\d+)", self.name)
-        # if cfl_mach_match:
-        #     meta['cfl'] = float(cfl_mach_match.group('cfl')) / 100.0
-        #     meta['mach_str'] = cfl_mach_match.group('mach')
-        #     meta['mach'] = float(f"0.{meta['mach_str'][1:]}")
-        #     meta['dt'] = (meta['cfl'] * dx) / self.C
-        #     meta['grid'] = int(np.round((2 * np.pi * self.R) / dx))
-            
-        #     return meta
+        # 1. NEW MATRIX FORMAT: Pxx_Xxx_Mxx.dat
         px_mach_match = re.search(r"P(\d+)_X(\d+)_M(\d+)", self.name)
         if px_mach_match:
             p_val = float(px_mach_match.group(1))
@@ -66,49 +58,28 @@ class FWHDataset:
             meta['dt'] = (1 - meta['mach']) / (p_val * self.F_SOURCE)
             meta['grid'] = int(np.round((2 * np.pi * self.R) / meta['dx']))
             return meta
-        
+
+        # 2. OLD CFL FORMAT: cflXXX_MXX.dat
         cfl_mach_match = re.search(r"cfl(\d+)_M(\d+)", self.name)
         if cfl_mach_match:
             meta['cfl'] = float(cfl_mach_match.group(1)) / 100.0
             meta['mach_str'] = cfl_mach_match.group(2)
-            
-            # FIXED: Directly divide by 100 since the string is exactly int(M*100)
             meta['mach'] = float(meta['mach_str']) / 100.0 
-            
             meta['dt'] = (meta['cfl'] * dx) / self.C
             meta['grid'] = int(np.round((2 * np.pi * self.R) / dx))
-            
             return meta
         
+        # 3. OLD RADIUS FORMAT: rXXX_MXX.dat
         rad_mach_match = re.search(r"r(\d+)_M(\d+)\.dat", self.name)
         if rad_mach_match:
             meta['radius'] = float(rad_mach_match.group(1))
             meta['mach_str'] = rad_mach_match.group(2)
             meta['mach'] = float(meta['mach_str']) / 100.0
-            
-            # Calculate Doppler-shifted dx and corresponding N
             meta['dx'] = self.C * (1 - meta['mach']) / (self.X_TARGET * self.F_SOURCE)
             meta['grid'] = int(np.round((2 * np.pi * meta['radius']) / meta['dx']))
-            
-            # Time was locked at CFL = 1.0 for this sweep
             meta['cfl'] = 1.0 
             meta['dt'] = (meta['cfl'] * meta['dx']) / self.C
             return meta
-        
-        # # LEGACY STUFF
-        # rad_mach_match = re.search(r"r(\d+)_M(\d+)([cmf])", self.name)
-        # if rad_mach_match:
-        #     meta['radius'] = int(rad_mach_match.group(1))
-        #     meta['mach_str'] = rad_mach_match.group(2)
-        #     meta['mach'] = float(f"0.{meta['mach_str'][1:]}")
-        #     meta['grid'] = rad_mach_match.group(3)
-        #     return meta
-            
-        # time_match = re.search(r"t_M(\d+)([cmf])", self.name)
-        # if time_match:
-        #     meta['mach_str'] = time_match.group(1)
-        #     meta['mach'] = float(f"0.{meta['mach_str'][1:]}")
-        #     meta['time_lbl'] = time_match.group(2)
             
         return meta
     
@@ -121,57 +92,59 @@ class FWHDataset:
             p_coarse = self.data[col].values
             p_interp = np.interp(t_fine, t_coarse, p_coarse)
             abs_error = np.linalg.norm(ref_df[col].to_numpy() - p_interp)
-
         else:
             abs_error = np.linalg.norm(ref_df[col].to_numpy() - self.data[col].to_numpy())
 
         return abs_error / (np.linalg.norm(ref_df[col]) + 1e-15)
     
     @staticmethod
-    def compile_fwh_batch(directory, use_doppler=True):
-        import re
-        from pathlib import Path
-        
+    def compile_fwh_batch(directory, use_doppler=True, verbose=False):
         folder_path = Path(directory)
         
-        # 1. Load local analytical references for THIS folder
+        # 1. Load local analytical references
         local_refs = {}
         for ana_file in folder_path.glob("ana_M*.dat"):
             m_match = re.search(r"ana_M(\d+)", ana_file.name)
             if m_match:
                 local_refs[m_match.group(1)] = FWHDataset(filepath=ana_file)
                 
-        # 2. Process all CFL files in the folder
+        if verbose:
+            print(f"DEBUG: Loaded Analytical References for Machs: {list(local_refs.keys())}")
+        
         folder_data = []
-        for filepath in folder_path.glob("cfl*.dat"):
+        files_scanned = 0
+        
+        # 2. Process all data files
+        for filepath in folder_path.glob("*.dat"):
+            if filepath.name.startswith("ana_"):
+                continue
+                
+            files_scanned += 1
             case = FWHDataset(filepath=filepath)
             meta = case.metadata
             
             if meta.get('cfl') is None:
+                if verbose: print(f"DEBUG: Skipped {filepath.name} -> Could not parse CFL/Metadata.")
                 continue
                 
             ref_key = meta['mach_str']
+            
             if ref_key not in local_refs:
+                if verbose: print(f"DEBUG: Skipped {filepath.name} -> Ref key '{ref_key}' not found.")
                 continue 
                 
-            # Calculate Error
             ref_df = local_refs[ref_key]
             error = case.l2_error(ref_df, col='P_obs')
             
-            # Calculate true dt and dx
             if len(case.data) > 1:
                 actual_dt = case.data['Time'].iloc[1] - case.data['Time'].iloc[0]
             else:
                 actual_dt = meta['dt'] 
                 
             actual_dx = (case.C * actual_dt) / meta['cfl']
-            
-            # FIXED: Calculate the true grid dimensions using actual_dx
-            import numpy as np
             true_N = int(np.round((2 * np.pi * case.R) / actual_dx))
             true_elements = true_N * true_N
             
-            # Calculate Spatial (X) and Temporal (P) resolutions
             if use_doppler:
                 p_val = (1.0 / actual_dt) / (case.F_SOURCE / (1 - meta['mach']))
                 x_val = (case.LAMBDA_SOURCE * (1 - meta['mach'])) / actual_dx
@@ -182,16 +155,19 @@ class FWHDataset:
             folder_data.append({
                 'mach': meta['mach'],
                 'cfl': meta['cfl'],
-                'dt': actual_dt,            # Added dt to the output
+                'dt': actual_dt,
                 'P': p_val,
                 'X': x_val,
                 'error': error,
-                'elements': true_elements,  # Using dynamically calculated elements
+                'elements': true_elements,
                 'batch_name': folder_path.name
             })
             
+        if verbose:
+            print(f"\nDEBUG: Scanned {files_scanned} files. Successfully compiled {len(folder_data)} files.")
+            
         return folder_data
-
+    
 class FWHPlotter:
     # @staticmethod
     # def plot_pressure(reference, *comparisons, labels=None, title=None, scale=1.0,
@@ -442,7 +418,7 @@ class FWHPlotter:
         plt.show()
 
     @staticmethod
-    def plot_px_parameter_space(compiled_data, use_doppler=True, shape_by='elements', draw_mach_lines=False):
+    def plot_px_parameter_space(compiled_data, use_doppler=True, shape_by='elements', draw_mach_lines=False, mach_number=None):
         import matplotlib.cm as cm
         import matplotlib.colors as mcolors
         from matplotlib.lines import Line2D
@@ -500,7 +476,10 @@ class FWHPlotter:
 
         # 3. Formatting
         title_prefix = "Doppler-Shifted " if use_doppler else "Source "
-        ax.set_title(f"Acoustic Resolution Space: Temporal ({title_prefix}PPP) vs Spatial ({title_prefix}PPW)\nColored by L2 Error, Shaped by {shape_by.upper()}")
+        if mach_number is None:
+            ax.set_title(f"Temporal ({title_prefix}PPP) vs Spatial ({title_prefix}PPW)\nColored by L2 Error, Shaped by {shape_by.upper()}")
+        else:
+            ax.set_title(f"Temporal ({title_prefix}PPP) vs Spatial ({title_prefix}PPW)\nColoured by L2 Error, Shaped by {shape_by.upper()}, Mach number = {mach_number}")
         ax.set_xlabel(f"Spatial Resolution, X ({title_prefix}Points Per Wavelength)")
         ax.set_ylabel(f"Temporal Resolution, P ({title_prefix}Points Per Period)")
         
