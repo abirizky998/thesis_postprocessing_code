@@ -54,6 +54,19 @@ class FWHDataset:
         #     meta['grid'] = int(np.round((2 * np.pi * self.R) / dx))
             
         #     return meta
+        px_mach_match = re.search(r"P(\d+)_X(\d+)_M(\d+)", self.name)
+        if px_mach_match:
+            p_val = float(px_mach_match.group(1))
+            x_val = float(px_mach_match.group(2))
+            meta['mach_str'] = px_mach_match.group(3)
+            meta['mach'] = float(meta['mach_str']) / 100.0
+            
+            meta['cfl'] = x_val / p_val
+            meta['dx'] = self.C * (1 - meta['mach']) / (x_val * self.F_SOURCE)
+            meta['dt'] = (1 - meta['mach']) / (p_val * self.F_SOURCE)
+            meta['grid'] = int(np.round((2 * np.pi * self.R) / meta['dx']))
+            return meta
+        
         cfl_mach_match = re.search(r"cfl(\d+)_M(\d+)", self.name)
         if cfl_mach_match:
             meta['cfl'] = float(cfl_mach_match.group(1)) / 100.0
