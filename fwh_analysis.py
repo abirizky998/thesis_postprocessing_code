@@ -418,7 +418,7 @@ class FWHPlotter:
         plt.show()
 
     @staticmethod
-    def plot_px_parameter_space(compiled_data, use_doppler=True, shape_by='elements', draw_mach_lines=False, mach_number=None):
+    def plot_px_parameter_space(compiled_data, use_doppler=True, shape_by='elements', draw_mach_lines=False, mach_number=None, vmin=None, vmax=None):
         import matplotlib.cm as cm
         import matplotlib.colors as mcolors
         from matplotlib.lines import Line2D
@@ -433,7 +433,10 @@ class FWHPlotter:
         errors = [d['error'] for d in compiled_data]
         
         # Color Mapping (Log Scale Error)
-        norm = mcolors.LogNorm(vmin=min(errors), vmax=max(errors))
+        c_min = vmin if vmin is not None else min(errors)
+        c_max = vmax if vmax is not None else max(errors)
+
+        norm = mcolors.LogNorm(vmin=c_min, vmax=c_max)
         cmap = cm.coolwarm
         
         # Dynamic Marker Shapes based on the toggle
@@ -504,9 +507,10 @@ class FWHPlotter:
             Line2D([0], [0], marker='^', color='w', markerfacecolor='gray', markeredgecolor='black', markersize=8, label=lbls[2]),
             Line2D([0], [0], marker='D', color='w', markerfacecolor='gray', markeredgecolor='black', markersize=8, label=lbls[3])
         ]
-        ax.legend(handles=legend_elements, loc='upper left', bbox_to_anchor=(1.0, 1.0))
+        ax.legend(handles=legend_elements, loc='upper left', bbox_to_anchor=(1.15, 1.0))
 
-        plt.tight_layout()
+        # plt.tight_layout(right=0.75)
+        plt.subplots_adjust(right=0.75)
         plt.show()
 
     @staticmethod
