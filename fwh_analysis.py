@@ -297,16 +297,19 @@ class FWHPlotter:
     #     plt.show()
 
     @staticmethod
-    def plot_cfl_convergence_by_mach(directory, analysis, analytical_refs, ref_val, use_doppler=True):
+    def plot_cfl_convergence_by_mach(directory, analysis, analytical_refs, ref_val, ymin=3e-5, ymax=5e-2, use_doppler=True):
         from matplotlib.lines import Line2D
         import matplotlib.cm as cm
         
         mach_data = {}
         marker_keys = set()
 
-        search_pattern = "r*_M*.dat" if analysis == 'r' else "cfl*.dat"
+        search_pattern = "r*_M*.dat" if analysis == 'r' else "*.dat"
 
         for filepath in Path(directory).glob(search_pattern):
+            if filepath.name.startswith('ana_'):
+                continue
+
             case = FWHDataset(filepath=filepath)
             meta = case.metadata
 
@@ -315,7 +318,9 @@ class FWHPlotter:
             if analysis == 'r' and meta.get('radius') is None:
                 continue
 
-            ref_key = str(meta['mach']).replace('.','')
+            # ref_key = str(meta['mach']).replace('.','')
+            ref_key = meta['mach_str']
+
             if ref_key not in analytical_refs:
                 continue
             ref_df = analytical_refs[ref_key]
@@ -390,7 +395,7 @@ class FWHPlotter:
             
         legend_elements.append(Line2D([0], [0], color='w', label='', lw=0)) 
         
-        marker_title = r'$\bf{Radius\ (m)}$' if analysis == 'r' else r'$\bf{CFL}$'
+        marker_title = r'$\bf{Radius\ (m)}$' if analysis == 'r' else r'$\bf{X/P}$'
         legend_elements.append(Line2D([0], [0], color='w', label=marker_title, lw=0))
         for m_val in sorted_markers:
             lbl = f"{int(m_val)}" if analysis == 'r' else f'{m_val}'
@@ -411,6 +416,7 @@ class FWHPlotter:
             ax.set_xlabel(f"Normalised Radius ($R / \lambda$)")
         ax.set_ylabel("Log L2 Error (%)")
         ax.set_yscale('log')
+        ax.set_ylim(bottom=ymin, top=ymax)
         ax.grid(True, which="both", linestyle='--', alpha=0.6)
         
         ax.legend(handles=legend_elements, bbox_to_anchor=(1.05, 1), loc='upper left')
