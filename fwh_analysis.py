@@ -169,132 +169,45 @@ class FWHDataset:
         return folder_data
     
 class FWHPlotter:
-    # @staticmethod
-    # def plot_pressure(reference, *comparisons, labels=None, title=None, scale=1.0,
-    #                   ref_col='P_analytical', comp_col='P_obs'):
+    @staticmethod
+    def plot_pressure(reference, *comparisons, labels=None, title=None, scale=1.0,
+                      ref_col='P_analytical', comp_col='P_obs'):
         
-    #     fig, ax = plt.subplots(figsize=(8,5))
-    #     ref_df = reference.data if hasattr(reference, 'data') else reference
-    #     ax.plot(ref_df['Time'], ref_df[ref_col] * scale, ls='-', c='black', label=f'Reference ({ref_col})')
+        fig, ax = plt.subplots(figsize=(8,5))
+        ref_df = reference.data if hasattr(reference, 'data') else reference
+        ax.plot(ref_df['Time'], ref_df[ref_col] * scale, ls='-', c='black', label=f'Reference ({ref_col})')
 
-    #     if not labels or len(labels) != len(comparisons):
-    #         labels = [f'Dataset {i+1}' for i in range(len(comparisons))]
+        if not labels or len(labels) != len(comparisons):
+            labels = [f'Dataset {i+1}' for i in range(len(comparisons))]
 
-    #     styles = [':', '-.', '--']
-    #     colors = ['red', 'blue', 'green', 'orange', 'purple', 'cyan']
+        styles = [':', '-.', '--']
+        colors = ['red', 'blue', 'green', 'orange', 'purple', 'cyan']
 
-    #     for i, comp in enumerate(comparisons):
-    #         comp_df = comp.data if hasattr(comp, 'data') else comp
+        for i, comp in enumerate(comparisons):
+            comp_df = comp.data if hasattr(comp, 'data') else comp
 
-    #         error = comp.l2_error(reference, col=comp_col)
-    #         ls = styles[i % len(styles)]
-    #         c = colors[i % len(colors)]
+            error = comp.l2_error(reference, col=comp_col)
+            ls = styles[i % len(styles)]
+            c = colors[i % len(colors)]
 
-    #         full_label = f'{labels[i]} (Error: {error * 100:.2f}%)'
-    #         ax.plot(comp_df['Time'], comp_df[comp_col] * scale, ls=ls, c=c, label=full_label)
+            full_label = f'{labels[i]} (Error: {error * 100:.2f}%)'
+            ax.plot(comp_df['Time'], comp_df[comp_col] * scale, ls=ls, c=c, label=full_label)
 
-    #     ax.set_xlabel('Time (s)')
+        ax.set_xlabel('Time (s)')
 
-    #     if scale == 1.0:
-    #         ax.set_ylabel("Pressure (Pa)")
-    #     else:
-    #         scale_str = f"x10^{{{int(np.log10(scale))}}}" if scale >= 10 else f"x{scale}"
-    #         ax.set_ylabel(f'Pressure ({scale_str} Pa)')
+        if scale == 1.0:
+            ax.set_ylabel("Pressure (Pa)")
+        else:
+            scale_str = f"x10^{{{int(np.log10(scale))}}}" if scale >= 10 else f"x{scale}"
+            ax.set_ylabel(f'Pressure ({scale_str} Pa)')
 
-    #     if title:
-    #         ax.set_title(title)
+        if title:
+            ax.set_title(title)
 
-    #     ax.grid(True, linestyle='--', alpha=0.7)
-    #     ax.legend(loc='upper right', bbox_to_anchor=(1.35, 1))
-    #     plt.tight_layout()
-    #     plt.show()
-
-    # @staticmethod
-    # def plot_cfl_convergence(directory, analytical_refs, use_doppler=True):
-    #     """
-    #     Plots L2 Error vs Points Per Period (PPP) for the CFL batch dataset.
-    #     Lines connect constant CFL values. Markers differentiate Mach numbers.
-    #     """
-    #     from matplotlib.lines import Line2D
-        
-    #     # Group data by CFL value
-    #     cfl_data = {}
-        
-    #     for filepath in Path(directory).glob("cfl*.dat"):
-    #         case = FWHDataset(filepath=filepath)
-    #         meta = case.metadata
-            
-    #         if meta['cfl'] is None:
-    #             continue
-            
-    #         ref_key = str(meta['mach']).replace('.', '')
-    #         ref_df = analytical_refs[ref_key]
-
-    #         # ref_df = analytical_refs[meta['mach_str']]
-    #         error = case.l2_error(ref_df, col='P_obs')
-            
-    #         # PPP = X / CFL
-    #         points_per_period = case.X_TARGET / meta['cfl']
-            
-    #         if meta['cfl'] not in cfl_data:
-    #             cfl_data[meta['cfl']] = []
-                
-    #         cfl_data[meta['cfl']].append((points_per_period, error, meta['mach'], meta['mach_str']))
-
-    #     # Setup Plot
-    #     fig, ax = plt.subplots(figsize=(10, 7))
-        
-    #     mach_keys = sorted(list(set([m for c in cfl_data.values() for _, _, _, m in c])))
-    #     markers = ['o', 's', '^', 'D', 'v', 'p', '*', 'X', '<', '>']
-    #     mach_marker_map = {m: markers[i % len(markers)] for i, m in enumerate(mach_keys)}
-        
-    #     # Color mapping for lines based on CFL
-    #     import matplotlib.cm as cm
-    #     sorted_cfls = sorted(cfl_data.keys())
-    #     colors = cm.viridis(np.linspace(0, 0.9, len(sorted_cfls)))
-
-    #     # Plotting
-    #     for idx, cfl in enumerate(sorted_cfls):
-    #         data = cfl_data[cfl]
-    #         data.sort(key=lambda x: x[2]) # Sort by Mach to draw logical lines
-            
-    #         cfl_color = colors[idx]
-            
-    #         x_vals = [p[0] for p in data]
-    #         y_vals = [p[1] for p in data]
-            
-    #         # Connect the points of the same CFL
-    #         ax.plot(x_vals, y_vals, linestyle='-', color=cfl_color, zorder=1)
-            
-    #         # Add Mach markers
-    #         for p in data:
-    #             x, y, mach_val, m_str = p
-    #             ax.scatter(x, y, marker=mach_marker_map[m_str], 
-    #                        color=cfl_color, s=70, zorder=2, edgecolor='black', linewidth=0.5)
-
-    #     # Custom Legend
-    #     legend_elements = [Line2D([0], [0], color='w', label=r'$\bf{CFL\ Targets}$', lw=0)]
-    #     for idx, cfl in enumerate(sorted_cfls):
-    #         legend_elements.append(Line2D([0], [0], color=colors[idx], lw=2, label=f"CFL = {cfl}"))
-            
-    #     legend_elements.append(Line2D([0], [0], color='w', label='', lw=0)) 
-        
-    #     legend_elements.append(Line2D([0], [0], color='w', label=r'$\bf{Mach\ Numbers}$', lw=0))
-    #     for m_str in mach_keys:
-    #         legend_elements.append(Line2D([0], [0], marker=mach_marker_map[m_str], color='w', 
-    #                                       markerfacecolor='gray', markeredgecolor='black', 
-    #                                       markersize=8, label=f"M = {float(m_str)/100:.2f}"))
-
-    #     title_shift = "Doppler-Shifted " if use_doppler else "Source "
-    #     ax.set_title(f"Time Convergence: L2 Error vs Points Per Period (Spatial PPW = {FWHDataset.X_TARGET})")
-    #     ax.set_xlabel(f"Points Per Period ({title_shift}Frequency)")
-    #     ax.set_ylabel("Log Error")
-    #     ax.set_yscale('log')
-    #     ax.grid(True, which="both", linestyle='--', alpha=0.6)
-        
-    #     ax.legend(handles=legend_elements, bbox_to_anchor=(1.05, 1), loc='upper left')
-    #     plt.tight_layout()
-    #     plt.show()
+        ax.grid(True, linestyle='--', alpha=0.7)
+        ax.legend(loc='upper right', bbox_to_anchor=(1.35, 1))
+        plt.tight_layout()
+        plt.show()
 
     @staticmethod
     def plot_cfl_convergence_by_mach(directory, analysis, analytical_refs, ref_val, ymin=3e-5, ymax=5e-2, use_doppler=True):
