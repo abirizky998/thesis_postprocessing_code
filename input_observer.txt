@@ -1,13 +1,51 @@
-# Example observer definition file
-# Number of observer sets
-1
-# Observer definition
-Scatter
-# Number of observers in this set
-1
-# Observer initial location [m]
+# Example observer
+# N observer sets
+8
+# obs 1
+Point
+# initial loc
+100.0 0.0 0.0
+# motion type and duration
+Stationary 1000.0
+# obs 2
+Point
+# initial loc
 70.7 70.7 0.0
-# Observer motion type and duration [s]
-General 1000.0
-# Observer motion directions
-0.0 0.0 0.0 0.0 0.0 0.0
+# motion type and duration
+Stationary 1000.0
+# obs 3
+Point 
+# initial loc
+0.0 100.0 0.0
+# motion type and duration
+Stationary 1000.0
+# obs 4
+Point
+# initial loc 
+-70.7 70.7 0.0
+# motion type and duration
+Stationary 1000.0
+# obs 5
+Point
+# initial loc
+-100.0 0.0 0.0
+# motion type and duration
+Stationary 1000.0
+# obs 6
+Point
+# initial loc
+-70.7 -70.7 0.0
+# motion type and duration
+Stationary 1000.0
+# obs 7
+Point
+# initial loc
+0.0 -100.0 0.0
+# motion type and duration
+Stationary 1000.0
+# obs 8
+Point
+# initial loc
+70.7 -70.7 0.0
+#motion type and duration
+Stationary 1000.0

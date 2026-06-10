@@ -1,6 +1,6 @@
 # Example source definition file
 # Number of source sets
-1
+2
 # Source type
 Monopole Harmonic
 # Source frequency [rad/s], source strength, and source phase [rad]
@@ -8,8 +8,20 @@ Monopole Harmonic
 # Source definition
 Point
 # Source initial location [m]
-0.0 0.0 0.0
+0.0 0.1 0.0
 # Source motion type and duration [s]
 General 1000.0
 # Source translational velocity vector [m/s] and rotation rate vector [rad/s]
-0.0, 0.0, 0.0, 0.0, 0.0, 0.0
+0.0 0.0 0.0 0.0 0.0 0.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+10.0 -1.0 0.0
+# Source definition
+Point
+# Source initial location [m]
+0.0 -0.1 0.0
+# Source motion type and duration [s]
+General 1000.0
+# Source translational velocity vector [m/s] and rotation rate vector [rad/s]
+0.0 0.0 0.0 0.0 0.0 0.0

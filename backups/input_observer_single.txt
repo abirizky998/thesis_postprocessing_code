@@ -1,0 +1,13 @@
+# Example observer definition file
+# Number of observer sets
+1
+# Observer definition
+Scatter
+# Number of observers in this set
+1
+# Observer initial location [m]
+70.7 70.7 0.0
+# Observer motion type and duration [s]
+General 1000.0
+# Observer motion directions
+0.0 0.0 0.0 0.0 0.0 0.0
