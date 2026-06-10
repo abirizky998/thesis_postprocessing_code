@@ -12,4 +12,4 @@ Point
 # Source motion type and duration [s]
 General 1000.0
 # Source translational velocity vector [m/s] and rotation rate vector [rad/s]
-170.0 0.0 0.0 0.0 0.0 0.0
+0.0, 0.0, 0.0, 0.0, 0.0, 0.0

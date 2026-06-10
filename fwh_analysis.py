@@ -323,10 +323,10 @@ class FWHPlotter:
             ax.set_xlabel(f"Temporal Resolution ($f_{{sample}} / f_{{eff}}$)")
         if analysis == "dx":
             ax.set_title(f"Error vs {title_shift}Points Per Wavelength\n(Temporal Resolution Fixed at {ref_val[0]} PPP and CS Radius at {ref_val[1]} m)")
-            ax.set_xlabel(f"Spatial Resolution ($\lambda / d$)")
+            ax.set_xlabel(f"Spatial Resolution ($\lambda% / d)")
         if analysis == 'r':
             ax.set_title(f"Error vs Normalised CS Radius\n(Spatial Grid Fixed at {ref_val[0]} PPW and CFL={ref_val[1]})")
-            ax.set_xlabel(f"Normalised Radius ($R / \lambda$)")
+            ax.set_xlabel(f"Normalised Radius (R / $\lambda$)")
         ax.set_ylabel("Log L2 Error (%)")
         ax.set_yscale('log')
         ax.set_ylim(bottom=ymin, top=ymax)
