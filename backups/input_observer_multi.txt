@@ -1,6 +1,6 @@
 # Example observer
 # N observer sets
-5
+8
 # obs 1
 Point
 # initial loc
@@ -30,4 +30,22 @@ Point
 # initial loc
 -100.0 0.0 0.0
 # motion type and duration
+Stationary 1000.0
+# obs 6
+Point
+# initial loc
+-70.7 -70.7 0.0
+# motion type and duration
+Stationary 1000.0
+# obs 7
+Point
+# initial loc
+0.0 -100.0 0.0
+# motion type and duration
+Stationary 1000.0
+# obs 8
+Point
+# initial loc
+70.7 -70.7 0.0
+#motion type and duration
 Stationary 1000.0
