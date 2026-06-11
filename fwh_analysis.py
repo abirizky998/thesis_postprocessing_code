@@ -97,8 +97,22 @@ class FWHDataset:
 
         return abs_error / (np.linalg.norm(ref_df[col]) + 1e-15)
     
+    def rmse_error(self, ref_data, col='P_obs'):
+        ref_df = ref_data.data if hasattr(ref_data, 'data') else ref_data
+
+        if len(self.data) != len(ref_df):
+            t_fine = ref_df['Time'].values
+            t_coarse = self.data['Time'].values
+            p_coarse = self.data[col].values
+            p_interp = np.interp(t_fine, t_coarse, p_coarse)
+            diff = ref_df[col].to_numpy() - p_interp
+        else:
+            diff = ref_df[col].to_numpy() - self.data[col].to_numpy()
+
+        return np.sqrt(np.mean(diff**2))
+    
     @staticmethod
-    def compile_fwh_batch(directory, use_doppler=True, verbose=False):
+    def compile_fwh_batch(directory, error_method='l2', use_doppler=True, verbose=False):
         folder_path = Path(directory)
         
         # 1. Load local analytical references
@@ -134,8 +148,11 @@ class FWHDataset:
                 continue 
                 
             ref_df = local_refs[ref_key]
-            error = case.l2_error(ref_df, col='P_obs')
-            
+            if error_method == 'l2':
+                error = case.l2_error(ref_df, col='P_obs')
+            elif error_method == 'rmse':
+                error = case.rmse_error(ref_df, col='P_obs')
+
             if len(case.data) > 1:
                 actual_dt = case.data['Time'].iloc[1] - case.data['Time'].iloc[0]
             else:
@@ -170,7 +187,7 @@ class FWHDataset:
     
 class FWHPlotter:
     @staticmethod
-    def plot_pressure(reference, *comparisons, labels=None, title=None, scale=1.0,
+    def plot_pressure(reference, *comparisons, labels=None, title=None, scale=1.0, error_method='l2',
                       ref_col='P_analytical', comp_col='P_obs'):
         
         fig, ax = plt.subplots(figsize=(8,5))
@@ -185,8 +202,10 @@ class FWHPlotter:
 
         for i, comp in enumerate(comparisons):
             comp_df = comp.data if hasattr(comp, 'data') else comp
-
-            error = comp.l2_error(reference, col=comp_col)
+            if error_method == 'l2':
+                error = comp.l2_error(reference, col=comp_col)
+            elif error_method == 'rmse':
+                error = comp.rmse_error(reference, col=comp_col)
             ls = styles[i % len(styles)]
             c = colors[i % len(colors)]
 
@@ -210,7 +229,7 @@ class FWHPlotter:
         plt.show()
 
     @staticmethod
-    def plot_cfl_convergence_by_mach(directory, analysis, analytical_refs, ref_val, ymin=3e-5, ymax=5e-2, use_doppler=True):
+    def plot_cfl_convergence_by_mach(directory, analysis, analytical_refs, ref_val, error_method='l2', ymin=3e-5, ymax=5e-2, use_doppler=True):
         from matplotlib.lines import Line2D
         import matplotlib.cm as cm
         
@@ -237,7 +256,11 @@ class FWHPlotter:
             if ref_key not in analytical_refs:
                 continue
             ref_df = analytical_refs[ref_key]
-            error = case.l2_error(ref_df, col='P_obs')
+            
+            if error_method == 'l2':
+                error = case.l2_error(ref_df, col='P_obs')
+            elif error_method == 'rmse':
+                error = case.rmse_error(ref_df, col='P_obs')
 
             actual_dt = case.data['Time'].iloc[1] - case.data['Time'].iloc[0]
             actual_dx = (case.C * actual_dt) / meta['cfl']
@@ -327,8 +350,12 @@ class FWHPlotter:
         if analysis == 'r':
             ax.set_title(f"Error vs Normalised CS Radius\n(Spatial Grid Fixed at {ref_val[0]} PPW and CFL={ref_val[1]})")
             ax.set_xlabel(f"Normalised Radius (R / $\lambda$)")
-        ax.set_ylabel("Log L2 Error (%)")
-        ax.set_yscale('log')
+        if error_method == 'l2':
+            ax.set_ylabel("Log L2 Error (%)")
+            ax.set_yscale('log')
+        elif error_method == 'rmse':
+            ax.set_ylabel("RMSE Error (Pa)")
+        
         ax.set_ylim(bottom=ymin, top=ymax)
         ax.grid(True, which="both", linestyle='--', alpha=0.6)
         
@@ -336,106 +363,106 @@ class FWHPlotter:
         plt.tight_layout()
         plt.show()
 
-    @staticmethod
-    def plot_px_parameter_space(compiled_data, use_doppler=True, shape_by='elements', 
-                                draw_mach_lines=False, mach_number=None, vmin=1e-3, vmax=1e-1,
-                                legend=True, add_title=None):
-        import matplotlib.cm as cm
-        import matplotlib.colors as mcolors
-        from matplotlib.lines import Line2D
-        import matplotlib.pyplot as plt
+    # @staticmethod
+    # def plot_px_parameter_space(compiled_data, use_doppler=True, shape_by='elements', 
+    #                             draw_mach_lines=False, mach_number=None, vmin=1e-3, vmax=1e-1,
+    #                             legend=True, add_title=None):
+    #     import matplotlib.cm as cm
+    #     import matplotlib.colors as mcolors
+    #     from matplotlib.lines import Line2D
+    #     import matplotlib.pyplot as plt
 
-        if not compiled_data:
-            print("No data provided to plot.")
-            return
+    #     if not compiled_data:
+    #         print("No data provided to plot.")
+    #         return
 
-        fig, ax = plt.subplots(figsize=(12, 8))
+    #     fig, ax = plt.subplots(figsize=(12, 8))
         
-        errors = [d['error'] for d in compiled_data]
+    #     errors = [d['error'] for d in compiled_data]
         
-        # Color Mapping (Log Scale Error)
-        c_min = vmin if vmin is not None else min(errors)
-        c_max = vmax if vmax is not None else max(errors)
+    #     # Color Mapping (Log Scale Error)
+    #     c_min = vmin if vmin is not None else min(errors)
+    #     c_max = vmax if vmax is not None else max(errors)
 
-        norm = mcolors.LogNorm(vmin=c_min, vmax=c_max)
-        cmap = cm.coolwarm
+    #     norm = mcolors.LogNorm(vmin=c_min, vmax=c_max)
+    #     cmap = cm.coolwarm
         
-        # Dynamic Marker Shapes based on the toggle
-        def get_marker(d, mode):
-            if mode == 'elements':
-                val = d['elements']
-                if val < 50000: return 'o'       
-                elif val < 250000: return 's'    
-                elif val < 1000000: return '^'   
-                else: return 'D'
-            elif mode == 'dt':
-                val = d['dt']
-                if val > 5e-3: return 'o'        
-                elif val > 1e-3: return 's'      
-                elif val > 1e-4: return '^'      
-                else: return 'D'                 
+    #     # Dynamic Marker Shapes based on the toggle
+    #     def get_marker(d, mode):
+    #         if mode == 'elements':
+    #             val = d['elements']
+    #             if val < 50000: return 'o'       
+    #             elif val < 250000: return 's'    
+    #             elif val < 1000000: return '^'   
+    #             else: return 'D'
+    #         elif mode == 'dt':
+    #             val = d['dt']
+    #             if val > 5e-3: return 'o'        
+    #             elif val > 1e-3: return 's'      
+    #             elif val > 1e-4: return '^'      
+    #             else: return 'D'                 
 
-        # 1. Draw Mach Lines (if toggled)
-        if draw_mach_lines:
-            mach_groups = {}
-            for d in compiled_data:
-                m = d['mach']
-                if m not in mach_groups:
-                    mach_groups[m] = []
-                mach_groups[m].append(d)
+    #     # 1. Draw Mach Lines (if toggled)
+    #     if draw_mach_lines:
+    #         mach_groups = {}
+    #         for d in compiled_data:
+    #             m = d['mach']
+    #             if m not in mach_groups:
+    #                 mach_groups[m] = []
+    #             mach_groups[m].append(d)
                 
-            for m, points in mach_groups.items():
-                points.sort(key=lambda item: item['X'])
-                xs = [p['X'] for p in points]
-                ps = [p['P'] for p in points]
-                ax.plot(xs, ps, color='gray', linestyle='-', linewidth=1.0, alpha=0.5, zorder=1)
-                ax.text(xs[-1], ps[-1], f" M={m:.2f}", fontsize=8, color='dimgray', verticalalignment='center')
+    #         for m, points in mach_groups.items():
+    #             points.sort(key=lambda item: item['X'])
+    #             xs = [p['X'] for p in points]
+    #             ps = [p['P'] for p in points]
+    #             ax.plot(xs, ps, color='gray', linestyle='-', linewidth=1.0, alpha=0.5, zorder=1)
+    #             ax.text(xs[-1], ps[-1], f" M={m:.2f}", fontsize=8, color='dimgray', verticalalignment='center')
 
-        # 2. Scatter Plotting
-        for d in compiled_data:
-            color_val = cmap(norm(d['error']))
-            marker_shape = get_marker(d, shape_by)
-            ax.scatter(d['X'], d['P'], marker=marker_shape, color=color_val, 
-                       edgecolor='black', s=80, linewidth=0.5, alpha=0.8, zorder=2)
+    #     # 2. Scatter Plotting
+    #     for d in compiled_data:
+    #         color_val = cmap(norm(d['error']))
+    #         marker_shape = get_marker(d, shape_by)
+    #         ax.scatter(d['X'], d['P'], marker=marker_shape, color=color_val, 
+    #                    edgecolor='black', s=80, linewidth=0.5, alpha=0.8, zorder=2)
 
-        # 3. Formatting
-        title_prefix = f"Doppler-Shifted " if use_doppler else f"Source "
+    #     # 3. Formatting
+    #     title_prefix = f"Doppler-Shifted " if use_doppler else f"Source "
 
-        if mach_number is None:
-            ax.set_title(f"{add_title}\nTemporal ({title_prefix}P) vs Spatial ({title_prefix}X)\nColored by L2 Error, Shaped by {shape_by.upper()}")
-        else:
-            ax.set_title(f"{add_title}\nTemporal ({title_prefix}P) vs Spatial ({title_prefix}X)\nColoured by L2 Error, Shaped by {shape_by.upper()}, Mach number = {mach_number}")
+    #     if mach_number is None:
+    #         ax.set_title(f"{add_title}\nTemporal ({title_prefix}P) vs Spatial ({title_prefix}X)\nColored by Error, Shaped by {shape_by.upper()}")
+    #     else:
+    #         ax.set_title(f"{add_title}\nTemporal ({title_prefix}P) vs Spatial ({title_prefix}X)\nColoured by Error, Shaped by {shape_by.upper()}, Mach number = {mach_number}")
 
-        ax.set_xlabel(f"Spatial Resolution, X ({title_prefix}Points Per Wavelength)")
-        ax.set_ylabel(f"Temporal Resolution, P ({title_prefix}Points Per Period)")
+    #     ax.set_xlabel(f"Spatial Resolution, X ({title_prefix}Points Per Wavelength)")
+    #     ax.set_ylabel(f"Temporal Resolution, P ({title_prefix}Points Per Period)")
         
-        # ax.set_xscale('log')
-        # ax.set_yscale('log')
-        ax.grid(True, which='both', linestyle='--', alpha=0.4)
+    #     # ax.set_xscale('log')
+    #     # ax.set_yscale('log')
+    #     ax.grid(True, which='both', linestyle='--', alpha=0.4)
         
-        # Colorbar
-        sm = plt.cm.ScalarMappable(cmap=cmap, norm=norm)
-        sm.set_array([])
-        cbar = fig.colorbar(sm, ax=ax)
-        cbar.set_label('Log L2 Error (%)')
+    #     # Colorbar
+    #     sm = plt.cm.ScalarMappable(cmap=cmap, norm=norm)
+    #     sm.set_array([])
+    #     cbar = fig.colorbar(sm, ax=ax)
+    #     cbar.set_label('Log L2 Error (%)')
         
-        # Dynamic Legend
-        if legend:
-            legend_title = r'$\bf{Element\ Count}$' if shape_by == 'elements' else r'$\bf{Time\ Step\ (\Delta t)}$'
-            lbls = ['< 50k', '50k - 250k', '250k - 1M', '> 1M'] if shape_by == 'elements' else ['> 5e-3 s', '1e-3 to 5e-3 s', '1e-4 to 1e-3 s', '< 1e-4 s']
+    #     # Dynamic Legend
+    #     if legend:
+    #         legend_title = r'$\bf{Element\ Count}$' if shape_by == 'elements' else r'$\bf{Time\ Step\ (\Delta t)}$'
+    #         lbls = ['< 50k', '50k - 250k', '250k - 1M', '> 1M'] if shape_by == 'elements' else ['> 5e-3 s', '1e-3 to 5e-3 s', '1e-4 to 1e-3 s', '< 1e-4 s']
             
-            legend_elements = [
-                Line2D([0], [0], color='w', label=legend_title, lw=0),
-                Line2D([0], [0], marker='o', color='w', markerfacecolor='gray', markeredgecolor='black', markersize=8, label=lbls[0]),
-                Line2D([0], [0], marker='s', color='w', markerfacecolor='gray', markeredgecolor='black', markersize=8, label=lbls[1]),
-                Line2D([0], [0], marker='^', color='w', markerfacecolor='gray', markeredgecolor='black', markersize=8, label=lbls[2]),
-                Line2D([0], [0], marker='D', color='w', markerfacecolor='gray', markeredgecolor='black', markersize=8, label=lbls[3])
-            ]
-            ax.legend(handles=legend_elements, loc='upper left', bbox_to_anchor=(1.15, 1.0))
+    #         legend_elements = [
+    #             Line2D([0], [0], color='w', label=legend_title, lw=0),
+    #             Line2D([0], [0], marker='o', color='w', markerfacecolor='gray', markeredgecolor='black', markersize=8, label=lbls[0]),
+    #             Line2D([0], [0], marker='s', color='w', markerfacecolor='gray', markeredgecolor='black', markersize=8, label=lbls[1]),
+    #             Line2D([0], [0], marker='^', color='w', markerfacecolor='gray', markeredgecolor='black', markersize=8, label=lbls[2]),
+    #             Line2D([0], [0], marker='D', color='w', markerfacecolor='gray', markeredgecolor='black', markersize=8, label=lbls[3])
+    #         ]
+    #         ax.legend(handles=legend_elements, loc='upper left', bbox_to_anchor=(1.15, 1.0))
 
-        # plt.tight_layout(right=0.75)
-        plt.subplots_adjust(right=0.75)
-        plt.show()
+    #     # plt.tight_layout(right=0.75)
+    #     plt.subplots_adjust(right=0.75)
+    #     plt.show()
 
     # @staticmethod
     # def plot_px_contour_space(compiled_data, use_doppler=True, shape_by='elements', draw_mach_lines=False):
