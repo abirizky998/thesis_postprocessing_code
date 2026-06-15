@@ -4,7 +4,7 @@
 # Source type
 Monopole Harmonic
 # Source frequency [rad/s], source strength, and source phase [rad]
-10.0 1.0 0.0
+100.00 1.0 0.0
 # Source definition
 Point
 # Source initial location [m]
