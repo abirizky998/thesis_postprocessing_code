@@ -398,6 +398,138 @@ class FWHPlotter:
         plt.tight_layout()
         plt.show()
 
+    @staticmethod
+    def plot_px_contour_space(compiled_data, add_title=None, use_doppler=True, shape_by='elements', draw_mach_lines=False, vmax=1e-1, vmin=1e-3):
+        import matplotlib.cm as cm
+        import matplotlib.colors as mcolors
+        from matplotlib.lines import Line2D
+        import matplotlib.pyplot as plt
+        import numpy as np
+        from scipy.interpolate import griddata
+
+        if not compiled_data:
+            print("No data provided to plot.")
+            return
+
+        fig, ax = plt.subplots(figsize=(12, 8))
+        
+        X_coords = np.array([d['X'] for d in compiled_data])
+        P_coords = np.array([d['P'] for d in compiled_data])
+        errors = np.array([d['error'] for d in compiled_data])
+
+        c_min = vmin if vmin is not None else min(errors)
+        c_max = vmax if vmax is not None else max(errors)
+        
+        norm = mcolors.LogNorm(vmin=c_min, vmax=c_max)
+        cmap = cm.coolwarm
+        
+        # 1. Generate the Contour Mesh (in Log Space for accurate scaling)
+        xi = np.logspace(np.log10(X_coords.min()), np.log10(X_coords.max()), 100)
+        pi = np.logspace(np.log10(P_coords.min()), np.log10(P_coords.max()), 100)
+        XI, PI = np.meshgrid(xi, pi)
+        
+        # Interpolate the error data onto the grid using linear triangulation
+        ZI = griddata((X_coords, P_coords), errors, (XI, PI), method='linear')
+        
+        # Plot the background contour (levels map to the log scale)
+        contour = ax.contourf(XI, PI, ZI, levels=np.logspace(np.log10(errors.min()), np.log10(errors.max()), 20), 
+                              norm=norm, cmap=cmap, alpha=0.6, zorder=0)
+
+        # ---------------------------------------------------------
+        # NEW: Draw explicit contour lines (isocurves) for major error thresholds
+        # ---------------------------------------------------------
+        # Dynamically determine clean logarithmic decades (e.g., 10^-3, 10^-2) 
+        min_pow = int(np.floor(np.log10(errors.min())))
+        max_pow = int(np.ceil(np.log10(errors.max())))
+        
+        # If the range is very tight, do half-decades to ensure we get enough lines. Otherwise, full decades.
+        if (max_pow - min_pow) <= 2:
+            major_levels = np.logspace(min_pow, max_pow, num=int(2*(max_pow-min_pow)+1))
+        else:
+            major_levels = np.logspace(min_pow, max_pow, num=int((max_pow-min_pow)+1))
+            
+        # Filter levels to strictly fall within the min/max of the data
+        major_levels = [lvl for lvl in major_levels if errors.min() <= lvl <= errors.max()]
+        
+        # Fallback if filtering removes too many lines
+        if len(major_levels) < 3:
+            major_levels = np.logspace(np.log10(errors.min()), np.log10(errors.max()), 5)
+
+        # Draw the lines in black with partial transparency
+        contour_lines = ax.contour(XI, PI, ZI, levels=major_levels, colors='black', linewidths=1.2, alpha=0.5, zorder=1)
+        
+        # Stamp the labels directly onto the lines (inline=True breaks the line so the text is readable)
+        ax.clabel(contour_lines, inline=True, fontsize=10, fmt='%.1e', colors='black')
+        # ---------------------------------------------------------
+
+        # Dynamic Marker Shapes based on the toggle
+        def get_marker(d, mode):
+            if mode == 'elements':
+                val = d['elements']
+                if val < 50000: return 'o'       
+                elif val < 250000: return 's'    
+                elif val < 1000000: return '^'   
+                else: return 'D'
+            elif mode == 'dt':
+                val = d['dt']
+                if val > 5e-3: return 'o'        
+                elif val > 1e-3: return 's'      
+                elif val > 1e-4: return '^'      
+                else: return 'D'                 
+
+        # 2. Draw Mach Lines (if toggled)
+        if draw_mach_lines:
+            mach_groups = {}
+            for d in compiled_data:
+                m = d['mach']
+                if m not in mach_groups:
+                    mach_groups[m] = []
+                mach_groups[m].append(d)
+                
+            for m, points in mach_groups.items():
+                points.sort(key=lambda item: item['X'])
+                xs = [p['X'] for p in points]
+                ps = [p['P'] for p in points]
+                ax.plot(xs, ps, color='black', linestyle='-', linewidth=1.5, alpha=0.5, zorder=2)
+                ax.text(xs[-1], ps[-1], f" M={m:.2f}", fontsize=8, color='black', verticalalignment='center', zorder=3)
+
+        # 3. Scatter Plotting (Overlaying the actual anchor points)
+        for d in compiled_data:
+            color_val = cmap(norm(d['error']))
+            marker_shape = get_marker(d, shape_by)
+            ax.scatter(d['X'], d['P'], marker=marker_shape, color=color_val, 
+                       edgecolor='black', s=50, linewidth=0.8, zorder=4)
+
+        # 4. Formatting
+        title_prefix = "Doppler-Shifted " if use_doppler else "Source "
+        ax.set_title(f"{add_title}\n Temporal ({title_prefix}PPP) vs Spatial ({title_prefix}PPW)\nShaped by {shape_by.upper()}")
+        ax.set_xlabel(f"Spatial Resolution, X ({title_prefix}Points Per Wavelength)")
+        ax.set_ylabel(f"Temporal Resolution, P ({title_prefix}Points Per Period)")
+        
+        # Colorbar
+
+        sm = plt.cm.ScalarMappable(cmap=cmap, norm=norm)
+        sm.set_array([])
+        cbar = fig.colorbar(sm, ax=ax)
+        # cbar = fig.colorbar(contour, ax=ax)
+        cbar.set_label('Log L2 Error (%)')
+        
+        # Dynamic Legend
+        legend_title = r'$\bf{Element\ Count}$' if shape_by == 'elements' else r'$\bf{Time\ Step\ (\Delta t)}$'
+        lbls = ['< 50k', '50k - 250k', '250k - 1M', '> 1M'] if shape_by == 'elements' else ['> 5e-3 s', '1e-3 to 5e-3 s', '1e-4 to 1e-3 s', '< 1e-4 s']
+        
+        legend_elements = [
+            Line2D([0], [0], color='w', label=legend_title, lw=0),
+            Line2D([0], [0], marker='o', color='w', markerfacecolor='gray', markeredgecolor='black', markersize=8, label=lbls[0]),
+            Line2D([0], [0], marker='s', color='w', markerfacecolor='gray', markeredgecolor='black', markersize=8, label=lbls[1]),
+            Line2D([0], [0], marker='^', color='w', markerfacecolor='gray', markeredgecolor='black', markersize=8, label=lbls[2]),
+            Line2D([0], [0], marker='D', color='w', markerfacecolor='gray', markeredgecolor='black', markersize=8, label=lbls[3])
+        ]
+        ax.legend(handles=legend_elements, loc='upper left', bbox_to_anchor=(1.15, 1.0))
+
+        plt.tight_layout()
+        plt.show()
+
     # @staticmethod
     # def plot_cfl_convergence_by_mach(directory, analysis, analytical_refs, ref_val, error_method='l2', ymin=3e-5, ymax=5e-2, use_doppler=True):
     #     from matplotlib.lines import Line2D
@@ -636,177 +768,178 @@ class FWHPlotter:
         plt.subplots_adjust(right=0.75)
         plt.show()
 
-    @staticmethod
-    def plot_px_contour_space(compiled_data, use_doppler=True, shape_by='elements', draw_mach_lines=False, vmax=1e-2, vmin=1e-3):
-        import matplotlib.cm as cm
-        import matplotlib.colors as mcolors
-        from matplotlib.lines import Line2D
-        import matplotlib.pyplot as plt
-        import numpy as np
-        from scipy.interpolate import griddata
+    # @staticmethod
+    # def plot_px_contour_space(compiled_data, use_doppler=True, shape_by='elements', draw_mach_lines=False, vmax=1e-2, vmin=1e-3):
+    #     import matplotlib.cm as cm
+    #     import matplotlib.colors as mcolors
+    #     from matplotlib.lines import Line2D
+    #     import matplotlib.pyplot as plt
+    #     import numpy as np
+    #     from scipy.interpolate import griddata
 
-        if not compiled_data:
-            print("No data provided to plot.")
-            return
+    #     if not compiled_data:
+    #         print("No data provided to plot.")
+    #         return
 
-        fig, ax = plt.subplots(figsize=(12, 8))
+    #     fig, ax = plt.subplots(figsize=(12, 8))
         
-        X_coords = np.array([d['X'] for d in compiled_data])
-        P_coords = np.array([d['P'] for d in compiled_data])
-        errors = np.array([d['error'] for d in compiled_data])
+    #     X_coords = np.array([d['X'] for d in compiled_data])
+    #     P_coords = np.array([d['P'] for d in compiled_data])
+    #     errors = np.array([d['error'] for d in compiled_data])
 
-        c_min = vmin if vmin is not None else min(errors)
-        c_max = vmax if vmax is not None else max(errors)
+    #     c_min = vmin if vmin is not None else min(errors)
+    #     c_max = vmax if vmax is not None else max(errors)
         
-        norm = mcolors.LogNorm(vmin=c_min, vmax=c_max)
-        cmap = cm.coolwarm
+    #     norm = mcolors.LogNorm(vmin=c_min, vmax=c_max)
+    #     cmap = cm.coolwarm
         
-        # 1. Generate the Contour Mesh (in Log Space for accurate scaling)
-        # We create a fine 100x100 grid spanning the min and max of your data
-        xi = np.logspace(np.log10(X_coords.min()), np.log10(X_coords.max()), 100)
-        pi = np.logspace(np.log10(P_coords.min()), np.log10(P_coords.max()), 100)
-        XI, PI = np.meshgrid(xi, pi)
+    #     # 1. Generate the Contour Mesh (in Log Space for accurate scaling)
+    #     # We create a fine 100x100 grid spanning the min and max of your data
+    #     xi = np.logspace(np.log10(X_coords.min()), np.log10(X_coords.max()), 100)
+    #     pi = np.logspace(np.log10(P_coords.min()), np.log10(P_coords.max()), 100)
+    #     XI, PI = np.meshgrid(xi, pi)
         
-        # Interpolate the error data onto the grid using linear triangulation
-        ZI = griddata((X_coords, P_coords), errors, (XI, PI), method='linear')
+    #     # Interpolate the error data onto the grid using linear triangulation
+    #     ZI = griddata((X_coords, P_coords), errors, (XI, PI), method='linear')
         
-        # Plot the background contour (levels map to the log scale)
-        contour = ax.contourf(XI, PI, ZI, levels=np.logspace(np.log10(errors.min()), np.log10(errors.max()), 20), 
-                              norm=norm, cmap=cmap, alpha=0.6, zorder=0)
+    #     # Plot the background contour (levels map to the log scale)
+    #     contour = ax.contourf(XI, PI, ZI, levels=np.logspace(np.log10(errors.min()), np.log10(errors.max()), 20), 
+    #                           norm=norm, cmap=cmap, alpha=0.6, zorder=0)
 
-        # Dynamic Marker Shapes based on the toggle
-        def get_marker(d, mode):
-            if mode == 'elements':
-                val = d['elements']
-                if val < 50000: return 'o'       
-                elif val < 250000: return 's'    
-                elif val < 1000000: return '^'   
-                else: return 'D'
-            elif mode == 'dt':
-                val = d['dt']
-                if val > 5e-3: return 'o'        
-                elif val > 1e-3: return 's'      
-                elif val > 1e-4: return '^'      
-                else: return 'D'                 
+    #     # Dynamic Marker Shapes based on the toggle
+    #     def get_marker(d, mode):
+    #         if mode == 'elements':
+    #             val = d['elements']
+    #             if val < 50000: return 'o'       
+    #             elif val < 250000: return 's'    
+    #             elif val < 1000000: return '^'   
+    #             else: return 'D'
+    #         elif mode == 'dt':
+    #             val = d['dt']
+    #             if val > 5e-3: return 'o'        
+    #             elif val > 1e-3: return 's'      
+    #             elif val > 1e-4: return '^'      
+    #             else: return 'D'                 
 
-        # 2. Draw Mach Lines (if toggled)
-        if draw_mach_lines:
-            mach_groups = {}
-            for d in compiled_data:
-                m = d['mach']
-                if m not in mach_groups:
-                    mach_groups[m] = []
-                mach_groups[m].append(d)
+    #     # 2. Draw Mach Lines (if toggled)
+    #     if draw_mach_lines:
+    #         mach_groups = {}
+    #         for d in compiled_data:
+    #             m = d['mach']
+    #             if m not in mach_groups:
+    #                 mach_groups[m] = []
+    #             mach_groups[m].append(d)
                 
-            for m, points in mach_groups.items():
-                points.sort(key=lambda item: item['X'])
-                xs = [p['X'] for p in points]
-                ps = [p['P'] for p in points]
-                ax.plot(xs, ps, color='black', linestyle='-', linewidth=1.5, alpha=0.5, zorder=1)
-                ax.text(xs[-1], ps[-1], f" M={m:.2f}", fontsize=8, color='black', verticalalignment='center', zorder=2)
+    #         for m, points in mach_groups.items():
+    #             points.sort(key=lambda item: item['X'])
+    #             xs = [p['X'] for p in points]
+    #             ps = [p['P'] for p in points]
+    #             ax.plot(xs, ps, color='black', linestyle='-', linewidth=1.5, alpha=0.5, zorder=1)
+    #             ax.text(xs[-1], ps[-1], f" M={m:.2f}", fontsize=8, color='black', verticalalignment='center', zorder=2)
 
-        # 3. Scatter Plotting (Overlaying the actual anchor points)
-        for d in compiled_data:
-            # We color the edge black and fill with the exact error color so it blends but remains visible
-            color_val = cmap(norm(d['error']))
-            marker_shape = get_marker(d, shape_by)
-            ax.scatter(d['X'], d['P'], marker=marker_shape, color=color_val, 
-                       edgecolor='black', s=50, linewidth=0.8, zorder=3)
+    #     # 3. Scatter Plotting (Overlaying the actual anchor points)
+    #     for d in compiled_data:
+    #         # We color the edge black and fill with the exact error color so it blends but remains visible
+    #         color_val = cmap(norm(d['error']))
+    #         marker_shape = get_marker(d, shape_by)
+    #         ax.scatter(d['X'], d['P'], marker=marker_shape, color=color_val, 
+    #                    edgecolor='black', s=50, linewidth=0.8, zorder=3)
 
-        # 4. Formatting
-        title_prefix = "Doppler-Shifted " if use_doppler else "Source "
-        ax.set_title(f"Acoustic Error Contour Map: Temporal ({title_prefix}PPP) vs Spatial ({title_prefix}PPW)\nShaped by {shape_by.upper()}")
-        ax.set_xlabel(f"Spatial Resolution, X ({title_prefix}Points Per Wavelength)")
-        ax.set_ylabel(f"Temporal Resolution, P ({title_prefix}Points Per Period)")
+    #     # 4. Formatting
+    #     title_prefix = "Doppler-Shifted " if use_doppler else "Source "
+    #     ax.set_title(f"Acoustic Error Contour Map: Temporal ({title_prefix}PPP) vs Spatial ({title_prefix}PPW)\nShaped by {shape_by.upper()}")
+    #     ax.set_xlabel(f"Spatial Resolution, X ({title_prefix}Points Per Wavelength)")
+    #     ax.set_ylabel(f"Temporal Resolution, P ({title_prefix}Points Per Period)")
         
-        # ax.set_xscale('log')
-        # ax.set_yscale('log')
+    #     # ax.set_xscale('log')
+    #     # ax.set_yscale('log')
         
-        # Colorbar
-        cbar = fig.colorbar(contour, ax=ax)
-        cbar.set_label('Log L2 Error (%)')
+    #     # Colorbar
+    #     cbar = fig.colorbar(contour, ax=ax)
+    #     cbar.set_label('Log L2 Error (%)')
         
-        # Dynamic Legend
-        legend_title = r'$\bf{Element\ Count}$' if shape_by == 'elements' else r'$\bf{Time\ Step\ (\Delta t)}$'
-        lbls = ['< 50k', '50k - 250k', '250k - 1M', '> 1M'] if shape_by == 'elements' else ['> 5e-3 s', '1e-3 to 5e-3 s', '1e-4 to 1e-3 s', '< 1e-4 s']
+    #     # Dynamic Legend
+    #     legend_title = r'$\bf{Element\ Count}$' if shape_by == 'elements' else r'$\bf{Time\ Step\ (\Delta t)}$'
+    #     lbls = ['< 50k', '50k - 250k', '250k - 1M', '> 1M'] if shape_by == 'elements' else ['> 5e-3 s', '1e-3 to 5e-3 s', '1e-4 to 1e-3 s', '< 1e-4 s']
         
-        legend_elements = [
-            Line2D([0], [0], color='w', label=legend_title, lw=0),
-            Line2D([0], [0], marker='o', color='w', markerfacecolor='gray', markeredgecolor='black', markersize=8, label=lbls[0]),
-            Line2D([0], [0], marker='s', color='w', markerfacecolor='gray', markeredgecolor='black', markersize=8, label=lbls[1]),
-            Line2D([0], [0], marker='^', color='w', markerfacecolor='gray', markeredgecolor='black', markersize=8, label=lbls[2]),
-            Line2D([0], [0], marker='D', color='w', markerfacecolor='gray', markeredgecolor='black', markersize=8, label=lbls[3])
-        ]
-        ax.legend(handles=legend_elements, loc='upper left', bbox_to_anchor=(1.0, 1.0))
+    #     legend_elements = [
+    #         Line2D([0], [0], color='w', label=legend_title, lw=0),
+    #         Line2D([0], [0], marker='o', color='w', markerfacecolor='gray', markeredgecolor='black', markersize=8, label=lbls[0]),
+    #         Line2D([0], [0], marker='s', color='w', markerfacecolor='gray', markeredgecolor='black', markersize=8, label=lbls[1]),
+    #         Line2D([0], [0], marker='^', color='w', markerfacecolor='gray', markeredgecolor='black', markersize=8, label=lbls[2]),
+    #         Line2D([0], [0], marker='D', color='w', markerfacecolor='gray', markeredgecolor='black', markersize=8, label=lbls[3])
+    #     ]
+    #     ax.legend(handles=legend_elements, loc='upper left', bbox_to_anchor=(1.0, 1.0))
 
-        plt.tight_layout()
-        plt.show()
+    #     plt.tight_layout()
+    #     plt.show()
 
-    @staticmethod
-    def plot_3d_parameter_surface(compiled_data, use_doppler=True, shape_by='elements'):
-        import matplotlib.pyplot as plt
-        import matplotlib.cm as cm
-        import matplotlib.colors as mcolors
-        import numpy as np
+    # @staticmethod
+    # def plot_3d_parameter_surface(compiled_data, use_doppler=True, shape_by='elements'):
+    #     import matplotlib.pyplot as plt
+    #     import matplotlib.cm as cm
+    #     import matplotlib.colors as mcolors
+    #     import numpy as np
         
-        if not compiled_data:
-            print("No data provided to plot.")
-            return
+    #     if not compiled_data:
+    #         print("No data provided to plot.")
+    #         return
 
-        # Create a wider figure to fit two colorbars
-        fig = plt.figure(figsize=(14, 9))
-        ax = fig.add_subplot(111, projection='3d')
+    #     # Create a wider figure to fit two colorbars
+    #     fig = plt.figure(figsize=(14, 9))
+    #     ax = fig.add_subplot(111, projection='3d')
         
-        # Extract data
-        X_coords = np.array([d['X'] for d in compiled_data])
-        P_coords = np.array([d['P'] for d in compiled_data])
-        errors = np.array([d['error'] for d in compiled_data])
+    #     # Extract data
+    #     X_coords = np.array([d['X'] for d in compiled_data])
+    #     P_coords = np.array([d['P'] for d in compiled_data])
+    #     errors = np.array([d['error'] for d in compiled_data])
         
-        # Extract the cost metric for the dots
-        costs = np.array([d[shape_by] for d in compiled_data])
+    #     # Extract the cost metric for the dots
+    #     costs = np.array([d[shape_by] for d in compiled_data])
         
-        # We pass the raw error values to Z to keep the axis readable, 
-        # but tell matplotlib to treat the Z-axis logarithmically
-        Z_coords = errors
+    #     # We pass the raw error values to Z to keep the axis readable, 
+    #     # but tell matplotlib to treat the Z-axis logarithmically
+    #     Z_coords = errors
         
-        # 1. Plot the Surface (Colored by Error using coolwarm)
-        # norm_error = mcolors.LogNorm(vmin=errors.min(), vmax=errors.max())
-        # surf = ax.plot_trisurf(X_coords, P_coords, Z_coords, 
-        #                        cmap=cm.coolwarm, norm=norm_error, 
-        #                        edgecolor='none', alpha=0.6, linewidth=0.2)
-        # 1. Plot the Surface (Colored by Error using coolwarm)
-        norm_error = mcolors.LogNorm(vmin=errors.min(), vmax=errors.max())
-        surf = ax.plot_trisurf(X_coords, P_coords, Z_coords, 
-                               cmap=cm.coolwarm, norm=norm_error, 
-                               edgecolor='none',  # Ensures no chaotic mesh lines are drawn
-                               antialiased=True,  # Smooths the surface rendering
-                               alpha=0.6)
+    #     # 1. Plot the Surface (Colored by Error using coolwarm)
+    #     # norm_error = mcolors.LogNorm(vmin=errors.min(), vmax=errors.max())
+    #     # surf = ax.plot_trisurf(X_coords, P_coords, Z_coords, 
+    #     #                        cmap=cm.coolwarm, norm=norm_error, 
+    #     #                        edgecolor='none', alpha=0.6, linewidth=0.2)
+    #     # 1. Plot the Surface (Colored by Error using coolwarm)
+    #     norm_error = mcolors.LogNorm(vmin=errors.min(), vmax=errors.max())
+    #     surf = ax.plot_trisurf(X_coords, P_coords, Z_coords, 
+    #                            cmap=cm.coolwarm, norm=norm_error, 
+    #                            edgecolor='none',  # Ensures no chaotic mesh lines are drawn
+    #                            antialiased=True,  # Smooths the surface rendering
+    #                            alpha=0.6)
         
-        # 2. Plot the Dots (Colored by Cost using viridis to contrast the surface)
-        norm_cost = mcolors.LogNorm(vmin=costs.min(), vmax=costs.max())
-        scatter = ax.scatter(X_coords, P_coords, Z_coords, 
-                             c=costs, cmap=cm.viridis, norm=norm_cost, 
-                             s=40, edgecolor='black', linewidth=0.5, zorder=3)
+    #     # 2. Plot the Dots (Colored by Cost using viridis to contrast the surface)
+    #     norm_cost = mcolors.LogNorm(vmin=costs.min(), vmax=costs.max())
+    #     scatter = ax.scatter(X_coords, P_coords, Z_coords, 
+    #                          c=costs, cmap=cm.viridis, norm=norm_cost, 
+    #                          s=40, edgecolor='black', linewidth=0.5, zorder=3)
 
-        # Formatting
-        title_prefix = "Doppler-Shifted " if use_doppler else "Source "
-        ax.set_title(f"3D Acoustic Error Topography\nSurface: L2 Error | Dots: {shape_by.upper()}")
-        ax.set_xlabel(f"Spatial Resolution, X ({title_prefix}PPW)")
-        ax.set_ylabel(f"Temporal Resolution, P ({title_prefix}PPP)")
-        ax.set_zlabel("L2 Error (%)")
+    #     # Formatting
+    #     title_prefix = "Doppler-Shifted " if use_doppler else "Source "
+    #     ax.set_title(f"3D Acoustic Error Topography\nSurface: L2 Error | Dots: {shape_by.upper()}")
+    #     ax.set_xlabel(f"Spatial Resolution, X ({title_prefix}PPW)")
+    #     ax.set_ylabel(f"Temporal Resolution, P ({title_prefix}PPP)")
+    #     ax.set_zlabel("L2 Error (%)")
         
-        # Force the Z-axis to behave logarithmically 
-        ax.set_zscale('log')
+    #     # Force the Z-axis to behave logarithmically 
+    #     ax.set_zscale('log')
         
-        # Adjust viewing angle
-        ax.view_init(elev=30, azim=225) 
+    #     # Adjust viewing angle
+    #     ax.view_init(elev=30, azim=225) 
         
-        # Add two distinct colorbars so Fan can read both metrics
-        cbar_error = fig.colorbar(surf, ax=ax, shrink=0.5, aspect=15, pad=0.05)
-        cbar_error.set_label('Surface: L2 Error (%)')
+    #     # Add two distinct colorbars so Fan can read both metrics
+    #     cbar_error = fig.colorbar(surf, ax=ax, shrink=0.5, aspect=15, pad=0.05)
+    #     cbar_error.set_label('Surface: L2 Error (%)')
         
-        cbar_cost = fig.colorbar(scatter, ax=ax, shrink=0.5, aspect=15, pad=0.1)
-        cbar_cost.set_label(f'Dots: {shape_by.upper()} Cost')
+    #     cbar_cost = fig.colorbar(scatter, ax=ax, shrink=0.5, aspect=15, pad=0.1)
+    #     cbar_cost.set_label(f'Dots: {shape_by.upper()} Cost')
         
-        plt.tight_layout()
-        plt.show()
+    #     plt.tight_layout()
+    #     plt.show()
+
