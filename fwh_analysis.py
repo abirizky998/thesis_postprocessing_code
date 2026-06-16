@@ -241,15 +241,20 @@ class FWHPlotter:
         plt.tight_layout()
         plt.show()
 
+
     @staticmethod
-    def plot_cfl_convergence_by_mach(directory, analysis, analytical_refs, ref_val, error_method='l2', ymin=3e-5, ymax=5e-2, use_doppler=True):
+    def plot_cfl_convergence_by_mach(directory, analysis, analytical_refs, ref_val, error_method='l2', ymin=3e-5, ymax=5e-2, use_doppler=True, legend=True):
         from matplotlib.lines import Line2D
         import matplotlib.cm as cm
+        from pathlib import Path
+        import re
+        import numpy as np
         
         mach_data = {}
         marker_keys = set()
 
         search_pattern = "r*_M*.dat" if analysis == 'r' else "*.dat"
+        fixed_val = ref_val[0]
 
         for filepath in Path(directory).glob(search_pattern):
             if filepath.name.startswith('ana_'):
@@ -263,13 +268,31 @@ class FWHPlotter:
             if analysis == 'r' and meta.get('radius') is None:
                 continue
 
-            # ref_key = str(meta['mach']).replace('.','')
+            # --- 1. FILTERING: Isolate the specific row/column of the parameter matrix ---
+            px_match = re.search(r"P(\d+)_X(\d+)_M(\d+)", filepath.name)
+            if px_match:
+                p_val = float(px_match.group(1))
+                x_val = float(px_match.group(2))
+                
+                # If plotting P (dt), lock X to the fixed_val
+                if analysis == 'dt' and x_val != fixed_val:
+                    continue
+                # If plotting X (dx), lock P to the fixed_val
+                if analysis == 'dx' and p_val != fixed_val:
+                    continue
+
             ref_key = meta['mach_str']
 
-            if ref_key not in analytical_refs:
-                continue
-            ref_df = analytical_refs[ref_key]
+            # --- 2. FLEXIBLE REFERENCES: Handle Dict vs Single Object ---
+            if isinstance(analytical_refs, dict):
+                if ref_key not in analytical_refs:
+                    continue
+                ref_df = analytical_refs[ref_key]
+            else:
+                # Assume a single FWHDataset was passed directly
+                ref_df = analytical_refs
             
+            # --- 3. BUG FIX: Actually call rmse_error ---
             if error_method == 'l2':
                 error = case.l2_error(ref_df, col='P_obs')
             elif error_method == 'rmse':
@@ -278,32 +301,32 @@ class FWHPlotter:
             actual_dt = case.data['Time'].iloc[1] - case.data['Time'].iloc[0]
             actual_dx = (case.C * actual_dt) / meta['cfl']
 
+            # Use plot_x_val to avoid clashing with the regex x_val variable above
             if analysis == 'dt':
                 if use_doppler:
-                    x_val = (1.0 / actual_dt) / (case.F_SOURCE / (1 - meta['mach']))
+                    plot_x_val = (1.0 / actual_dt) / (case.F_SOURCE / (1 - meta['mach']))
                 else:   
-                    x_val = (1.0 / actual_dt) / case.F_SOURCE
+                    plot_x_val = (1.0 / actual_dt) / case.F_SOURCE
                 marker_val = meta['cfl']
 
             elif analysis == 'dx':
                 if use_doppler:
-                    x_val = (case.LAMBDA_SOURCE * (1 - meta['mach'])) / actual_dx
+                    plot_x_val = (case.LAMBDA_SOURCE * (1 - meta['mach'])) / actual_dx
                 else:
-                    x_val = case.LAMBDA_SOURCE / actual_dx
+                    plot_x_val = case.LAMBDA_SOURCE / actual_dx
                 marker_val = meta['cfl']
 
             elif analysis == 'r':
                 if use_doppler:
-                    x_val = meta['radius'] / (case.LAMBDA_SOURCE * (1 - meta['mach']))
+                    plot_x_val = meta['radius'] / (case.LAMBDA_SOURCE * (1 - meta['mach']))
                 else:
-                    x_val = meta['radius'] / case.LAMBDA_SOURCE
-                # x_val = case.LAMBDA_SOURCE / meta['radius']
+                    plot_x_val = meta['radius'] / case.LAMBDA_SOURCE
                 marker_val = meta['radius']
 
             if meta['mach'] not in mach_data:
                 mach_data[meta['mach']] = []
                 
-            mach_data[meta['mach']].append((x_val, error, marker_val))
+            mach_data[meta['mach']].append((plot_x_val, error, marker_val))
             marker_keys.add(marker_val)
 
         
@@ -328,41 +351,40 @@ class FWHPlotter:
             y_vals = [p[1] for p in data]
             mach_color = colors[idx]
             
-            # Draw the convergence line for this specific Mach number
             ax.plot(x_vals, y_vals, linestyle='-', color=mach_color, zorder=1)
             
-            # Overlay the CFL markers
             for p in data:
                 x, y, m_val = p
                 ax.scatter(x, y, marker=marker_map[m_val], 
                         color=mach_color, s=70, zorder=2, edgecolor='black', linewidth=0.5)
 
         # 4. Custom Split Legend
-        legend_elements = [Line2D([0], [0], color='w', label=r'$\bf{Mach}$', lw=0)]
-        for idx, mach in enumerate(sorted_machs):
-            legend_elements.append(Line2D([0], [0], color=colors[idx], lw=2, label=f"{mach:.2f}"))
+            legend_elements = [Line2D([0], [0], color='w', label=r'$\bf{Mach}$', lw=0)]
+            for idx, mach in enumerate(sorted_machs):
+                legend_elements.append(Line2D([0], [0], color=colors[idx], lw=2, label=f"{mach:.2f}"))
+                
+            legend_elements.append(Line2D([0], [0], color='w', label='', lw=0)) 
             
-        legend_elements.append(Line2D([0], [0], color='w', label='', lw=0)) 
-        
-        marker_title = r'$\bf{Radius\ (m)}$' if analysis == 'r' else r'$\bf{X/P}$'
-        legend_elements.append(Line2D([0], [0], color='w', label=marker_title, lw=0))
-        for m_val in sorted_markers:
-            lbl = f"{int(m_val)}" if analysis == 'r' else f'{m_val}'
-            legend_elements.append(Line2D([0], [0], marker=marker_map[m_val], color='w', 
-                                        markerfacecolor='gray', markeredgecolor='black', 
-                                        markersize=8, label=lbl))
+            marker_title = r'$\bf{Radius\ (m)}$' if analysis == 'r' else r'$\bf{X/P}$'
+            legend_elements.append(Line2D([0], [0], color='w', label=marker_title, lw=0))
+            for m_val in sorted_markers:
+                lbl = f"{int(m_val)}" if analysis == 'r' else f'{m_val}'
+                legend_elements.append(Line2D([0], [0], marker=marker_map[m_val], color='w', 
+                                            markerfacecolor='gray', markeredgecolor='black', 
+                                            markersize=8, label=lbl))
 
         title_shift = "Doppler-Shifted " if use_doppler else "Source "
 
         if analysis == "dt":
-            ax.set_title(f"Error vs {title_shift}Points Per Period\n(Spatial Grid Fixed at {ref_val[0]} PPW and CS Radius at {ref_val[1]} m)")
+            ax.set_title(f"Error vs {title_shift}Points Per Period\n(Spatial Grid Fixed at {ref_val[0]} PPW and CS Radius at {ref_val[1]:.1f} m)")
             ax.set_xlabel(f"Temporal Resolution ($f_{{sample}} / f_{{eff}}$)")
         if analysis == "dx":
-            ax.set_title(f"Error vs {title_shift}Points Per Wavelength\n(Temporal Resolution Fixed at {ref_val[0]} PPP and CS Radius at {ref_val[1]} m)")
-            ax.set_xlabel(f"Spatial Resolution ($\lambda% / d)")
+            ax.set_title(f"Error vs {title_shift}Points Per Wavelength\n(Temporal Resolution Fixed at {ref_val[0]} PPP and CS Radius at {ref_val[1]:.1f} m)")
+            ax.set_xlabel(f"Spatial Resolution ($\lambda / d$)")
         if analysis == 'r':
             ax.set_title(f"Error vs Normalised CS Radius\n(Spatial Grid Fixed at {ref_val[0]} PPW and CFL={ref_val[1]})")
             ax.set_xlabel(f"Normalised Radius (R / $\lambda$)")
+            
         if error_method == 'l2':
             ax.set_ylabel("Log L2 Error (%)")
             ax.set_yscale('log')
@@ -371,10 +393,145 @@ class FWHPlotter:
         
         ax.set_ylim(bottom=ymin, top=ymax)
         ax.grid(True, which="both", linestyle='--', alpha=0.6)
-        
-        ax.legend(handles=legend_elements, bbox_to_anchor=(1.05, 1), loc='upper left')
+        if legend:
+            ax.legend(handles=legend_elements, bbox_to_anchor=(1.05, 1), loc='upper left')
         plt.tight_layout()
         plt.show()
+
+    # @staticmethod
+    # def plot_cfl_convergence_by_mach(directory, analysis, analytical_refs, ref_val, error_method='l2', ymin=3e-5, ymax=5e-2, use_doppler=True):
+    #     from matplotlib.lines import Line2D
+    #     import matplotlib.cm as cm
+        
+    #     mach_data = {}
+    #     marker_keys = set()
+
+    #     search_pattern = "r*_M*.dat" if analysis == 'r' else "*.dat"
+
+    #     for filepath in Path(directory).glob(search_pattern):
+    #         if filepath.name.startswith('ana_'):
+    #             continue
+
+    #         case = FWHDataset(filepath=filepath)
+    #         meta = case.metadata
+
+    #         if analysis in ['dt', 'dx'] and meta.get('cfl') is None:
+    #             continue
+    #         if analysis == 'r' and meta.get('radius') is None:
+    #             continue
+
+    #         # ref_key = str(meta['mach']).replace('.','')
+    #         ref_key = meta['mach_str']
+
+    #         if ref_key not in analytical_refs:
+    #             continue
+    #         ref_df = analytical_refs[ref_key]
+            
+    #         if error_method == 'l2':
+    #             error = case.l2_error(ref_df, col='P_obs')
+    #         elif error_method == 'rmse':
+    #             error = case.rmse_error(ref_df, col='P_obs')
+
+    #         actual_dt = case.data['Time'].iloc[1] - case.data['Time'].iloc[0]
+    #         actual_dx = (case.C * actual_dt) / meta['cfl']
+
+    #         if analysis == 'dt':
+    #             if use_doppler:
+    #                 x_val = (1.0 / actual_dt) / (case.F_SOURCE / (1 - meta['mach']))
+    #             else:   
+    #                 x_val = (1.0 / actual_dt) / case.F_SOURCE
+    #             marker_val = meta['cfl']
+
+    #         elif analysis == 'dx':
+    #             if use_doppler:
+    #                 x_val = (case.LAMBDA_SOURCE * (1 - meta['mach'])) / actual_dx
+    #             else:
+    #                 x_val = case.LAMBDA_SOURCE / actual_dx
+    #             marker_val = meta['cfl']
+
+    #         elif analysis == 'r':
+    #             if use_doppler:
+    #                 x_val = meta['radius'] / (case.LAMBDA_SOURCE * (1 - meta['mach']))
+    #             else:
+    #                 x_val = meta['radius'] / case.LAMBDA_SOURCE
+    #             # x_val = case.LAMBDA_SOURCE / meta['radius']
+    #             marker_val = meta['radius']
+
+    #         if meta['mach'] not in mach_data:
+    #             mach_data[meta['mach']] = []
+                
+    #         mach_data[meta['mach']].append((x_val, error, marker_val))
+    #         marker_keys.add(marker_val)
+
+        
+    #     fig, ax = plt.subplots(figsize=(10, 7))
+        
+    #     sorted_machs = sorted(mach_data.keys())
+    #     sorted_markers = sorted(list(marker_keys))
+        
+    #     # Color lines by Mach number (cool to warm)
+    #     colors = cm.coolwarm(np.linspace(0, 1, len(sorted_machs)))
+        
+    #     # Assign distinct markers to CFL values so you can still track them
+    #     markers = ['o', 's', '^', 'D', 'v', 'p', '*', 'X']
+    #     marker_map = {val: markers[i % len(markers)] for i, val in enumerate(sorted_markers)}
+
+    #     # 3. Plotting the Convergence Curves
+    #     for idx, mach in enumerate(sorted_machs):
+    #         data = mach_data[mach]
+    #         data.sort(key=lambda x: x[0]) 
+            
+    #         x_vals = [p[0] for p in data]
+    #         y_vals = [p[1] for p in data]
+    #         mach_color = colors[idx]
+            
+    #         # Draw the convergence line for this specific Mach number
+    #         ax.plot(x_vals, y_vals, linestyle='-', color=mach_color, zorder=1)
+            
+    #         # Overlay the CFL markers
+    #         for p in data:
+    #             x, y, m_val = p
+    #             ax.scatter(x, y, marker=marker_map[m_val], 
+    #                     color=mach_color, s=70, zorder=2, edgecolor='black', linewidth=0.5)
+
+    #     # 4. Custom Split Legend
+    #     legend_elements = [Line2D([0], [0], color='w', label=r'$\bf{Mach}$', lw=0)]
+    #     for idx, mach in enumerate(sorted_machs):
+    #         legend_elements.append(Line2D([0], [0], color=colors[idx], lw=2, label=f"{mach:.2f}"))
+            
+    #     legend_elements.append(Line2D([0], [0], color='w', label='', lw=0)) 
+        
+    #     marker_title = r'$\bf{Radius\ (m)}$' if analysis == 'r' else r'$\bf{X/P}$'
+    #     legend_elements.append(Line2D([0], [0], color='w', label=marker_title, lw=0))
+    #     for m_val in sorted_markers:
+    #         lbl = f"{int(m_val)}" if analysis == 'r' else f'{m_val}'
+    #         legend_elements.append(Line2D([0], [0], marker=marker_map[m_val], color='w', 
+    #                                     markerfacecolor='gray', markeredgecolor='black', 
+    #                                     markersize=8, label=lbl))
+
+    #     title_shift = "Doppler-Shifted " if use_doppler else "Source "
+
+    #     if analysis == "dt":
+    #         ax.set_title(f"Error vs {title_shift}Points Per Period\n(Spatial Grid Fixed at {ref_val[0]} PPW and CS Radius at {ref_val[1]} m)")
+    #         ax.set_xlabel(f"Temporal Resolution ($f_{{sample}} / f_{{eff}}$)")
+    #     if analysis == "dx":
+    #         ax.set_title(f"Error vs {title_shift}Points Per Wavelength\n(Temporal Resolution Fixed at {ref_val[0]} PPP and CS Radius at {ref_val[1]} m)")
+    #         ax.set_xlabel(f"Spatial Resolution ($\lambda% / d)")
+    #     if analysis == 'r':
+    #         ax.set_title(f"Error vs Normalised CS Radius\n(Spatial Grid Fixed at {ref_val[0]} PPW and CFL={ref_val[1]})")
+    #         ax.set_xlabel(f"Normalised Radius (R / $\lambda$)")
+    #     if error_method == 'l2':
+    #         ax.set_ylabel("Log L2 Error (%)")
+    #         ax.set_yscale('log')
+    #     elif error_method == 'rmse':
+    #         ax.set_ylabel("RMSE Error (Pa)")
+        
+    #     ax.set_ylim(bottom=ymin, top=ymax)
+    #     ax.grid(True, which="both", linestyle='--', alpha=0.6)
+        
+    #     ax.legend(handles=legend_elements, bbox_to_anchor=(1.05, 1), loc='upper left')
+    #     plt.tight_layout()
+    #     plt.show()
 
     @staticmethod
     def plot_px_parameter_space(compiled_data, use_doppler=True, shape_by='elements', 
