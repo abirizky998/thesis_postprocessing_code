@@ -1,4 +1,3 @@
-.venv
 config
 dipole_1_ts.dat
 dipole_far_invalid.png
@@ -52,7 +51,3 @@ FWH_grid_normal.dat
 FWH_grid.dat
 FWH_grid.szplt
 FWH_observer_time_01_validation.dat
-input_config.txt
-input_observer.txt
-input_post.txt
-input_source.txt
