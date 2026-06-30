@@ -4,7 +4,7 @@
 # FW-H surface grid type
 Sphere
 # FW-H control surface grid radius [m] and number of grid lines (latitude and longitudinal) [-]
-0.3399999999999999 126 126
+0.3399999999999999 63 63
 # FW-H control surface grid motion
 Source
 # FW-H surface data type
