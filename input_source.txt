@@ -1,15 +1,15 @@
-# Example source definition file
-# Number of source sets
+# Automatically generated source file
+# Number of source sets (Always 1 for grouped monopoles)
 1
 # Source type
 Monopole Harmonic
 # Source frequency [rad/s], source strength, and source phase [rad]
-628.32 1.0 0.0
+39.269908 1.000000 0.0
 # Source definition
 Point
-# Source initial location [m]
-0.0 0.0 0.0
+# Source initial location(s) [m] (x, y, z)
+0.0 0.500000 0.000000
 # Source motion type and duration [s]
-Translation 1000.0
-# Source translational velocity vector [m/s] and rotation rate vector [rad/s]
-306.0 0.0 0.0 0.0 0.0 0.0
+General 1000.0
+# Source translational velocity vector and rotation rate vector
+0.000000 0.0 0.0 628.318531 0.0 0.0
