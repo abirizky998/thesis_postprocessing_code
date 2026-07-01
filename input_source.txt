@@ -6,9 +6,12 @@ Monopole Harmonic
 # Source frequency [rad/s], source strength, and source phase [rad]
 39.269908 1.000000 0.0
 # Source definition
-Point
+Scatter
+# Number of scattered points
+2
 # Source initial location(s) [m] (x, y, z)
 0.0 0.500000 0.000000
+0.0 -0.500000 0.000000
 # Source motion type and duration [s]
 General 1000.0
 # Source translational velocity vector and rotation rate vector
