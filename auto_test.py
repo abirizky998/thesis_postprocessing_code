@@ -166,3 +166,60 @@ def observer_setup(config_path, D_obs, n, is_dipole=False, offset_deg=1.0, norma
 
     with open(config_path, 'w') as f:
         f.writelines(lines)
+
+def naca0012_thickness(x_norm, t_max):
+    # Analytical thickness distribution for NACA 0012
+    # x_norm is the normalized chord position from 0 (LE) to 1 (TE)
+    return 5.0 * t_max * (0.2969 * np.sqrt(x_norm) - 0.1260 * x_norm - 
+                          0.3516 * x_norm**2 + 0.2843 * x_norm**3 - 0.1015 * x_norm**4)
+
+def source_setup_chordwise_array(config_path, R_p, eta, chord, beta_c_deg, t_max, n_pts, n_blades, Omega_x):
+    r_eta = R_p * eta
+    beta_c = np.radians(beta_c_deg)
+    
+    s_array = np.linspace(-0.5, 0.5, n_pts)
+    ds = 1.0 / (n_pts - 1)
+    
+    lines = [
+        "# Automatically generated source file\n",
+        "# Number of source sets\n",
+        f"{n_pts * n_blades}\n"
+    ]
+    
+    for b in range(n_blades):
+        phi_blade = b * (2 * np.pi / n_blades) # 0, 120, 240 degrees
+        
+        for s in s_array:
+            # Map s [-0.5, 0.5] to x_norm [0, 1] for NACA polynomial
+            x_norm = s + 0.5
+            thickness = naca0012_thickness(x_norm, t_max)
+            amplitude = thickness * ds  # Volume represented by this point
+            
+            # Local coordinates prior to rotation
+            # Twist beta_c rotates the chord line around the spanwise Y-axis
+            x_local = -s * chord * np.sin(beta_c)
+            y_local = r_eta
+            z_local = s * chord * np.cos(beta_c)
+            
+            # Global rotation around X-axis for blade positioning
+            x_global = x_local
+            y_global = y_local * np.cos(phi_blade) - z_local * np.sin(phi_blade)
+            z_global = y_local * np.sin(phi_blade) + z_local * np.cos(phi_blade)
+            
+            lines.extend([
+                "# Source type\n",
+                "Monopole Harmonic\n",
+                "# Source frequency [rad/s], source strength, and source phase [rad]\n",
+                f"0.0 {amplitude:.8e} 1.570796327\n",  # omega=0, phase=pi/2
+                "# Source definition\n",
+                "Point\n",
+                "# Source initial location [m] (x, y, z)\n",
+                f"{x_global:.6f} {y_global:.6f} {z_global:.6f}\n",
+                "# Source motion type and duration [s]\n",
+                "General 1000.0\n",
+                "# Source translational velocity vector and rotation rate vector\n",
+                f"0.0 0.0 0.0 {Omega_x:.6f} 0.0 0.0\n"
+            ])
+            
+    with open(config_path, 'w') as f:
+        f.writelines(lines)

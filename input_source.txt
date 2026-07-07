@@ -1,18 +1,1803 @@
 # Automatically generated source file
-# Number of source sets (Always 1 for grouped monopoles)
-1
+# Number of source sets
+150
 # Source type
 Monopole Harmonic
 # Source frequency [rad/s], source strength, and source phase [rad]
-39.269908 1.000000 0.0
+0.0 0.00000000e+00 1.570796327
 # Source definition
-Scatter
-# Number of scattered points
-2
-# Source initial location(s) [m] (x, y, z)
-0.0 0.500000 0.000000
-0.0 -0.500000 0.000000
+Point
+# Source initial location [m] (x, y, z)
+0.035355 1.040000 -0.035355
 # Source motion type and duration [s]
 General 1000.0
 # Source translational velocity vector and rotation rate vector
-0.000000 0.0 0.0 628.318531 0.0 0.0
+0.0 0.0 0.0 71.500000 0.0 0.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+0.0 4.05089970e-05 1.570796327
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+0.033912 1.040000 -0.033912
+# Source motion type and duration [s]
+General 1000.0
+# Source translational velocity vector and rotation rate vector
+0.0 0.0 0.0 71.500000 0.0 0.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+0.0 5.53809137e-05 1.570796327
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+0.032469 1.040000 -0.032469
+# Source motion type and duration [s]
+General 1000.0
+# Source translational velocity vector and rotation rate vector
+0.0 0.0 0.0 71.500000 0.0 0.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+0.0 6.58115111e-05 1.570796327
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+0.031026 1.040000 -0.031026
+# Source motion type and duration [s]
+General 1000.0
+# Source translational velocity vector and rotation rate vector
+0.0 0.0 0.0 71.500000 0.0 0.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+0.0 7.38265130e-05 1.570796327
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+0.029583 1.040000 -0.029583
+# Source motion type and duration [s]
+General 1000.0
+# Source translational velocity vector and rotation rate vector
+0.0 0.0 0.0 71.500000 0.0 0.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+0.0 8.02185389e-05 1.570796327
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+0.028140 1.040000 -0.028140
+# Source motion type and duration [s]
+General 1000.0
+# Source translational velocity vector and rotation rate vector
+0.0 0.0 0.0 71.500000 0.0 0.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+0.0 8.54001333e-05 1.570796327
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+0.026697 1.040000 -0.026697
+# Source motion type and duration [s]
+General 1000.0
+# Source translational velocity vector and rotation rate vector
+0.0 0.0 0.0 71.500000 0.0 0.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+0.0 8.96211538e-05 1.570796327
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+0.025254 1.040000 -0.025254
+# Source motion type and duration [s]
+General 1000.0
+# Source translational velocity vector and rotation rate vector
+0.0 0.0 0.0 71.500000 0.0 0.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+0.0 9.30482941e-05 1.570796327
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+0.023811 1.040000 -0.023811
+# Source motion type and duration [s]
+General 1000.0
+# Source translational velocity vector and rotation rate vector
+0.0 0.0 0.0 71.500000 0.0 0.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+0.0 9.58005711e-05 1.570796327
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+0.022368 1.040000 -0.022368
+# Source motion type and duration [s]
+General 1000.0
+# Source translational velocity vector and rotation rate vector
+0.0 0.0 0.0 71.500000 0.0 0.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+0.0 9.79673528e-05 1.570796327
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+0.020925 1.040000 -0.020925
+# Source motion type and duration [s]
+General 1000.0
+# Source translational velocity vector and rotation rate vector
+0.0 0.0 0.0 71.500000 0.0 0.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+0.0 9.96184012e-05 1.570796327
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+0.019482 1.040000 -0.019482
+# Source motion type and duration [s]
+General 1000.0
+# Source translational velocity vector and rotation rate vector
+0.0 0.0 0.0 71.500000 0.0 0.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+0.0 1.00809870e-04 1.570796327
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+0.018038 1.040000 -0.018038
+# Source motion type and duration [s]
+General 1000.0
+# Source translational velocity vector and rotation rate vector
+0.0 0.0 0.0 71.500000 0.0 0.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+0.0 1.01588087e-04 1.570796327
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+0.016595 1.040000 -0.016595
+# Source motion type and duration [s]
+General 1000.0
+# Source translational velocity vector and rotation rate vector
+0.0 0.0 0.0 71.500000 0.0 0.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+0.0 1.01992044e-04 1.570796327
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+0.015152 1.040000 -0.015152
+# Source motion type and duration [s]
+General 1000.0
+# Source translational velocity vector and rotation rate vector
+0.0 0.0 0.0 71.500000 0.0 0.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+0.0 1.02055099e-04 1.570796327
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+0.013709 1.040000 -0.013709
+# Source motion type and duration [s]
+General 1000.0
+# Source translational velocity vector and rotation rate vector
+0.0 0.0 0.0 71.500000 0.0 0.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+0.0 1.01806172e-04 1.570796327
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+0.012266 1.040000 -0.012266
+# Source motion type and duration [s]
+General 1000.0
+# Source translational velocity vector and rotation rate vector
+0.0 0.0 0.0 71.500000 0.0 0.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+0.0 1.01270613e-04 1.570796327
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+0.010823 1.040000 -0.010823
+# Source motion type and duration [s]
+General 1000.0
+# Source translational velocity vector and rotation rate vector
+0.0 0.0 0.0 71.500000 0.0 0.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+0.0 1.00470836e-04 1.570796327
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+0.009380 1.040000 -0.009380
+# Source motion type and duration [s]
+General 1000.0
+# Source translational velocity vector and rotation rate vector
+0.0 0.0 0.0 71.500000 0.0 0.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+0.0 9.94268057e-05 1.570796327
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+0.007937 1.040000 -0.007937
+# Source motion type and duration [s]
+General 1000.0
+# Source translational velocity vector and rotation rate vector
+0.0 0.0 0.0 71.500000 0.0 0.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+0.0 9.81563999e-05 1.570796327
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+0.006494 1.040000 -0.006494
+# Source motion type and duration [s]
+General 1000.0
+# Source translational velocity vector and rotation rate vector
+0.0 0.0 0.0 71.500000 0.0 0.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+0.0 9.66756990e-05 1.570796327
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+0.005051 1.040000 -0.005051
+# Source motion type and duration [s]
+General 1000.0
+# Source translational velocity vector and rotation rate vector
+0.0 0.0 0.0 71.500000 0.0 0.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+0.0 9.49992107e-05 1.570796327
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+0.003608 1.040000 -0.003608
+# Source motion type and duration [s]
+General 1000.0
+# Source translational velocity vector and rotation rate vector
+0.0 0.0 0.0 71.500000 0.0 0.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+0.0 9.31400495e-05 1.570796327
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+0.002165 1.040000 -0.002165
+# Source motion type and duration [s]
+General 1000.0
+# Source translational velocity vector and rotation rate vector
+0.0 0.0 0.0 71.500000 0.0 0.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+0.0 9.11100818e-05 1.570796327
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+0.000722 1.040000 -0.000722
+# Source motion type and duration [s]
+General 1000.0
+# Source translational velocity vector and rotation rate vector
+0.0 0.0 0.0 71.500000 0.0 0.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+0.0 8.89200444e-05 1.570796327
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+-0.000722 1.040000 0.000722
+# Source motion type and duration [s]
+General 1000.0
+# Source translational velocity vector and rotation rate vector
+0.0 0.0 0.0 71.500000 0.0 0.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+0.0 8.65796405e-05 1.570796327
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+-0.002165 1.040000 0.002165
+# Source motion type and duration [s]
+General 1000.0
+# Source translational velocity vector and rotation rate vector
+0.0 0.0 0.0 71.500000 0.0 0.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+0.0 8.40976209e-05 1.570796327
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+-0.003608 1.040000 0.003608
+# Source motion type and duration [s]
+General 1000.0
+# Source translational velocity vector and rotation rate vector
+0.0 0.0 0.0 71.500000 0.0 0.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+0.0 8.14818507e-05 1.570796327
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+-0.005051 1.040000 0.005051
+# Source motion type and duration [s]
+General 1000.0
+# Source translational velocity vector and rotation rate vector
+0.0 0.0 0.0 71.500000 0.0 0.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+0.0 7.87393655e-05 1.570796327
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+-0.006494 1.040000 0.006494
+# Source motion type and duration [s]
+General 1000.0
+# Source translational velocity vector and rotation rate vector
+0.0 0.0 0.0 71.500000 0.0 0.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+0.0 7.58764194e-05 1.570796327
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+-0.007937 1.040000 0.007937
+# Source motion type and duration [s]
+General 1000.0
+# Source translational velocity vector and rotation rate vector
+0.0 0.0 0.0 71.500000 0.0 0.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+0.0 7.28985252e-05 1.570796327
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+-0.009380 1.040000 0.009380
+# Source motion type and duration [s]
+General 1000.0
+# Source translational velocity vector and rotation rate vector
+0.0 0.0 0.0 71.500000 0.0 0.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+0.0 6.98104896e-05 1.570796327
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+-0.010823 1.040000 0.010823
+# Source motion type and duration [s]
+General 1000.0
+# Source translational velocity vector and rotation rate vector
+0.0 0.0 0.0 71.500000 0.0 0.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+0.0 6.66164426e-05 1.570796327
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+-0.012266 1.040000 0.012266
+# Source motion type and duration [s]
+General 1000.0
+# Source translational velocity vector and rotation rate vector
+0.0 0.0 0.0 71.500000 0.0 0.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+0.0 6.33198637e-05 1.570796327
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+-0.013709 1.040000 0.013709
+# Source motion type and duration [s]
+General 1000.0
+# Source translational velocity vector and rotation rate vector
+0.0 0.0 0.0 71.500000 0.0 0.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+0.0 5.99236041e-05 1.570796327
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+-0.015152 1.040000 0.015152
+# Source motion type and duration [s]
+General 1000.0
+# Source translational velocity vector and rotation rate vector
+0.0 0.0 0.0 71.500000 0.0 0.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+0.0 5.64299065e-05 1.570796327
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+-0.016595 1.040000 0.016595
+# Source motion type and duration [s]
+General 1000.0
+# Source translational velocity vector and rotation rate vector
+0.0 0.0 0.0 71.500000 0.0 0.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+0.0 5.28404219e-05 1.570796327
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+-0.018038 1.040000 0.018038
+# Source motion type and duration [s]
+General 1000.0
+# Source translational velocity vector and rotation rate vector
+0.0 0.0 0.0 71.500000 0.0 0.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+0.0 4.91562251e-05 1.570796327
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+-0.019482 1.040000 0.019482
+# Source motion type and duration [s]
+General 1000.0
+# Source translational velocity vector and rotation rate vector
+0.0 0.0 0.0 71.500000 0.0 0.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+0.0 4.53778275e-05 1.570796327
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+-0.020925 1.040000 0.020925
+# Source motion type and duration [s]
+General 1000.0
+# Source translational velocity vector and rotation rate vector
+0.0 0.0 0.0 71.500000 0.0 0.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+0.0 4.15051895e-05 1.570796327
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+-0.022368 1.040000 0.022368
+# Source motion type and duration [s]
+General 1000.0
+# Source translational velocity vector and rotation rate vector
+0.0 0.0 0.0 71.500000 0.0 0.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+0.0 3.75377302e-05 1.570796327
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+-0.023811 1.040000 0.023811
+# Source motion type and duration [s]
+General 1000.0
+# Source translational velocity vector and rotation rate vector
+0.0 0.0 0.0 71.500000 0.0 0.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+0.0 3.34743373e-05 1.570796327
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+-0.025254 1.040000 0.025254
+# Source motion type and duration [s]
+General 1000.0
+# Source translational velocity vector and rotation rate vector
+0.0 0.0 0.0 71.500000 0.0 0.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+0.0 2.93133754e-05 1.570796327
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+-0.026697 1.040000 0.026697
+# Source motion type and duration [s]
+General 1000.0
+# Source translational velocity vector and rotation rate vector
+0.0 0.0 0.0 71.500000 0.0 0.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+0.0 2.50526930e-05 1.570796327
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+-0.028140 1.040000 0.028140
+# Source motion type and duration [s]
+General 1000.0
+# Source translational velocity vector and rotation rate vector
+0.0 0.0 0.0 71.500000 0.0 0.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+0.0 2.06896295e-05 1.570796327
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+-0.029583 1.040000 0.029583
+# Source motion type and duration [s]
+General 1000.0
+# Source translational velocity vector and rotation rate vector
+0.0 0.0 0.0 71.500000 0.0 0.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+0.0 1.62210213e-05 1.570796327
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+-0.031026 1.040000 0.031026
+# Source motion type and duration [s]
+General 1000.0
+# Source translational velocity vector and rotation rate vector
+0.0 0.0 0.0 71.500000 0.0 0.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+0.0 1.16432073e-05 1.570796327
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+-0.032469 1.040000 0.032469
+# Source motion type and duration [s]
+General 1000.0
+# Source translational velocity vector and rotation rate vector
+0.0 0.0 0.0 71.500000 0.0 0.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+0.0 6.95203329e-06 1.570796327
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+-0.033912 1.040000 0.033912
+# Source motion type and duration [s]
+General 1000.0
+# Source translational velocity vector and rotation rate vector
+0.0 0.0 0.0 71.500000 0.0 0.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+0.0 2.14285714e-06 1.570796327
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+-0.035355 1.040000 0.035355
+# Source motion type and duration [s]
+General 1000.0
+# Source translational velocity vector and rotation rate vector
+0.0 0.0 0.0 71.500000 0.0 0.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+0.0 0.00000000e+00 1.570796327
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+0.035355 -0.489381 0.918344
+# Source motion type and duration [s]
+General 1000.0
+# Source translational velocity vector and rotation rate vector
+0.0 0.0 0.0 71.500000 0.0 0.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+0.0 4.05089970e-05 1.570796327
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+0.033912 -0.490631 0.917623
+# Source motion type and duration [s]
+General 1000.0
+# Source translational velocity vector and rotation rate vector
+0.0 0.0 0.0 71.500000 0.0 0.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+0.0 5.53809137e-05 1.570796327
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+0.032469 -0.491881 0.916901
+# Source motion type and duration [s]
+General 1000.0
+# Source translational velocity vector and rotation rate vector
+0.0 0.0 0.0 71.500000 0.0 0.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+0.0 6.58115111e-05 1.570796327
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+0.031026 -0.493131 0.916179
+# Source motion type and duration [s]
+General 1000.0
+# Source translational velocity vector and rotation rate vector
+0.0 0.0 0.0 71.500000 0.0 0.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+0.0 7.38265130e-05 1.570796327
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+0.029583 -0.494380 0.915458
+# Source motion type and duration [s]
+General 1000.0
+# Source translational velocity vector and rotation rate vector
+0.0 0.0 0.0 71.500000 0.0 0.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+0.0 8.02185389e-05 1.570796327
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+0.028140 -0.495630 0.914736
+# Source motion type and duration [s]
+General 1000.0
+# Source translational velocity vector and rotation rate vector
+0.0 0.0 0.0 71.500000 0.0 0.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+0.0 8.54001333e-05 1.570796327
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+0.026697 -0.496880 0.914015
+# Source motion type and duration [s]
+General 1000.0
+# Source translational velocity vector and rotation rate vector
+0.0 0.0 0.0 71.500000 0.0 0.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+0.0 8.96211538e-05 1.570796327
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+0.025254 -0.498130 0.913293
+# Source motion type and duration [s]
+General 1000.0
+# Source translational velocity vector and rotation rate vector
+0.0 0.0 0.0 71.500000 0.0 0.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+0.0 9.30482941e-05 1.570796327
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+0.023811 -0.499379 0.912572
+# Source motion type and duration [s]
+General 1000.0
+# Source translational velocity vector and rotation rate vector
+0.0 0.0 0.0 71.500000 0.0 0.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+0.0 9.58005711e-05 1.570796327
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+0.022368 -0.500629 0.911850
+# Source motion type and duration [s]
+General 1000.0
+# Source translational velocity vector and rotation rate vector
+0.0 0.0 0.0 71.500000 0.0 0.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+0.0 9.79673528e-05 1.570796327
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+0.020925 -0.501879 0.911129
+# Source motion type and duration [s]
+General 1000.0
+# Source translational velocity vector and rotation rate vector
+0.0 0.0 0.0 71.500000 0.0 0.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+0.0 9.96184012e-05 1.570796327
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+0.019482 -0.503129 0.910407
+# Source motion type and duration [s]
+General 1000.0
+# Source translational velocity vector and rotation rate vector
+0.0 0.0 0.0 71.500000 0.0 0.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+0.0 1.00809870e-04 1.570796327
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+0.018038 -0.504378 0.909686
+# Source motion type and duration [s]
+General 1000.0
+# Source translational velocity vector and rotation rate vector
+0.0 0.0 0.0 71.500000 0.0 0.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+0.0 1.01588087e-04 1.570796327
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+0.016595 -0.505628 0.908964
+# Source motion type and duration [s]
+General 1000.0
+# Source translational velocity vector and rotation rate vector
+0.0 0.0 0.0 71.500000 0.0 0.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+0.0 1.01992044e-04 1.570796327
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+0.015152 -0.506878 0.908243
+# Source motion type and duration [s]
+General 1000.0
+# Source translational velocity vector and rotation rate vector
+0.0 0.0 0.0 71.500000 0.0 0.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+0.0 1.02055099e-04 1.570796327
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+0.013709 -0.508127 0.907521
+# Source motion type and duration [s]
+General 1000.0
+# Source translational velocity vector and rotation rate vector
+0.0 0.0 0.0 71.500000 0.0 0.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+0.0 1.01806172e-04 1.570796327
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+0.012266 -0.509377 0.906799
+# Source motion type and duration [s]
+General 1000.0
+# Source translational velocity vector and rotation rate vector
+0.0 0.0 0.0 71.500000 0.0 0.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+0.0 1.01270613e-04 1.570796327
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+0.010823 -0.510627 0.906078
+# Source motion type and duration [s]
+General 1000.0
+# Source translational velocity vector and rotation rate vector
+0.0 0.0 0.0 71.500000 0.0 0.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+0.0 1.00470836e-04 1.570796327
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+0.009380 -0.511877 0.905356
+# Source motion type and duration [s]
+General 1000.0
+# Source translational velocity vector and rotation rate vector
+0.0 0.0 0.0 71.500000 0.0 0.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+0.0 9.94268057e-05 1.570796327
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+0.007937 -0.513126 0.904635
+# Source motion type and duration [s]
+General 1000.0
+# Source translational velocity vector and rotation rate vector
+0.0 0.0 0.0 71.500000 0.0 0.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+0.0 9.81563999e-05 1.570796327
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+0.006494 -0.514376 0.903913
+# Source motion type and duration [s]
+General 1000.0
+# Source translational velocity vector and rotation rate vector
+0.0 0.0 0.0 71.500000 0.0 0.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+0.0 9.66756990e-05 1.570796327
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+0.005051 -0.515626 0.903192
+# Source motion type and duration [s]
+General 1000.0
+# Source translational velocity vector and rotation rate vector
+0.0 0.0 0.0 71.500000 0.0 0.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+0.0 9.49992107e-05 1.570796327
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+0.003608 -0.516876 0.902470
+# Source motion type and duration [s]
+General 1000.0
+# Source translational velocity vector and rotation rate vector
+0.0 0.0 0.0 71.500000 0.0 0.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+0.0 9.31400495e-05 1.570796327
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+0.002165 -0.518125 0.901749
+# Source motion type and duration [s]
+General 1000.0
+# Source translational velocity vector and rotation rate vector
+0.0 0.0 0.0 71.500000 0.0 0.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+0.0 9.11100818e-05 1.570796327
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+0.000722 -0.519375 0.901027
+# Source motion type and duration [s]
+General 1000.0
+# Source translational velocity vector and rotation rate vector
+0.0 0.0 0.0 71.500000 0.0 0.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+0.0 8.89200444e-05 1.570796327
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+-0.000722 -0.520625 0.900306
+# Source motion type and duration [s]
+General 1000.0
+# Source translational velocity vector and rotation rate vector
+0.0 0.0 0.0 71.500000 0.0 0.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+0.0 8.65796405e-05 1.570796327
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+-0.002165 -0.521875 0.899584
+# Source motion type and duration [s]
+General 1000.0
+# Source translational velocity vector and rotation rate vector
+0.0 0.0 0.0 71.500000 0.0 0.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+0.0 8.40976209e-05 1.570796327
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+-0.003608 -0.523124 0.898863
+# Source motion type and duration [s]
+General 1000.0
+# Source translational velocity vector and rotation rate vector
+0.0 0.0 0.0 71.500000 0.0 0.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+0.0 8.14818507e-05 1.570796327
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+-0.005051 -0.524374 0.898141
+# Source motion type and duration [s]
+General 1000.0
+# Source translational velocity vector and rotation rate vector
+0.0 0.0 0.0 71.500000 0.0 0.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+0.0 7.87393655e-05 1.570796327
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+-0.006494 -0.525624 0.897420
+# Source motion type and duration [s]
+General 1000.0
+# Source translational velocity vector and rotation rate vector
+0.0 0.0 0.0 71.500000 0.0 0.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+0.0 7.58764194e-05 1.570796327
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+-0.007937 -0.526874 0.896698
+# Source motion type and duration [s]
+General 1000.0
+# Source translational velocity vector and rotation rate vector
+0.0 0.0 0.0 71.500000 0.0 0.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+0.0 7.28985252e-05 1.570796327
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+-0.009380 -0.528123 0.895976
+# Source motion type and duration [s]
+General 1000.0
+# Source translational velocity vector and rotation rate vector
+0.0 0.0 0.0 71.500000 0.0 0.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+0.0 6.98104896e-05 1.570796327
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+-0.010823 -0.529373 0.895255
+# Source motion type and duration [s]
+General 1000.0
+# Source translational velocity vector and rotation rate vector
+0.0 0.0 0.0 71.500000 0.0 0.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+0.0 6.66164426e-05 1.570796327
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+-0.012266 -0.530623 0.894533
+# Source motion type and duration [s]
+General 1000.0
+# Source translational velocity vector and rotation rate vector
+0.0 0.0 0.0 71.500000 0.0 0.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+0.0 6.33198637e-05 1.570796327
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+-0.013709 -0.531873 0.893812
+# Source motion type and duration [s]
+General 1000.0
+# Source translational velocity vector and rotation rate vector
+0.0 0.0 0.0 71.500000 0.0 0.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+0.0 5.99236041e-05 1.570796327
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+-0.015152 -0.533122 0.893090
+# Source motion type and duration [s]
+General 1000.0
+# Source translational velocity vector and rotation rate vector
+0.0 0.0 0.0 71.500000 0.0 0.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+0.0 5.64299065e-05 1.570796327
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+-0.016595 -0.534372 0.892369
+# Source motion type and duration [s]
+General 1000.0
+# Source translational velocity vector and rotation rate vector
+0.0 0.0 0.0 71.500000 0.0 0.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+0.0 5.28404219e-05 1.570796327
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+-0.018038 -0.535622 0.891647
+# Source motion type and duration [s]
+General 1000.0
+# Source translational velocity vector and rotation rate vector
+0.0 0.0 0.0 71.500000 0.0 0.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+0.0 4.91562251e-05 1.570796327
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+-0.019482 -0.536871 0.890926
+# Source motion type and duration [s]
+General 1000.0
+# Source translational velocity vector and rotation rate vector
+0.0 0.0 0.0 71.500000 0.0 0.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+0.0 4.53778275e-05 1.570796327
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+-0.020925 -0.538121 0.890204
+# Source motion type and duration [s]
+General 1000.0
+# Source translational velocity vector and rotation rate vector
+0.0 0.0 0.0 71.500000 0.0 0.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+0.0 4.15051895e-05 1.570796327
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+-0.022368 -0.539371 0.889483
+# Source motion type and duration [s]
+General 1000.0
+# Source translational velocity vector and rotation rate vector
+0.0 0.0 0.0 71.500000 0.0 0.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+0.0 3.75377302e-05 1.570796327
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+-0.023811 -0.540621 0.888761
+# Source motion type and duration [s]
+General 1000.0
+# Source translational velocity vector and rotation rate vector
+0.0 0.0 0.0 71.500000 0.0 0.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+0.0 3.34743373e-05 1.570796327
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+-0.025254 -0.541870 0.888040
+# Source motion type and duration [s]
+General 1000.0
+# Source translational velocity vector and rotation rate vector
+0.0 0.0 0.0 71.500000 0.0 0.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+0.0 2.93133754e-05 1.570796327
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+-0.026697 -0.543120 0.887318
+# Source motion type and duration [s]
+General 1000.0
+# Source translational velocity vector and rotation rate vector
+0.0 0.0 0.0 71.500000 0.0 0.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+0.0 2.50526930e-05 1.570796327
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+-0.028140 -0.544370 0.886596
+# Source motion type and duration [s]
+General 1000.0
+# Source translational velocity vector and rotation rate vector
+0.0 0.0 0.0 71.500000 0.0 0.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+0.0 2.06896295e-05 1.570796327
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+-0.029583 -0.545620 0.885875
+# Source motion type and duration [s]
+General 1000.0
+# Source translational velocity vector and rotation rate vector
+0.0 0.0 0.0 71.500000 0.0 0.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+0.0 1.62210213e-05 1.570796327
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+-0.031026 -0.546869 0.885153
+# Source motion type and duration [s]
+General 1000.0
+# Source translational velocity vector and rotation rate vector
+0.0 0.0 0.0 71.500000 0.0 0.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+0.0 1.16432073e-05 1.570796327
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+-0.032469 -0.548119 0.884432
+# Source motion type and duration [s]
+General 1000.0
+# Source translational velocity vector and rotation rate vector
+0.0 0.0 0.0 71.500000 0.0 0.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+0.0 6.95203329e-06 1.570796327
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+-0.033912 -0.549369 0.883710
+# Source motion type and duration [s]
+General 1000.0
+# Source translational velocity vector and rotation rate vector
+0.0 0.0 0.0 71.500000 0.0 0.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+0.0 2.14285714e-06 1.570796327
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+-0.035355 -0.550619 0.882989
+# Source motion type and duration [s]
+General 1000.0
+# Source translational velocity vector and rotation rate vector
+0.0 0.0 0.0 71.500000 0.0 0.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+0.0 0.00000000e+00 1.570796327
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+0.035355 -0.550619 -0.882989
+# Source motion type and duration [s]
+General 1000.0
+# Source translational velocity vector and rotation rate vector
+0.0 0.0 0.0 71.500000 0.0 0.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+0.0 4.05089970e-05 1.570796327
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+0.033912 -0.549369 -0.883710
+# Source motion type and duration [s]
+General 1000.0
+# Source translational velocity vector and rotation rate vector
+0.0 0.0 0.0 71.500000 0.0 0.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+0.0 5.53809137e-05 1.570796327
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+0.032469 -0.548119 -0.884432
+# Source motion type and duration [s]
+General 1000.0
+# Source translational velocity vector and rotation rate vector
+0.0 0.0 0.0 71.500000 0.0 0.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+0.0 6.58115111e-05 1.570796327
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+0.031026 -0.546869 -0.885153
+# Source motion type and duration [s]
+General 1000.0
+# Source translational velocity vector and rotation rate vector
+0.0 0.0 0.0 71.500000 0.0 0.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+0.0 7.38265130e-05 1.570796327
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+0.029583 -0.545620 -0.885875
+# Source motion type and duration [s]
+General 1000.0
+# Source translational velocity vector and rotation rate vector
+0.0 0.0 0.0 71.500000 0.0 0.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+0.0 8.02185389e-05 1.570796327
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+0.028140 -0.544370 -0.886596
+# Source motion type and duration [s]
+General 1000.0
+# Source translational velocity vector and rotation rate vector
+0.0 0.0 0.0 71.500000 0.0 0.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+0.0 8.54001333e-05 1.570796327
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+0.026697 -0.543120 -0.887318
+# Source motion type and duration [s]
+General 1000.0
+# Source translational velocity vector and rotation rate vector
+0.0 0.0 0.0 71.500000 0.0 0.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+0.0 8.96211538e-05 1.570796327
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+0.025254 -0.541870 -0.888040
+# Source motion type and duration [s]
+General 1000.0
+# Source translational velocity vector and rotation rate vector
+0.0 0.0 0.0 71.500000 0.0 0.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+0.0 9.30482941e-05 1.570796327
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+0.023811 -0.540621 -0.888761
+# Source motion type and duration [s]
+General 1000.0
+# Source translational velocity vector and rotation rate vector
+0.0 0.0 0.0 71.500000 0.0 0.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+0.0 9.58005711e-05 1.570796327
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+0.022368 -0.539371 -0.889483
+# Source motion type and duration [s]
+General 1000.0
+# Source translational velocity vector and rotation rate vector
+0.0 0.0 0.0 71.500000 0.0 0.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+0.0 9.79673528e-05 1.570796327
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+0.020925 -0.538121 -0.890204
+# Source motion type and duration [s]
+General 1000.0
+# Source translational velocity vector and rotation rate vector
+0.0 0.0 0.0 71.500000 0.0 0.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+0.0 9.96184012e-05 1.570796327
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+0.019482 -0.536871 -0.890926
+# Source motion type and duration [s]
+General 1000.0
+# Source translational velocity vector and rotation rate vector
+0.0 0.0 0.0 71.500000 0.0 0.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+0.0 1.00809870e-04 1.570796327
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+0.018038 -0.535622 -0.891647
+# Source motion type and duration [s]
+General 1000.0
+# Source translational velocity vector and rotation rate vector
+0.0 0.0 0.0 71.500000 0.0 0.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+0.0 1.01588087e-04 1.570796327
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+0.016595 -0.534372 -0.892369
+# Source motion type and duration [s]
+General 1000.0
+# Source translational velocity vector and rotation rate vector
+0.0 0.0 0.0 71.500000 0.0 0.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+0.0 1.01992044e-04 1.570796327
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+0.015152 -0.533122 -0.893090
+# Source motion type and duration [s]
+General 1000.0
+# Source translational velocity vector and rotation rate vector
+0.0 0.0 0.0 71.500000 0.0 0.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+0.0 1.02055099e-04 1.570796327
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+0.013709 -0.531873 -0.893812
+# Source motion type and duration [s]
+General 1000.0
+# Source translational velocity vector and rotation rate vector
+0.0 0.0 0.0 71.500000 0.0 0.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+0.0 1.01806172e-04 1.570796327
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+0.012266 -0.530623 -0.894533
+# Source motion type and duration [s]
+General 1000.0
+# Source translational velocity vector and rotation rate vector
+0.0 0.0 0.0 71.500000 0.0 0.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+0.0 1.01270613e-04 1.570796327
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+0.010823 -0.529373 -0.895255
+# Source motion type and duration [s]
+General 1000.0
+# Source translational velocity vector and rotation rate vector
+0.0 0.0 0.0 71.500000 0.0 0.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+0.0 1.00470836e-04 1.570796327
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+0.009380 -0.528123 -0.895976
+# Source motion type and duration [s]
+General 1000.0
+# Source translational velocity vector and rotation rate vector
+0.0 0.0 0.0 71.500000 0.0 0.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+0.0 9.94268057e-05 1.570796327
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+0.007937 -0.526874 -0.896698
+# Source motion type and duration [s]
+General 1000.0
+# Source translational velocity vector and rotation rate vector
+0.0 0.0 0.0 71.500000 0.0 0.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+0.0 9.81563999e-05 1.570796327
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+0.006494 -0.525624 -0.897420
+# Source motion type and duration [s]
+General 1000.0
+# Source translational velocity vector and rotation rate vector
+0.0 0.0 0.0 71.500000 0.0 0.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+0.0 9.66756990e-05 1.570796327
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+0.005051 -0.524374 -0.898141
+# Source motion type and duration [s]
+General 1000.0
+# Source translational velocity vector and rotation rate vector
+0.0 0.0 0.0 71.500000 0.0 0.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+0.0 9.49992107e-05 1.570796327
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+0.003608 -0.523124 -0.898863
+# Source motion type and duration [s]
+General 1000.0
+# Source translational velocity vector and rotation rate vector
+0.0 0.0 0.0 71.500000 0.0 0.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+0.0 9.31400495e-05 1.570796327
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+0.002165 -0.521875 -0.899584
+# Source motion type and duration [s]
+General 1000.0
+# Source translational velocity vector and rotation rate vector
+0.0 0.0 0.0 71.500000 0.0 0.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+0.0 9.11100818e-05 1.570796327
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+0.000722 -0.520625 -0.900306
+# Source motion type and duration [s]
+General 1000.0
+# Source translational velocity vector and rotation rate vector
+0.0 0.0 0.0 71.500000 0.0 0.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+0.0 8.89200444e-05 1.570796327
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+-0.000722 -0.519375 -0.901027
+# Source motion type and duration [s]
+General 1000.0
+# Source translational velocity vector and rotation rate vector
+0.0 0.0 0.0 71.500000 0.0 0.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+0.0 8.65796405e-05 1.570796327
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+-0.002165 -0.518125 -0.901749
+# Source motion type and duration [s]
+General 1000.0
+# Source translational velocity vector and rotation rate vector
+0.0 0.0 0.0 71.500000 0.0 0.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+0.0 8.40976209e-05 1.570796327
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+-0.003608 -0.516876 -0.902470
+# Source motion type and duration [s]
+General 1000.0
+# Source translational velocity vector and rotation rate vector
+0.0 0.0 0.0 71.500000 0.0 0.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+0.0 8.14818507e-05 1.570796327
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+-0.005051 -0.515626 -0.903192
+# Source motion type and duration [s]
+General 1000.0
+# Source translational velocity vector and rotation rate vector
+0.0 0.0 0.0 71.500000 0.0 0.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+0.0 7.87393655e-05 1.570796327
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+-0.006494 -0.514376 -0.903913
+# Source motion type and duration [s]
+General 1000.0
+# Source translational velocity vector and rotation rate vector
+0.0 0.0 0.0 71.500000 0.0 0.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+0.0 7.58764194e-05 1.570796327
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+-0.007937 -0.513126 -0.904635
+# Source motion type and duration [s]
+General 1000.0
+# Source translational velocity vector and rotation rate vector
+0.0 0.0 0.0 71.500000 0.0 0.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+0.0 7.28985252e-05 1.570796327
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+-0.009380 -0.511877 -0.905356
+# Source motion type and duration [s]
+General 1000.0
+# Source translational velocity vector and rotation rate vector
+0.0 0.0 0.0 71.500000 0.0 0.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+0.0 6.98104896e-05 1.570796327
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+-0.010823 -0.510627 -0.906078
+# Source motion type and duration [s]
+General 1000.0
+# Source translational velocity vector and rotation rate vector
+0.0 0.0 0.0 71.500000 0.0 0.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+0.0 6.66164426e-05 1.570796327
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+-0.012266 -0.509377 -0.906799
+# Source motion type and duration [s]
+General 1000.0
+# Source translational velocity vector and rotation rate vector
+0.0 0.0 0.0 71.500000 0.0 0.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+0.0 6.33198637e-05 1.570796327
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+-0.013709 -0.508127 -0.907521
+# Source motion type and duration [s]
+General 1000.0
+# Source translational velocity vector and rotation rate vector
+0.0 0.0 0.0 71.500000 0.0 0.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+0.0 5.99236041e-05 1.570796327
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+-0.015152 -0.506878 -0.908243
+# Source motion type and duration [s]
+General 1000.0
+# Source translational velocity vector and rotation rate vector
+0.0 0.0 0.0 71.500000 0.0 0.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+0.0 5.64299065e-05 1.570796327
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+-0.016595 -0.505628 -0.908964
+# Source motion type and duration [s]
+General 1000.0
+# Source translational velocity vector and rotation rate vector
+0.0 0.0 0.0 71.500000 0.0 0.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+0.0 5.28404219e-05 1.570796327
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+-0.018038 -0.504378 -0.909686
+# Source motion type and duration [s]
+General 1000.0
+# Source translational velocity vector and rotation rate vector
+0.0 0.0 0.0 71.500000 0.0 0.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+0.0 4.91562251e-05 1.570796327
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+-0.019482 -0.503129 -0.910407
+# Source motion type and duration [s]
+General 1000.0
+# Source translational velocity vector and rotation rate vector
+0.0 0.0 0.0 71.500000 0.0 0.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+0.0 4.53778275e-05 1.570796327
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+-0.020925 -0.501879 -0.911129
+# Source motion type and duration [s]
+General 1000.0
+# Source translational velocity vector and rotation rate vector
+0.0 0.0 0.0 71.500000 0.0 0.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+0.0 4.15051895e-05 1.570796327
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+-0.022368 -0.500629 -0.911850
+# Source motion type and duration [s]
+General 1000.0
+# Source translational velocity vector and rotation rate vector
+0.0 0.0 0.0 71.500000 0.0 0.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+0.0 3.75377302e-05 1.570796327
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+-0.023811 -0.499379 -0.912572
+# Source motion type and duration [s]
+General 1000.0
+# Source translational velocity vector and rotation rate vector
+0.0 0.0 0.0 71.500000 0.0 0.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+0.0 3.34743373e-05 1.570796327
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+-0.025254 -0.498130 -0.913293
+# Source motion type and duration [s]
+General 1000.0
+# Source translational velocity vector and rotation rate vector
+0.0 0.0 0.0 71.500000 0.0 0.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+0.0 2.93133754e-05 1.570796327
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+-0.026697 -0.496880 -0.914015
+# Source motion type and duration [s]
+General 1000.0
+# Source translational velocity vector and rotation rate vector
+0.0 0.0 0.0 71.500000 0.0 0.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+0.0 2.50526930e-05 1.570796327
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+-0.028140 -0.495630 -0.914736
+# Source motion type and duration [s]
+General 1000.0
+# Source translational velocity vector and rotation rate vector
+0.0 0.0 0.0 71.500000 0.0 0.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+0.0 2.06896295e-05 1.570796327
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+-0.029583 -0.494380 -0.915458
+# Source motion type and duration [s]
+General 1000.0
+# Source translational velocity vector and rotation rate vector
+0.0 0.0 0.0 71.500000 0.0 0.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+0.0 1.62210213e-05 1.570796327
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+-0.031026 -0.493131 -0.916179
+# Source motion type and duration [s]
+General 1000.0
+# Source translational velocity vector and rotation rate vector
+0.0 0.0 0.0 71.500000 0.0 0.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+0.0 1.16432073e-05 1.570796327
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+-0.032469 -0.491881 -0.916901
+# Source motion type and duration [s]
+General 1000.0
+# Source translational velocity vector and rotation rate vector
+0.0 0.0 0.0 71.500000 0.0 0.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+0.0 6.95203329e-06 1.570796327
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+-0.033912 -0.490631 -0.917623
+# Source motion type and duration [s]
+General 1000.0
+# Source translational velocity vector and rotation rate vector
+0.0 0.0 0.0 71.500000 0.0 0.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+0.0 2.14285714e-06 1.570796327
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+-0.035355 -0.489381 -0.918344
+# Source motion type and duration [s]
+General 1000.0
+# Source translational velocity vector and rotation rate vector
+0.0 0.0 0.0 71.500000 0.0 0.0

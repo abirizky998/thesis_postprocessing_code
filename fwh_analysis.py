@@ -201,7 +201,7 @@ class FWHDataset:
 class FWHPlotter:
     @staticmethod
     def plot_pressure(reference, *comparisons, labels=None, title=None, scale=1.0, error_method='l2',
-                      ref_col='P_analytical', comp_col='P_obs'):
+                      ref_col='P_analytical', comp_col='P_obs', legend=True):
         
         fig, ax = plt.subplots(figsize=(8,5))
         ref_df = reference.data if hasattr(reference, 'data') else reference
@@ -237,12 +237,78 @@ class FWHPlotter:
             ax.set_title(title)
 
         ax.grid(True, linestyle='--', alpha=0.7)
-        ax.legend(loc='upper right', bbox_to_anchor=(1.35, 1))
+        if legend: ax.legend(loc='upper right', bbox_to_anchor=(1.35, 1))
         plt.tight_layout()
         plt.show()
 
+    # @staticmethod
+    # def plot_directivity_snapshot(datasets, target_time, col='P_obs', is_polar=False, ylim=None, title=None):
+    #     import numpy as np
+    #     import matplotlib.pyplot as plt
+
+    #     if not datasets:
+    #         print("No datasets provided.")
+    #         return
+
+    #     n_obs = len(datasets)
+    #     # Calculate angles in radians and degrees based on the number of observers
+    #     angles_rad = np.linspace(0, 2 * np.pi, n_obs, endpoint=False)
+    #     angles_deg = np.degrees(angles_rad)
+
+    #     pressures = []
+    #     actual_time = 0.0
+
+    #     # Extract pressure at the closest time for each observer
+    #     for ds in datasets:
+    #         df = ds.data
+    #         # Find the row index where the time is closest to the target_time
+    #         idx = (np.abs(df['Time'] - target_time)).argmin()
+    #         p_val = df[col].iloc[idx]
+    #         pressures.append(p_val)
+    #         actual_time = df['Time'].iloc[idx] 
+
+    #     if is_polar:
+    #         fig, ax = plt.subplots(figsize=(8, 8), subplot_kw={'projection': 'polar'})
+            
+    #         # Append the first element to the end to close the circular loop visually
+    #         plot_angles = np.append(angles_rad, angles_rad[0])
+    #         plot_pressures = np.append(pressures, pressures[0])
+
+    #         ax.plot(plot_angles, plot_pressures, marker='o', linestyle='-', color='b', 
+    #                 linewidth=2, markersize=6, label=f'Snapshot at t ≈ {actual_time:.4f} s')
+            
+    #         # Standard math orientation: 0 degrees at East, counter-clockwise
+    #         ax.set_theta_zero_location('E') 
+    #         ax.set_title(title or f"Acoustic Directivity Polar Map", pad=20, weight='bold')
+            
+    #         # Customize radial grids for cleaner pressure reading
+    #         ax.grid(True, linestyle='--', alpha=0.7)
+    #         ax.legend(loc='upper right', bbox_to_anchor=(1.2, 1.1))
+
+    #     else:
+    #         fig, ax = plt.subplots(figsize=(12, 6))
+    #         ax.plot(angles_deg, pressures, marker='o', linestyle='-', color='b', 
+    #                 linewidth=2, markersize=8, label=f'Snapshot at t ≈ {actual_time:.4f} s')
+
+    #         ax.set_title(title or f"Pressure vs Observer Angle ($\theta$)", weight='bold')
+    #         ax.set_xlabel(r"Observer Angle, $\theta$ (Degrees)")
+    #         ax.set_ylabel("Pressure (Pa)")
+
+    #         ax.set_ylim(bottom=(-ylim if ylim is not None else None),
+    #                     top = (ylim if ylim is not None else none))
+
+    #         # Set x-ticks to match the exact observer angles and label them clearly
+    #         ax.set_xticks(angles_deg)
+    #         ax.set_xticklabels([f"{int(deg)}°\n(Obs {i+1:02d})" for i, deg in enumerate(angles_deg)])
+
+    #         ax.grid(True, linestyle='--', alpha=0.6)
+    #         ax.legend()
+
+    #     plt.tight_layout()
+    #     plt.show()
+
     @staticmethod
-    def plot_directivity_snapshot(datasets, target_time, col='P_obs', is_polar=False, title=None):
+    def plot_directivity_snapshot(datasets, target_times, col='P_obs', ylim=None, is_polar=False, title=None):
         import numpy as np
         import matplotlib.pyplot as plt
 
@@ -250,60 +316,69 @@ class FWHPlotter:
             print("No datasets provided.")
             return
 
+        # Ensure target_times is iterable so older scripts passing a single float don't break
+        if np.isscalar(target_times):
+            target_times = [target_times]
+
         n_obs = len(datasets)
-        # Calculate angles in radians and degrees based on the number of observers
         angles_rad = np.linspace(0, 2 * np.pi, n_obs, endpoint=False)
         angles_deg = np.degrees(angles_rad)
 
-        pressures = []
-        actual_time = 0.0
-
-        # Extract pressure at the closest time for each observer
-        for ds in datasets:
-            df = ds.data
-            # Find the row index where the time is closest to the target_time
-            idx = (np.abs(df['Time'] - target_time)).argmin()
-            p_val = df[col].iloc[idx]
-            pressures.append(p_val)
-            actual_time = df['Time'].iloc[idx] 
-
+        # Setup Canvas
         if is_polar:
             fig, ax = plt.subplots(figsize=(8, 8), subplot_kw={'projection': 'polar'})
-            
-            # Append the first element to the end to close the circular loop visually
-            plot_angles = np.append(angles_rad, angles_rad[0])
-            plot_pressures = np.append(pressures, pressures[0])
-
-            ax.plot(plot_angles, plot_pressures, marker='o', linestyle='-', color='b', 
-                    linewidth=2, markersize=6, label=f'Snapshot at t ≈ {actual_time:.4f} s')
-            
-            # Standard math orientation: 0 degrees at East, counter-clockwise
-            ax.set_theta_zero_location('E') 
-            ax.set_title(title or f"Acoustic Directivity Polar Map", pad=20, weight='bold')
-            
-            # Customize radial grids for cleaner pressure reading
-            ax.grid(True, linestyle='--', alpha=0.7)
-            ax.legend(loc='upper right', bbox_to_anchor=(1.2, 1.1))
-
         else:
             fig, ax = plt.subplots(figsize=(12, 6))
-            ax.plot(angles_deg, pressures, marker='o', linestyle='-', color='b', 
-                    linewidth=2, markersize=8, label=f'Snapshot at t ≈ {actual_time:.4f} s')
 
-            ax.set_title(title or f"Pressure vs Observer Angle ($\theta$)", weight='bold')
+        # Generate sequential colors based on how many time steps you want to plot
+        num_times = len(target_times)
+        colors = plt.cm.viridis(np.linspace(0, 0.9, num_times)) if num_times > 1 else ['b']
+
+        for i, target_time in enumerate(target_times):
+            pressures = []
+            
+            # Extract actual solver time from the first observer (assumes uniform dt across array)
+            idx_0 = (np.abs(datasets[0].data['Time'] - target_time)).argmin()
+            actual_time = datasets[0].data['Time'].iloc[idx_0]
+
+            for ds in datasets:
+                df = ds.data
+                idx = (np.abs(df['Time'] - target_time)).argmin()
+                pressures.append(df[col].iloc[idx])
+
+            label_str = f't ≈ {actual_time:.4f} s'
+
+            if is_polar:
+                plot_angles = np.append(angles_rad, angles_rad[0])
+                plot_pressures = np.append(pressures, pressures[0])
+                ax.plot(plot_angles, plot_pressures, marker='o', linestyle='-', 
+                        color=colors[i], linewidth=2, markersize=5, label=label_str)
+            else:
+                ax.plot(angles_deg, pressures, marker='o', linestyle='-', 
+                        color=colors[i], linewidth=2, markersize=6, label=label_str)
+
+        # Formatting
+        if is_polar:
+            ax.set_theta_zero_location('E') 
+            ax.set_title(title or "Acoustic Directivity Time Evolution", pad=20, weight='bold')
+            ax.grid(True, linestyle='--', alpha=0.7)
+            # Push legend outside the polar plot so it doesn't overlap the lobes
+            ax.legend(loc='upper right', bbox_to_anchor=(1.35, 1.1))
+        else:
+            ax.set_title(title or r"Pressure vs Observer Angle ($\theta$)", weight='bold')
             ax.set_xlabel(r"Observer Angle, $\theta$ (Degrees)")
             ax.set_ylabel("Pressure (Pa)")
-
-            # Set x-ticks to match the exact observer angles and label them clearly
+            ax.set_ylim(bottom=-ylim if ylim is not None else None,
+                        top=ylim if ylim is not None else None)
             ax.set_xticks(angles_deg)
-            ax.set_xticklabels([f"{int(deg)}°\n(Obs {i+1:02d})" for i, deg in enumerate(angles_deg)])
-
+            ax.set_xticklabels([f"{int(deg)}°\n(Obs {j+1:02d})" for j, deg in enumerate(angles_deg)],
+                               rotation=45, ha='right')
             ax.grid(True, linestyle='--', alpha=0.6)
-            ax.legend()
+            # Push legend to the right of the Cartesian plot
+            ax.legend(loc='center left', bbox_to_anchor=(1, 0.5))
 
         plt.tight_layout()
         plt.show()
-
 
     @staticmethod
     def plot_cfl_convergence_by_mach(directory, analysis, analytical_refs, ref_val, error_method='l2', ymin=3e-5, ymax=5e-2, use_doppler=True, legend=True):
