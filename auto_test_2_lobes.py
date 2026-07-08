@@ -14,15 +14,15 @@ c = 340.0
 rho = 1.2
 r_obs = 50.0
 n_observer = 36
-n_source = 4
+n_source = 2
 r_eff = 1.5
 freq = 100 # Hz
 omega = 2 * np.pi * freq
 
-output_dir = f"data_{date}/4lobes-Test"
+output_dir = f"data_{date}/2lobes-0deg"
 os.makedirs(output_dir, exist_ok=True)
 
-observer_setup(observer, D_obs=r_obs, n=n_observer, normal='x')
+observer_setup(observer, D_obs=r_obs, n=n_observer, normal='z')
 timestep_sizing(config, M=0.0, P=40, f_s=freq, T_sim=1/freq)
 
 lines = [
@@ -32,11 +32,11 @@ lines = [
 ]
 
 for n in range(n_source):
-    y_b = r_eff * np.cos(n * 2 * np.pi / n_source)
-    z_b = r_eff * np.sin(n * 2 * np.pi / n_source)
+    x_b = r_eff * np.cos((2*n+1) * np.pi / n_source)
+    y_b = r_eff * np.sin((2*n+1) * np.pi / n_source)
 
     strength_n = 1.0
-    phase_shift = n * np.pi / 2
+    phase_shift = 0 # (2*n+1) * np.pi / n_source
 
     lines.extend([
         "# Source type\n",
@@ -46,7 +46,7 @@ for n in range(n_source):
         "# Source definition\n",
         "Point\n",
         "# Source initial location [m] (x, y, z)\n",
-        f"0.000000 {y_b:.6f} {z_b:.6f}\n",
+        f"{x_b:.6f} {y_b:.6f} 0.0\n",
         "# Source motion type and duration [s]\n",
         "Stationary 1000.0\n"
     ])
@@ -54,7 +54,7 @@ for n in range(n_source):
 with open(source, 'w') as f:
     f.writelines(lines)
 
-subprocess.run(["mpirun", "-np", "6", "../bin/FWH_Sphere"], check=True)
+subprocess.run(["mpirun", "-np", "6", "../../bin/FWH_Sphere"], check=True)
 
 # Post-Process and Move Files
 for i in range(1, n_observer + 1):
