@@ -35,7 +35,7 @@ os.makedirs(output_dir, exist_ok=True)
 
 # Orienting observer ring to match source coordinates (X-Y plane)
 observer_setup(observer, D_obs=r_obs, n=n_observer, normal='z')
-timestep_sizing(config, M=0.0, P=40, f_s=num_harmonics * f_fundamental, T_sim=1/f_fundamental)
+timestep_sizing(config, M=0.0, P=40, f_s=num_harmonics * f_fundamental, T_sim=1/(f_fundamental))
 
 lines = [
     "# Automatically generated 72-Source Dense Phased Array\n",

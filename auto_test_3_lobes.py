@@ -7,7 +7,7 @@ import shutil
 config = 'input_config.txt'
 source = 'input_source.txt'
 observer = 'input_observer.txt'
-date = current_date()
+date = '260708' # current_date()
 
 # Physical Constants
 c = 340.0
@@ -19,7 +19,7 @@ r_eff = 1.5
 freq = 100 # Hz
 omega = 2 * np.pi * freq
 
-output_dir = f"data_{date}/3lobes-0deg"
+output_dir = f"data_{date}/3lobes-120deg"
 os.makedirs(output_dir, exist_ok=True)
 
 observer_setup(observer, D_obs=r_obs, n=n_observer, normal='z')
@@ -32,11 +32,11 @@ lines = [
 ]
 
 for n in range(n_source):
-    x_b = r_eff * np.cos(n * np.pi / n_source)
-    y_b = r_eff * np.sin(n * np.pi / n_source)
+    x_b = r_eff * np.cos(n * 2 * np.pi / n_source)
+    y_b = r_eff * np.sin(n * 2 * np.pi / n_source)
 
     strength_n = 1.0
-    phase_shift = 0.0 #n * np.pi / n_source
+    phase_shift = n * 2 * np.pi / n_source
 
     lines.extend([
         "# Source type\n",
@@ -54,7 +54,7 @@ for n in range(n_source):
 with open(source, 'w') as f:
     f.writelines(lines)
 
-subprocess.run(["mpirun", "-np", "1", "../../bin/FWH_Sphere"], check=True)
+subprocess.run(["mpirun", "-np", "1", "../bin/FWH_Sphere"], check=True)
 
 # Post-Process and Move Files
 for i in range(1, n_observer + 1):

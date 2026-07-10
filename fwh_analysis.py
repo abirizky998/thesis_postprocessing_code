@@ -307,7 +307,7 @@ class FWHPlotter:
     #     plt.tight_layout()
     #     plt.show()
     @staticmethod
-    def plot_directivity_snapshot(datasets, target_times, col='P_obs', ylim=None, is_polar=False, title=None, plot=True):
+    def plot_directivity_snapshot(datasets, target_times, col='P_obs', ylim=None, is_polar=False, title=None, plot=True, legend=False):
         import numpy as np
         import matplotlib.pyplot as plt
 
@@ -328,7 +328,7 @@ class FWHPlotter:
             if is_polar:
                 fig, ax = plt.subplots(figsize=(8, 8), subplot_kw={'projection': 'polar'})
             else:
-                fig, ax = plt.subplots(figsize=(12, 6))
+                fig, ax = plt.subplots(figsize=(8, 6))
 
             num_times = len(target_times)
             colors = plt.cm.viridis(np.linspace(0, 0.9, num_times)) if num_times > 1 else ['b']
@@ -370,9 +370,12 @@ class FWHPlotter:
                 ax.set_ylabel("Pressure (Pa)")
                 ax.set_ylim(bottom=-ylim if ylim is not None else None,
                             top=ylim if ylim is not None else None)
-                ax.set_xticks(angles_deg)
+                if n_obs <= 12: step = 1
+                elif n_obs <= 36: step = n_obs // 12
+                else: step // 8
+                ax.set_xticks(angles_deg[::step])
                 ax.grid(True, linestyle='--', alpha=0.6)
-                ax.legend(loc='center left', bbox_to_anchor=(1, 0.5))
+                ax.legend(loc='center left', bbox_to_anchor=(1, 0.5)) if legend is True else None
 
             plt.tight_layout()
             plt.show()
