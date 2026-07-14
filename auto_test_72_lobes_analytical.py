@@ -10,16 +10,20 @@ observer = 'input_observer.txt'
 date = current_date()
 
 # Physical Constants
-c = 340.0
+c = 345.0
 rho = 1.2
-r_obs = 50.0
+r_obs = 7.28
 n_observer = 36
 
 # Dense Array Kinematics
-n_source = 72       
-n_blades = 3        
+n_source = 108
+n_blades = 3       
 r_eff = 1.3         
 f_fundamental = 107.25
+ux = 40.14
+
+Mr = 0 #(2 * np.pi * f_fundamental * r_eff) / c
+
 
 # Target DFT Arrays
 amps = np.array([3.39017904, 4.41553483, 4.33133909, 4.05853316, 3.68401838,
@@ -30,12 +34,12 @@ phases = np.array([-0.53425042,  2.19246152, -1.4319258 ,  1.29567134, -2.373115
                     1.35893209, -2.542671])
 num_harmonics = len(amps)
 
-output_dir = f"data_{date}/72Sources_12Harmonics"
+output_dir = f"data_{date}/{n_source}Sources_12Harmonics"
 os.makedirs(output_dir, exist_ok=True)
 
 # Orienting observer ring to match source coordinates (X-Y plane)
 observer_setup(observer, D_obs=r_obs, n=n_observer, normal='z')
-timestep_sizing(config, M=0.0, P=40, f_s=num_harmonics * f_fundamental, T_sim=1/(f_fundamental))
+timestep_sizing(config, M=0.0, P=40, f_s=num_harmonics * f_fundamental, T_sim=(n_blades)/(f_fundamental))
 
 lines = [
     "# Automatically generated 72-Source Dense Phased Array\n",
@@ -55,8 +59,8 @@ for s in range(n_source):
         omega_n = 2 * np.pi * n * f_fundamental
         
         # Distribute the target pressure amplitude evenly across the ring
-        amp_s = amps[idx] / n_source
-        strength_n = (4 * np.pi * r_obs * amp_s) / (rho * omega_n)
+        amp_s = amps[idx] / (n_source)
+        strength_n = (4 * np.pi * r_obs * amp_s  * (1 - Mr)) / (omega_n)
         
         # Tyler-Sofrin stagger: Current phase - (harmonic_number * blades * current_angle)
         phase_shift = (phases[idx] - (n * n_blades * theta_s)) % (2 * np.pi)
@@ -72,6 +76,8 @@ for s in range(n_source):
             f"{x_b:.6f} {y_b:.6f} 0.000000\n",
             "# Source motion type and duration [s]\n",
             "Stationary 1000.0\n"
+            # "# Source Motion Definition\n",
+            # f"{ux} 0.0 0.0 0.0 0.0 0.0\n"
         ])
 
 with open(source, 'w') as f:
