@@ -83,7 +83,11 @@ current_run = 1
 
 # 4. Execution Loop
 for x in x_values:
-    grid_sizing(config, M=0.0, X=x, lambda_s=c / f_fundamental, R=(r_eff + r_obs)/2)
+    n = grid_sizing(config, M=0.0, X=x, lambda_s=c / f_fundamental, R=(r_eff + r_obs)/2)
+    if n * n > 1e5: processes = 4
+    elif n * n > 5e4: processes = 2
+    else: processes = 1
+    
     for p in p_values:
         print(f"--- Running Case {current_run}/{total_runs} | X = {x}, P = {p} ---")
         
@@ -91,7 +95,7 @@ for x in x_values:
         timestep_sizing(config, M=0.0, P=p, f_s=f_fundamental, T_sim=T_sim)
         
         # Execute solver
-        subprocess.run(["mpirun", "-np", "1", "../../bin/FWH_Sphere"], check=True)
+        subprocess.run(["mpirun", "-np", str(processes), "../../bin/FWH_Sphere"], check=True)
         
         # Post-Process and Rename
         for i in range(1, n_observer + 1):
@@ -107,11 +111,11 @@ for x in x_values:
                 os.remove(ana_file) # Delete duplicates from subsequent runs
             
             # Save the numerical file with X and P tags
-            # num_file = f'FWH_observer_time_{obs_str}_RT.dat'
-            # num_dest_file = os.path.join(output_dir, f"X{int(x)}_P{int(p)}_{obs_str}.dat") 
+            num_file = f'FWH_observer_time_{obs_str}_RT.dat'
+            num_dest_file = os.path.join(output_dir, f"X{int(x)}_P{int(p)}_{obs_str}.dat") 
             
-            # if os.path.exists(num_file):
-            #     shutil.move(num_file, num_dest_file)
+            if os.path.exists(num_file):
+                shutil.move(num_file, num_dest_file)
                 
         current_run += 1
 
