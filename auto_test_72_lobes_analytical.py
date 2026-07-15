@@ -39,7 +39,6 @@ os.makedirs(output_dir, exist_ok=True)
 
 # Orienting observer ring to match source coordinates (X-Y plane)
 observer_setup(observer, D_obs=r_obs, n=n_observer, normal='z')
-timestep_sizing(config, M=0.0, P=40, f_s=num_harmonics * f_fundamental, T_sim=(n_blades)/(f_fundamental))
 
 lines = [
     "# Automatically generated 72-Source Dense Phased Array\n",
@@ -83,19 +82,23 @@ for s in range(n_source):
 with open(source, 'w') as f:
     f.writelines(lines)
 
-# Bump MPI processes to handle 864 individual source elements
-subprocess.run(["mpirun", "-np", "1", "../../bin/FWH_Sphere"], check=True)
+P_values = [10, 20, 30, 40, 50, 60, 70, 80]
+for p in P_values:
+    timestep_sizing(config, M=0.0, P=p, f_s=num_harmonics * f_fundamental, T_sim=(n_blades)/(f_fundamental))
 
-# Post-Process and Move Files
-for i in range(1, n_observer + 1):
-    obs_str = f"{i:02d}"
-    ana_file = f"FWH_observer_time_{obs_str}_validation.dat" 
-    dest_file = os.path.join(output_dir, f"ana_spatial_{obs_str}.dat")
+    # Bump MPI processes to handle 864 individual source elements
+    subprocess.run(["mpirun", "-np", "1", "../../bin/FWH_Sphere"], check=True)
 
-    if os.path.exists(ana_file):
-        shutil.move(ana_file, dest_file)
-        print(f"Success. Analytical output saved to: {dest_file}")
-    else:
-        print(f"Error: Analytical output {ana_file} not found. Check solver execution.")
+    # Post-Process and Move Files
+    for i in range(1, n_observer + 1):
+        obs_str = f"{i:02d}"
+        ana_file = f"FWH_observer_time_{obs_str}_validation.dat" 
+        dest_file = os.path.join(output_dir, f"P{p}_{obs_str}.dat")
+
+        if os.path.exists(ana_file):
+            shutil.move(ana_file, dest_file)
+            print(f"Success. Analytical output saved to: {dest_file}")
+        else:
+            print(f"Error: Analytical output {ana_file} not found. Check solver execution.")
 
 print("Spatial Simulation Complete.")

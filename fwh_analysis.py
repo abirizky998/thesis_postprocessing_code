@@ -143,7 +143,7 @@ class FWHDataset:
         
         # 2. Process all data files
         for filepath in folder_path.glob("*.dat"):
-            if filepath.name.startswith("ana_"):
+            if filepath.name.startswith("ana_") or filepath.name.startswith('P'):
                 continue
                 
             files_scanned += 1

@@ -123,8 +123,8 @@ def source_speed_omega(config_path, M, speed_of_sound, omega, strength, Omega_ro
         
     return ux
 
-def observer_setup(config_path, D_obs, n, is_dipole=False, offset_deg=1.0, normal='z'):
-    angles = np.linspace(0, 2 * np.pi, n, endpoint=False)
+def observer_setup(config_path, D_obs, n, circle = 1.0, is_dipole=False, offset_deg=1.0, normal='z'):
+    angles = np.linspace(0, circle * 2 * np.pi, n, endpoint=False)
 
     if is_dipole:
         offset_rad = np.radians(offset_deg)
