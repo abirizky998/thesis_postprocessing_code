@@ -3,6 +3,7 @@ import numpy as np
 import os
 import subprocess
 import shutil
+import time
 
 config = 'input_config.txt'
 source = 'input_source.txt'
@@ -70,8 +71,8 @@ with open(source, 'w') as f:
     f.writelines(lines)
 
 # 3. Parameter Sweep Setup
-x_values = [10.0, 20.0, 30.0, 40.0]
-p_values = [10.0, 20.0, 30.0, 40.0]
+x_values = [30.0] # 40.0
+p_values = [30.0, 40.0] # 10 30 40
 
 # Calculate Simulation Time (Acoustic delay + 1 full mechanical rotation)
 t_delay = r_obs / c
@@ -84,10 +85,10 @@ current_run = 1
 # 4. Execution Loop
 for x in x_values:
     n = grid_sizing(config, M=0.0, X=x, lambda_s=c / f_fundamental, R=(r_eff + r_obs)/2)
-    if n * n > 1e5: processes = 4
-    elif n * n > 5e4: processes = 2
-    else: processes = 1
-    
+    # if n * n > 1e5: processes = 4
+    # elif n * n > 5e4: processes = 2
+    # else: processes = 1
+    processes = 6
     for p in p_values:
         print(f"--- Running Case {current_run}/{total_runs} | X = {x}, P = {p} ---")
         
@@ -96,6 +97,8 @@ for x in x_values:
         
         # Execute solver
         subprocess.run(["mpirun", "-np", str(processes), "../../bin/FWH_Sphere"], check=True)
+
+        time.sleep(10)
         
         # Post-Process and Rename
         for i in range(1, n_observer + 1):
