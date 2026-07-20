@@ -231,8 +231,8 @@ class FWHPlotter:
 
         if x_axis == 'absolute':
             ax.set_xlabel('Time (s)')
-        elif x_axis == 'normalised':
-            ax.set_xlabel(f't/T, T={(ref_df['Time'].max() * 1000):.3f} ms')
+        # elif x_axis == 'normalised':
+        #     ax.set_xlabel(f't/T, T={(ref_df['Time'].max() * 1000):.3f} ms')
 
         if scale == 1.0:
             ax.set_ylabel("Pressure (Pa)")
@@ -313,81 +313,163 @@ class FWHPlotter:
 
     #     plt.tight_layout()
     #     plt.show()
+
+    ### LATEST PRIOR TO LATEST UPDATE
+    # @staticmethod
+    # def plot_directivity_snapshot(datasets, target_times, col='P_obs', ylim=None, is_polar=False, title=None, plot=True, legend=False):
+    #     import numpy as np
+    #     import matplotlib.pyplot as plt
+
+    #     if not datasets:
+    #         print("No datasets provided.")
+    #         return None, None
+
+    #     if np.isscalar(target_times):
+    #         target_times = [target_times]
+
+    #     n_obs = len(datasets)
+    #     angles_rad = np.linspace(0, 2 * np.pi, n_obs, endpoint=False)
+    #     angles_deg = np.degrees(angles_rad)
+        
+    #     extracted_data = {} # Dictionary to store pressures at each time step
+
+    #     if plot:
+    #         if is_polar:
+    #             fig, ax = plt.subplots(figsize=(8, 8), subplot_kw={'projection': 'polar'})
+    #         else:
+    #             fig, ax = plt.subplots(figsize=(8, 6))
+
+    #         num_times = len(target_times)
+    #         colors = plt.cm.viridis(np.linspace(0, 0.9, num_times)) if num_times > 1 else ['b']
+
+    #     for i, target_time in enumerate(target_times):
+    #         pressures = []
+            
+    #         idx_0 = (np.abs(datasets[0].data['Time'] - target_time)).argmin()
+    #         actual_time = datasets[0].data['Time'].iloc[idx_0]
+
+    #         for ds in datasets:
+    #             df = ds.data
+    #             idx = (np.abs(df['Time'] - target_time)).argmin()
+    #             pressures.append(df[col].iloc[idx])
+                
+    #         extracted_data[actual_time] = np.array(pressures)
+
+    #         if plot:
+    #             label_str = f't ≈ {actual_time:.4f} s'
+
+    #             if is_polar:
+    #                 plot_angles = np.append(angles_rad, angles_rad[0])
+    #                 plot_pressures = np.append(pressures, pressures[0])
+    #                 ax.plot(plot_angles, plot_pressures, marker='o', linestyle='-', 
+    #                         color=colors[i], linewidth=2, markersize=5, label=label_str)
+    #             else:
+    #                 ax.plot(angles_deg, pressures, linestyle='-', 
+    #                         color=colors[i], linewidth=2, markersize=6, label=label_str)
+
+    #     if plot:
+    #         if is_polar:
+    #             ax.set_theta_zero_location('E') 
+    #             ax.set_title(title or "Acoustic Directivity Time Evolution", pad=20, weight='bold')
+    #             ax.grid(True, linestyle='--', alpha=0.7)
+    #             ax.legend(loc='upper right', bbox_to_anchor=(1.35, 1.1))
+    #         else:
+    #             ax.set_title(title or r"Pressure vs Observer Angle ($\theta$)", weight='bold')
+    #             ax.set_xlabel(r"Observer Angle, $\theta$ (Degrees)")
+    #             ax.set_ylabel("Pressure (Pa)")
+    #             ax.set_ylim(bottom=-ylim if ylim is not None else None,
+    #                         top=ylim if ylim is not None else None)
+    #             if n_obs <= 12: step = 1
+    #             elif n_obs <= 36: step = n_obs // 12
+    #             else: step // 8
+    #             ax.set_xticks(angles_deg[::step])
+    #             ax.grid(True, linestyle='--', alpha=0.6)
+    #             ax.legend(loc='center left', bbox_to_anchor=(1, 0.5)) if legend is True else None
+
+    #         plt.tight_layout()
+    #         plt.show()
+            
+    #     return angles_rad, extracted_data
+
+    ### LATEST
     @staticmethod
-    def plot_directivity_snapshot(datasets, target_times, col='P_obs', ylim=None, is_polar=False, title=None, plot=True, legend=False):
+    def plot_directivity_snapshot(reference, *comparisons, target_time, col='P_obs', labels=None, 
+                                  is_polar=False, title=None, legend=True, ylim=None):
         import numpy as np
         import matplotlib.pyplot as plt
 
-        if not datasets:
-            print("No datasets provided.")
-            return None, None
-
-        if np.isscalar(target_times):
-            target_times = [target_times]
-
-        n_obs = len(datasets)
+        n_obs = len(reference)
         angles_rad = np.linspace(0, 2 * np.pi, n_obs, endpoint=False)
         angles_deg = np.degrees(angles_rad)
         
-        extracted_data = {} # Dictionary to store pressures at each time step
+        if is_polar:
+            fig, ax = plt.subplots(figsize=(8, 8), subplot_kw={'projection': 'polar'})
+        else:
+            fig, ax = plt.subplots(figsize=(8, 6))
 
-        if plot:
-            if is_polar:
-                fig, ax = plt.subplots(figsize=(8, 8), subplot_kw={'projection': 'polar'})
-            else:
-                fig, ax = plt.subplots(figsize=(8, 6))
+        # 1. Extract and Plot Reference
+        ref_pressures = []
+        idx_0 = (np.abs(reference[0].data['Time'] - target_time)).argmin()
+        actual_time = reference[0].data['Time'].iloc[idx_0]
 
-            num_times = len(target_times)
-            colors = plt.cm.viridis(np.linspace(0, 0.9, num_times)) if num_times > 1 else ['b']
-
-        for i, target_time in enumerate(target_times):
-            pressures = []
+        for ds in reference:
+            df = ds.data if hasattr(ds, 'data') else ds
+            idx = (np.abs(df['Time'] - target_time)).argmin()
+            ref_pressures.append(df[col].iloc[idx])
             
-            idx_0 = (np.abs(datasets[0].data['Time'] - target_time)).argmin()
-            actual_time = datasets[0].data['Time'].iloc[idx_0]
+        if is_polar:
+            plot_angles = np.append(angles_rad, angles_rad[0])
+            plot_ref = np.append(ref_pressures, ref_pressures[0])
+            ax.plot(plot_angles, plot_ref, ls='-', c='black', lw=2, label='Reference')
+        else:
+            ax.plot(angles_deg, ref_pressures, ls='-', c='black', lw=2, label='Reference')
 
-            for ds in datasets:
-                df = ds.data
+        # 2. Extract and Plot Comparisons
+        if not labels or len(labels) != len(comparisons):
+            labels = [f'Dataset {i+1}' for i in range(len(comparisons))]
+
+        styles = ['--', '-.', ':']
+        colors = ['red', 'blue', 'green', 'orange', 'purple', 'cyan']
+
+        extracted_comps = []
+        for i, comp in enumerate(comparisons):
+            comp_pressures = []
+            for ds in comp:
+                df = ds.data if hasattr(ds, 'data') else ds
                 idx = (np.abs(df['Time'] - target_time)).argmin()
-                pressures.append(df[col].iloc[idx])
-                
-            extracted_data[actual_time] = np.array(pressures)
-
-            if plot:
-                label_str = f't ≈ {actual_time:.4f} s'
-
-                if is_polar:
-                    plot_angles = np.append(angles_rad, angles_rad[0])
-                    plot_pressures = np.append(pressures, pressures[0])
-                    ax.plot(plot_angles, plot_pressures, marker='o', linestyle='-', 
-                            color=colors[i], linewidth=2, markersize=5, label=label_str)
-                else:
-                    ax.plot(angles_deg, pressures, linestyle='-', 
-                            color=colors[i], linewidth=2, markersize=6, label=label_str)
-
-        if plot:
-            if is_polar:
-                ax.set_theta_zero_location('E') 
-                ax.set_title(title or "Acoustic Directivity Time Evolution", pad=20, weight='bold')
-                ax.grid(True, linestyle='--', alpha=0.7)
-                ax.legend(loc='upper right', bbox_to_anchor=(1.35, 1.1))
-            else:
-                ax.set_title(title or r"Pressure vs Observer Angle ($\theta$)", weight='bold')
-                ax.set_xlabel(r"Observer Angle, $\theta$ (Degrees)")
-                ax.set_ylabel("Pressure (Pa)")
-                ax.set_ylim(bottom=-ylim if ylim is not None else None,
-                            top=ylim if ylim is not None else None)
-                if n_obs <= 12: step = 1
-                elif n_obs <= 36: step = n_obs // 12
-                else: step // 8
-                ax.set_xticks(angles_deg[::step])
-                ax.grid(True, linestyle='--', alpha=0.6)
-                ax.legend(loc='center left', bbox_to_anchor=(1, 0.5)) if legend is True else None
-
-            plt.tight_layout()
-            plt.show()
+                comp_pressures.append(df[col].iloc[idx])
             
-        return angles_rad, extracted_data
+            extracted_comps.append(comp_pressures)
+            
+            ls = styles[i % len(styles)]
+            c = colors[i % len(colors)]
+            
+            if is_polar:
+                plot_comp = np.append(comp_pressures, comp_pressures[0])
+                ax.plot(plot_angles, plot_comp, ls=ls, c=c, marker='o', markersize=5, label=labels[i])
+            else:
+                ax.plot(angles_deg, comp_pressures, ls=ls, c=c, marker='o', markersize=5, label=labels[i])
+
+        # 3. Formatting
+        if is_polar:
+            ax.set_theta_zero_location('E') 
+            ax.set_title(title or f"Acoustic Directivity at t = {actual_time:.4f} s", pad=20, weight='bold')
+            ax.grid(True, linestyle='--', alpha=0.7)
+            if legend: ax.legend(loc='upper right', bbox_to_anchor=(1.35, 1.1))
+        else:
+            ax.set_title(title or f"Pressure vs Observer Angle at t = {actual_time:.4f} s", weight='bold')
+            ax.set_xlabel("Observer Angle (Degrees)")
+            ax.set_ylabel("Pressure (Pa)")
+            if ylim: ax.set_ylim(bottom=-ylim, top=ylim)
+            step = 1 if n_obs <= 12 else (n_obs // 12 if n_obs <= 36 else n_obs // 8)
+            ax.set_xticks(angles_deg[::step])
+            ax.grid(True, linestyle='--', alpha=0.6)
+            if legend: ax.legend(loc='center left', bbox_to_anchor=(1, 0.5))
+
+        plt.tight_layout()
+        plt.show()
+        
+        return angles_rad, ref_pressures, extracted_comps
     # @staticmethod
     # def plot_directivity_snapshot(datasets, target_times, col='P_obs', ylim=None, is_polar=False, title=None):
     #     import numpy as np

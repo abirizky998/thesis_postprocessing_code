@@ -8,7 +8,7 @@ import time
 config = 'input_config.txt'
 source = 'input_source.txt'
 observer = 'input_observer.txt'
-date = current_date()
+date = "260716" #current_date()
 
 # Physical Constants
 c = 345.0
@@ -72,7 +72,7 @@ with open(source, 'w') as f:
 
 # 3. Parameter Sweep Setup
 x_values = [40.0] # 40.0
-p_values = [10.0, 20.0, 30.0, 40.0] # 10 30 40
+p_values = [40.0] # 10 30 40
 
 # Calculate Simulation Time (Acoustic delay + 1 full mechanical rotation)
 t_delay = r_obs / c
