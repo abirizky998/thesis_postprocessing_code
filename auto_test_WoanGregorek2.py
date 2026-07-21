@@ -13,7 +13,7 @@ date = current_date()
 c = 340.0
 rho = 1.2
 r_obs = 50.0
-n_observer = 36
+n_observer = 72
 
 # Rotor Kinematics
 n_blades = 3

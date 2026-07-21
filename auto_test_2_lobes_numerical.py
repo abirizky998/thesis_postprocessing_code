@@ -14,16 +14,17 @@ date = current_date()
 c = 340.0
 rho = 1.2
 r_obs = 50.0
-n_observer = 4
+
+n_observer = 8
 n_source = 2
 
 freq = 100 # Hz
 omega = 2 * np.pi * freq
 
 lambda_s = c / freq
-r_eff = 1.5 #0.001 * lambda_s
+r_eff = 0.017 #0.001 * lambda_s
 
-output_dir = f"data_{date}/OLDBUILD_2lobes-inphase_new"
+output_dir = f"data_{date}/2lobes_nearer-inphase_8obs_50m"
 os.makedirs(output_dir, exist_ok=True)
 
 observer_setup(observer, D_obs=r_obs, n=n_observer, normal='z')
@@ -57,17 +58,17 @@ for n in range(n_source):
 with open(source, 'w') as f:
     f.writelines(lines)
 
-x_values = [10.0, 50.0, 100.0]
-p_values = [10.0, 50.0, 100.0]
+x_values = [10.0]
+p_values = [10.0]
 
 
 total_runs = len(x_values) * len(p_values)
 current_run = 1
 
 for x in x_values:
-    n = grid_sizing(config, M=0.0, X=x, lambda_s=c / freq, R=(r_eff + r_obs)/2)
+    n = grid_sizing(config, M=0.0, X=x, lambda_s=c / freq, R=25.75)
 
-    processes = 1
+    processes = 6
     for p in p_values:
         print(f"--- Running Case {current_run}/{total_runs} | X = {x}, P = {p} ---")
         
@@ -75,8 +76,8 @@ for x in x_values:
         timestep_sizing(config, M=0.0, P=p, f_s=freq, T_sim=1/freq)
         
         # Execute solver
-        # subprocess.run(["mpirun", "-np", str(processes), "../bin/FWH_Sphere"], check=True)
-        subprocess.run(['../bin/FWH_Sphere'], check=True)
+        subprocess.run(["mpirun", "-np", str(processes), "../../bin/FWH_Sphere"], check=True)
+        # subprocess.run(['../../bin/FWH_Sphere'], check=True)
 
         time.sleep(10)
 

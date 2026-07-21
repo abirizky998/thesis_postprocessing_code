@@ -8,7 +8,7 @@ Monopole Harmonic
 # Source definition
 Point
 # Source initial location [m] (x, y, z)
-0.000000 0.003400 0.0
+0.000000 0.017000 0.0
 # Source motion type and duration [s]
 Stationary 1000.0
 # Source type
@@ -18,6 +18,6 @@ Monopole Harmonic
 # Source definition
 Point
 # Source initial location [m] (x, y, z)
--0.000000 -0.003400 0.0
+-0.000000 -0.017000 0.0
 # Source motion type and duration [s]
 Stationary 1000.0
