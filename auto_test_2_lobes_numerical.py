@@ -15,16 +15,16 @@ c = 340.0
 rho = 1.2
 r_obs = 50.0
 
-n_observer = 8
+n_observer = 4
 n_source = 2
 
 freq = 100 # Hz
 omega = 2 * np.pi * freq
 
 lambda_s = c / freq
-r_eff = 0.017 #0.001 * lambda_s
+r_eff = 1.5 #0.001 * lambda_s
 
-output_dir = f"data_{date}/2lobes_nearer-inphase_8obs_50m"
+output_dir = f"data_{date}/TEST_NEW"
 os.makedirs(output_dir, exist_ok=True)
 
 observer_setup(observer, D_obs=r_obs, n=n_observer, normal='z')
@@ -59,16 +59,16 @@ with open(source, 'w') as f:
     f.writelines(lines)
 
 x_values = [10.0]
-p_values = [10.0]
+p_values = [100.0]
 
 
 total_runs = len(x_values) * len(p_values)
 current_run = 1
 
 for x in x_values:
-    n = grid_sizing(config, M=0.0, X=x, lambda_s=c / freq, R=25.75)
+    # n = grid_sizing(config, M=0.0, X=x, lambda_s=c / freq, R=25.75)
 
-    processes = 6
+    processes = 1
     for p in p_values:
         print(f"--- Running Case {current_run}/{total_runs} | X = {x}, P = {p} ---")
         
@@ -77,6 +77,7 @@ for x in x_values:
         
         # Execute solver
         subprocess.run(["mpirun", "-np", str(processes), "../../bin/FWH_Sphere"], check=True)
+
         # subprocess.run(['../../bin/FWH_Sphere'], check=True)
 
         time.sleep(10)

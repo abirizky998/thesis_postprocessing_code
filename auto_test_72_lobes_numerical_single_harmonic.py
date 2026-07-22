@@ -8,22 +8,20 @@ import time
 config = 'input_config.txt'
 source = 'input_source.txt'
 observer = 'input_observer.txt'
-date = "260716" #current_date()
+date = current_date()
 
-# Physical Constants
-c = 345.0
+c = 340.0
 rho = 1.2
 r_obs = 7.28
 n_observer = 36
+processes = 64
 
-# Kinematics (Full 72-Source Disk)
 n_source = 72  
 n_blades = 3
 r_eff = 1.3         
 f_fundamental = 107.25
 Mr = 0.0
 
-# Extract ONLY the fundamental harmonic (n=1)
 amp_target = 3.39017904
 phase_target = -0.53425042
 omega = 2 * np.pi * f_fundamental
@@ -31,10 +29,8 @@ omega = 2 * np.pi * f_fundamental
 output_dir = f"data_{date}/{n_source}Sources_Fundamental_Sweep"
 os.makedirs(output_dir, exist_ok=True)
 
-# 1. Setup Observers (Full Ring)
 observer_setup(observer, D_obs=r_obs, circle=1.0, n=n_observer, normal='z')
 
-# 2. Build the Source File Once (Geometry and Kinematics are constant)
 lines = [
     "# Automatically generated 72-Source Array (Fundamental Harmonic Only)\n",
     "# Number of source sets\n",
@@ -42,16 +38,13 @@ lines = [
 ]
 
 for s in range(n_source):
-    # Full 360-degree sweep (5-degree spacing)
     theta_s = s * (2 * np.pi / n_source)
     x_b = r_eff * np.cos(theta_s)
     y_b = r_eff * np.sin(theta_s)
 
-    # Source strength divided equally among 72 physical points
     amp_s = amp_target / n_source
     strength = (4 * np.pi * r_obs * amp_s * (1 - Mr)) / omega
     
-    # Tyler-Sofrin stagger for fundamental (n=1)
     phase_shift = (phase_target - (1 * n_blades * theta_s)) % (2 * np.pi)
 
     lines.extend([
@@ -70,11 +63,9 @@ for s in range(n_source):
 with open(source, 'w') as f:
     f.writelines(lines)
 
-# 3. Parameter Sweep Setup
-x_values = [40.0] # 40.0
-p_values = [40.0] # 10 30 40
+x_values = [20.0, 40.0, 60.0, 80.0, 100.0] # 40.0
+p_values = [20.0, 40.0, 60.0, 80.0, 100.0] # 10 30 40
 
-# Calculate Simulation Time (Acoustic delay + 1 full mechanical rotation)
 t_delay = r_obs / c
 t_rotation = n_blades / f_fundamental
 T_sim = t_delay + t_rotation
@@ -82,14 +73,9 @@ T_sim = t_delay + t_rotation
 total_runs = len(x_values) * len(p_values)
 current_run = 1
 
-# 4. Execution Loop
-for x in x_values:
+for x in x_values[::-1]:
     n = grid_sizing(config, M=0.0, X=x, lambda_s=c / f_fundamental, R=(r_eff + r_obs)/2)
-    # if n * n > 1e5: processes = 4
-    # elif n * n > 5e4: processes = 2
-    # else: processes = 1
-    processes = 8
-    for p in p_values:
+    for p in p_values[::-1]:
         print(f"--- Running Case {current_run}/{total_runs} | X = {x}, P = {p} ---")
         
         # Update config file
