@@ -13,7 +13,7 @@ date = current_date()
 c = 345.0
 rho = 1.2
 r_obs = 7.28
-n_observer = 36
+n_observer = 1
 
 # Dense Array Kinematics
 n_source = 72       

@@ -16,11 +16,10 @@ r_obs = 7.28
 n_observer = 36
 
 # Dense Array Kinematics
-n_source = 108
+n_source = 8
 n_blades = 3       
 r_eff = 1.3         
 f_fundamental = 107.25
-ux = 40.14
 
 Mr = 0 #(2 * np.pi * f_fundamental * r_eff) / c
 
@@ -41,7 +40,7 @@ os.makedirs(output_dir, exist_ok=True)
 observer_setup(observer, D_obs=r_obs, n=n_observer, normal='z')
 
 lines = [
-    "# Automatically generated 72-Source Dense Phased Array\n",
+    f"# Automatically generated {n_source}-Source Dense Phased Array\n",
     "# Number of source sets\n",
     f"{n_source * num_harmonics}\n"
 ]
@@ -82,23 +81,23 @@ for s in range(n_source):
 with open(source, 'w') as f:
     f.writelines(lines)
 
-P_values = [10, 20, 30, 40, 50, 60, 70, 80]
-for p in P_values:
-    timestep_sizing(config, M=0.0, P=p, f_s=num_harmonics * f_fundamental, T_sim=(n_blades)/(f_fundamental))
+# P_values = [10, 20, 30, 40, 50, 60, 70, 80]
+# for p in P_values:
+timestep_sizing(config, M=0.0, P=100, f_s=num_harmonics * f_fundamental, T_sim=(n_blades)/(f_fundamental))
 
-    # Bump MPI processes to handle 864 individual source elements
-    subprocess.run(["mpirun", "-np", "1", "../../bin/FWH_Sphere"], check=True)
+# Bump MPI processes to handle 864 individual source elements
+subprocess.run(["mpirun", "-np", "1", "../bin/FWH_Sphere"], check=True)
 
-    # Post-Process and Move Files
-    for i in range(1, n_observer + 1):
-        obs_str = f"{i:02d}"
-        ana_file = f"FWH_observer_time_{obs_str}_validation.dat" 
-        dest_file = os.path.join(output_dir, f"P{p}_{obs_str}.dat")
+# Post-Process and Move Files
+for i in range(1, n_observer + 1):
+    obs_str = f"{i:02d}"
+    ana_file = f"FWH_observer_time_{obs_str}_validation.dat" 
+    dest_file = os.path.join(output_dir, f"P{p}_{obs_str}.dat")
 
-        if os.path.exists(ana_file):
-            shutil.move(ana_file, dest_file)
-            print(f"Success. Analytical output saved to: {dest_file}")
-        else:
-            print(f"Error: Analytical output {ana_file} not found. Check solver execution.")
+    if os.path.exists(ana_file):
+        shutil.move(ana_file, dest_file)
+        print(f"Success. Analytical output saved to: {dest_file}")
+    else:
+        print(f"Error: Analytical output {ana_file} not found. Check solver execution.")
 
 print("Spatial Simulation Complete.")

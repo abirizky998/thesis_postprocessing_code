@@ -1,15 +1,543 @@
-# Single Rotating Harmonic Monopole
+# Automatically generated 18-Source Dense Phased Array
 # Number of source sets
-1
+54
 # Source type
 Monopole Harmonic
 # Source frequency [rad/s], source strength, and source phase [rad]
-2510.7692307692305 1.0 0.0
+673.871624 4.60242488e-01 5.748935
 # Source definition
 Point
 # Source initial location [m] (x, y, z)
-1.300000 0.00000 0.000000
+1.300000 0.000000 0.000000
 # Source motion type and duration [s]
-Rotation 1000.0
-Rotation angular velocity
-0.0 0.0 209.230769
+Stationary 1000.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+1347.743248 2.99721152e-01 2.192462
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+1.300000 0.000000 0.000000
+# Source motion type and duration [s]
+Stationary 1000.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+2021.614873 1.96004032e-01 4.851260
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+1.300000 0.000000 0.000000
+# Source motion type and duration [s]
+Stationary 1000.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+673.871624 4.60242488e-01 4.701737
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+1.221600 0.444626 0.000000
+# Source motion type and duration [s]
+Stationary 1000.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+1347.743248 2.99721152e-01 0.098066
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+1.221600 0.444626 0.000000
+# Source motion type and duration [s]
+Stationary 1000.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+2021.614873 1.96004032e-01 1.709667
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+1.221600 0.444626 0.000000
+# Source motion type and duration [s]
+Stationary 1000.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+673.871624 4.60242488e-01 3.654540
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+0.995858 0.835624 0.000000
+# Source motion type and duration [s]
+Stationary 1000.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+1347.743248 2.99721152e-01 4.286857
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+0.995858 0.835624 0.000000
+# Source motion type and duration [s]
+Stationary 1000.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+2021.614873 1.96004032e-01 4.851260
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+0.995858 0.835624 0.000000
+# Source motion type and duration [s]
+Stationary 1000.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+673.871624 4.60242488e-01 2.607342
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+0.650000 1.125833 0.000000
+# Source motion type and duration [s]
+Stationary 1000.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+1347.743248 2.99721152e-01 2.192462
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+0.650000 1.125833 0.000000
+# Source motion type and duration [s]
+Stationary 1000.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+2021.614873 1.96004032e-01 1.709667
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+0.650000 1.125833 0.000000
+# Source motion type and duration [s]
+Stationary 1000.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+673.871624 4.60242488e-01 1.560145
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+0.225743 1.280250 0.000000
+# Source motion type and duration [s]
+Stationary 1000.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+1347.743248 2.99721152e-01 0.098066
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+0.225743 1.280250 0.000000
+# Source motion type and duration [s]
+Stationary 1000.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+2021.614873 1.96004032e-01 4.851260
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+0.225743 1.280250 0.000000
+# Source motion type and duration [s]
+Stationary 1000.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+673.871624 4.60242488e-01 0.512947
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+-0.225743 1.280250 0.000000
+# Source motion type and duration [s]
+Stationary 1000.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+1347.743248 2.99721152e-01 4.286857
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+-0.225743 1.280250 0.000000
+# Source motion type and duration [s]
+Stationary 1000.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+2021.614873 1.96004032e-01 1.709667
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+-0.225743 1.280250 0.000000
+# Source motion type and duration [s]
+Stationary 1000.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+673.871624 4.60242488e-01 5.748935
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+-0.650000 1.125833 0.000000
+# Source motion type and duration [s]
+Stationary 1000.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+1347.743248 2.99721152e-01 2.192462
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+-0.650000 1.125833 0.000000
+# Source motion type and duration [s]
+Stationary 1000.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+2021.614873 1.96004032e-01 4.851260
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+-0.650000 1.125833 0.000000
+# Source motion type and duration [s]
+Stationary 1000.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+673.871624 4.60242488e-01 4.701737
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+-0.995858 0.835624 0.000000
+# Source motion type and duration [s]
+Stationary 1000.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+1347.743248 2.99721152e-01 0.098066
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+-0.995858 0.835624 0.000000
+# Source motion type and duration [s]
+Stationary 1000.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+2021.614873 1.96004032e-01 1.709667
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+-0.995858 0.835624 0.000000
+# Source motion type and duration [s]
+Stationary 1000.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+673.871624 4.60242488e-01 3.654540
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+-1.221600 0.444626 0.000000
+# Source motion type and duration [s]
+Stationary 1000.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+1347.743248 2.99721152e-01 4.286857
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+-1.221600 0.444626 0.000000
+# Source motion type and duration [s]
+Stationary 1000.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+2021.614873 1.96004032e-01 4.851260
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+-1.221600 0.444626 0.000000
+# Source motion type and duration [s]
+Stationary 1000.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+673.871624 4.60242488e-01 2.607342
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+-1.300000 0.000000 0.000000
+# Source motion type and duration [s]
+Stationary 1000.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+1347.743248 2.99721152e-01 2.192462
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+-1.300000 0.000000 0.000000
+# Source motion type and duration [s]
+Stationary 1000.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+2021.614873 1.96004032e-01 1.709667
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+-1.300000 0.000000 0.000000
+# Source motion type and duration [s]
+Stationary 1000.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+673.871624 4.60242488e-01 1.560145
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+-1.221600 -0.444626 0.000000
+# Source motion type and duration [s]
+Stationary 1000.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+1347.743248 2.99721152e-01 0.098066
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+-1.221600 -0.444626 0.000000
+# Source motion type and duration [s]
+Stationary 1000.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+2021.614873 1.96004032e-01 4.851260
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+-1.221600 -0.444626 0.000000
+# Source motion type and duration [s]
+Stationary 1000.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+673.871624 4.60242488e-01 0.512947
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+-0.995858 -0.835624 0.000000
+# Source motion type and duration [s]
+Stationary 1000.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+1347.743248 2.99721152e-01 4.286857
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+-0.995858 -0.835624 0.000000
+# Source motion type and duration [s]
+Stationary 1000.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+2021.614873 1.96004032e-01 1.709667
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+-0.995858 -0.835624 0.000000
+# Source motion type and duration [s]
+Stationary 1000.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+673.871624 4.60242488e-01 5.748935
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+-0.650000 -1.125833 0.000000
+# Source motion type and duration [s]
+Stationary 1000.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+1347.743248 2.99721152e-01 2.192462
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+-0.650000 -1.125833 0.000000
+# Source motion type and duration [s]
+Stationary 1000.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+2021.614873 1.96004032e-01 4.851260
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+-0.650000 -1.125833 0.000000
+# Source motion type and duration [s]
+Stationary 1000.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+673.871624 4.60242488e-01 4.701737
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+-0.225743 -1.280250 0.000000
+# Source motion type and duration [s]
+Stationary 1000.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+1347.743248 2.99721152e-01 0.098066
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+-0.225743 -1.280250 0.000000
+# Source motion type and duration [s]
+Stationary 1000.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+2021.614873 1.96004032e-01 1.709667
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+-0.225743 -1.280250 0.000000
+# Source motion type and duration [s]
+Stationary 1000.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+673.871624 4.60242488e-01 3.654540
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+0.225743 -1.280250 0.000000
+# Source motion type and duration [s]
+Stationary 1000.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+1347.743248 2.99721152e-01 4.286857
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+0.225743 -1.280250 0.000000
+# Source motion type and duration [s]
+Stationary 1000.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+2021.614873 1.96004032e-01 4.851260
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+0.225743 -1.280250 0.000000
+# Source motion type and duration [s]
+Stationary 1000.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+673.871624 4.60242488e-01 2.607342
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+0.650000 -1.125833 0.000000
+# Source motion type and duration [s]
+Stationary 1000.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+1347.743248 2.99721152e-01 2.192462
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+0.650000 -1.125833 0.000000
+# Source motion type and duration [s]
+Stationary 1000.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+2021.614873 1.96004032e-01 1.709667
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+0.650000 -1.125833 0.000000
+# Source motion type and duration [s]
+Stationary 1000.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+673.871624 4.60242488e-01 1.560145
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+0.995858 -0.835624 0.000000
+# Source motion type and duration [s]
+Stationary 1000.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+1347.743248 2.99721152e-01 0.098066
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+0.995858 -0.835624 0.000000
+# Source motion type and duration [s]
+Stationary 1000.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+2021.614873 1.96004032e-01 4.851260
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+0.995858 -0.835624 0.000000
+# Source motion type and duration [s]
+Stationary 1000.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+673.871624 4.60242488e-01 0.512947
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+1.221600 -0.444626 0.000000
+# Source motion type and duration [s]
+Stationary 1000.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+1347.743248 2.99721152e-01 4.286857
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+1.221600 -0.444626 0.000000
+# Source motion type and duration [s]
+Stationary 1000.0
+# Source type
+Monopole Harmonic
+# Source frequency [rad/s], source strength, and source phase [rad]
+2021.614873 1.96004032e-01 1.709667
+# Source definition
+Point
+# Source initial location [m] (x, y, z)
+1.221600 -0.444626 0.000000
+# Source motion type and duration [s]
+Stationary 1000.0
