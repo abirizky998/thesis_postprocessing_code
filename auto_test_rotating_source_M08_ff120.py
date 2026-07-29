@@ -8,13 +8,13 @@ import time
 config = 'input_config.txt'
 source = 'input_source.txt'
 observer = 'input_observer.txt'
-date = current_date()
+date = "260728" #current_date()
 
 c = 340.0
 rho = 1.2
 r_obs = 7.28
 n_observer = 3
-processes = 64
+processes = 8
 
 n_source = 1
 r_eff = 1.3 
@@ -44,15 +44,15 @@ lines = [
     f"{r_eff:.6f} 0.00000 0.000000\n",
     "# Source motion type and duration [s]\n",
     "Rotation 1000.0\n",
-    "Rotation angular velocity",
+    "Rotation angular velocity\n",
     f"0.0 0.0 {Omega_rot:.6f}"
 ]
 
 with open(source, 'w') as f:
     f.writelines(lines)
 
-x_values = [20.0, 40.0, 60.0] # 40.0
-p_values = [20.0, 40.0, 60.0] # 10 30 40
+x_values = [20.0, 40.0] # 40.0
+p_values = [80.0, 100.0] # 10 30 40
 
 T_sim = 1/(min(freq_har, freq_rot))
 
@@ -62,13 +62,13 @@ current_run = 1
 for x in x_values[::-1]:
     n = grid_sizing(config, M=0.0, X=x, lambda_s=c / freq_har, R=1.3 * r_eff)
     for p in p_values[::-1]:
-        print(f"--- Running Case {current_run}/{total_runs} | X = {x}, P = {p} ---")
+        print(f"--- Running Case {current_run}/{total_runs} | X = {x}, P = {p} --- | Grid Count = {n**2} Time Step Count = {T_sim * p * freq_har}")
         
         # Update config file
         timestep_sizing(config, M=0.0, P=p, f_s=freq_har, T_sim=T_sim)
         
         # Execute solver
-        subprocess.run(["mpirun", "-np", str(processes), "../bin/FWH_Sphere"], check=True)
+        subprocess.run(["mpirun", "-np", str(processes), "../../bin/FWH_Sphere"], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
         time.sleep(10)
         
