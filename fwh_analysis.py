@@ -124,79 +124,178 @@ class FWHDataset:
     #     else:
     #         # diff = ref_df[col].to_numpy() - self.data[col].to_numpy()
     
+    # @staticmethod
+    # def compile_fwh_batch(directory, error_method='l2', use_doppler=True, verbose=False):
+    #     folder_path = Path(directory)
+        
+    #     # 1. Load local analytical references
+    #     local_refs = {}
+    #     for ana_file in folder_path.glob("ana_M*.dat"):
+    #         m_match = re.search(r"ana_M(\d+)", ana_file.name)
+    #         if m_match:
+    #             local_refs[m_match.group(1)] = FWHDataset(filepath=ana_file)
+                
+    #     if verbose:
+    #         print(f"DEBUG: Loaded Analytical References for Machs: {list(local_refs.keys())}")
+        
+    #     folder_data = []
+    #     files_scanned = 0
+        
+    #     # 2. Process all data files
+    #     for filepath in folder_path.glob("*.dat"):
+    #         if filepath.name.startswith("ana_") or filepath.name.startswith('P'):
+    #             continue
+                
+    #         files_scanned += 1
+    #         case = FWHDataset(filepath=filepath)
+    #         meta = case.metadata
+            
+    #         if meta.get('cfl') is None:
+    #             if verbose: print(f"DEBUG: Skipped {filepath.name} -> Could not parse CFL/Metadata.")
+    #             continue
+                
+    #         ref_key = meta['mach_str']
+            
+    #         if ref_key not in local_refs:
+    #             if verbose: print(f"DEBUG: Skipped {filepath.name} -> Ref key '{ref_key}' not found.")
+    #             continue 
+                
+    #         ref_df = local_refs[ref_key]
+    #         if error_method == 'l2':
+    #             error = case.l2_error(ref_df, col='P_obs')
+    #         elif error_method == 'rmse':
+    #             error = case.rmse_error(ref_df, col='P_obs')
+
+    #         if len(case.data) > 1:
+    #             actual_dt = case.data['Time'].iloc[1] - case.data['Time'].iloc[0]
+    #         else:
+    #             actual_dt = meta['dt'] 
+                
+    #         actual_dx = (case.C * actual_dt) / meta['cfl']
+    #         true_N = int(np.round((2 * np.pi * case.R) / actual_dx))
+    #         true_elements = true_N * true_N
+            
+    #         if use_doppler:
+    #             p_val = (1.0 / actual_dt) / (case.F_SOURCE / (1 - meta['mach']))
+    #             x_val = (case.LAMBDA_SOURCE * (1 - meta['mach'])) / actual_dx
+    #         else:
+    #             p_val = (1.0 / actual_dt) / case.F_SOURCE
+    #             x_val = case.LAMBDA_SOURCE / actual_dx
+                
+    #         folder_data.append({
+    #             'mach': meta['mach'],
+    #             'cfl': meta['cfl'],
+    #             'dt': actual_dt,
+    #             'P': p_val,
+    #             'X': x_val,
+    #             'error': error,
+    #             'elements': true_elements,
+    #             'batch_name': folder_path.name
+    #         })
+            
+    #     if verbose:
+    #         print(f"\nDEBUG: Scanned {files_scanned} files. Successfully compiled {len(folder_data)} files.")
+            
+    #     return folder_data
     @staticmethod
     def compile_fwh_batch(directory, error_method='l2', use_doppler=True, verbose=False):
         folder_path = Path(directory)
-        
-        # 1. Load local analytical references
         local_refs = {}
-        for ana_file in folder_path.glob("ana_M*.dat"):
+        
+        # 1. Load Analytical References (Handles Old and New Formats)
+        for ana_file in folder_path.glob("ana_*.dat"):
+            # Match old format: ana_M00.dat
             m_match = re.search(r"ana_M(\d+)", ana_file.name)
             if m_match:
                 local_refs[m_match.group(1)] = FWHDataset(filepath=ana_file)
                 
+            # Match new format: ana_spatial_01.dat
+            obs_match = re.search(r"ana_spatial_(\d+)", ana_file.name)
+            if obs_match:
+                local_refs[f"obs_{obs_match.group(1)}"] = FWHDataset(filepath=ana_file)
+                
         if verbose:
-            print(f"DEBUG: Loaded Analytical References for Machs: {list(local_refs.keys())}")
-        
+            print(f"DEBUG: Loaded References: {list(local_refs.keys())}")
+            
         folder_data = []
-        files_scanned = 0
         
-        # 2. Process all data files
+        # 2. Process Data Files
         for filepath in folder_path.glob("*.dat"):
-            if filepath.name.startswith("ana_") or filepath.name.startswith('P'):
+            if filepath.name.startswith("ana_") or filepath.name.startswith("FWH_"):
                 continue
                 
-            files_scanned += 1
             case = FWHDataset(filepath=filepath)
             meta = case.metadata
             
-            if meta.get('cfl') is None:
-                if verbose: print(f"DEBUG: Skipped {filepath.name} -> Could not parse CFL/Metadata.")
+            # Determine File Schema
+            new_match = re.search(r"X(\d+(?:\.\d+)?)_P(\d+(?:\.\d+)?)_(\d+)\.dat", filepath.name)
+            old_match = re.search(r"P(\d+(?:\.\d+)?)_X(\d+(?:\.\d+)?)_M(\d+)\.dat", filepath.name)
+            
+            p_val, x_val, mach_val, cfl_val, true_elements, actual_dt = None, None, 0.0, None, None, None
+            ref_key, obs_id = None, None
+            
+            # Schema A: New Multipole Format (X20_P40_01.dat)
+            if new_match:
+                x_val = float(new_match.group(1))
+                p_val = float(new_match.group(2))
+                obs_id = new_match.group(3)
+                ref_key = f"obs_{obs_id}"
+                
+                if len(case.data) > 1:
+                    actual_dt = case.data['Time'].iloc[1] - case.data['Time'].iloc[0]
+                else:
+                    actual_dt = 1.0 / (p_val * case.F_SOURCE) 
+                    
+                true_elements = int((2 * np.pi * case.R * x_val / case.LAMBDA_SOURCE)**2)
+                
+            # Schema B: Old Fundamental Format (P40_X20_M00.dat)
+            elif old_match or meta.get('cfl') is not None:
+                cfl_val = meta.get('cfl')
+                if cfl_val is None:
+                    continue
+                    
+                ref_key = meta.get('mach_str')
+                mach_val = meta.get('mach', 0.0)
+                
+                if len(case.data) > 1:
+                    actual_dt = case.data['Time'].iloc[1] - case.data['Time'].iloc[0]
+                else:
+                    actual_dt = meta.get('dt', 1e-4)
+                    
+                actual_dx = (case.C * actual_dt) / cfl_val
+                true_elements = int(np.round((2 * np.pi * case.R) / actual_dx))**2
+                
+                if use_doppler:
+                    p_val = (1.0 / actual_dt) / (case.F_SOURCE / (1 - mach_val))
+                    x_val = (case.LAMBDA_SOURCE * (1 - mach_val)) / actual_dx
+                else:
+                    p_val = (1.0 / actual_dt) / case.F_SOURCE
+                    x_val = case.LAMBDA_SOURCE / actual_dx
+            else:
                 continue
                 
-            ref_key = meta['mach_str']
-            
+            # 3. Calculate Error & Append
             if ref_key not in local_refs:
-                if verbose: print(f"DEBUG: Skipped {filepath.name} -> Ref key '{ref_key}' not found.")
-                continue 
+                continue
                 
             ref_df = local_refs[ref_key]
-            if error_method == 'l2':
-                error = case.l2_error(ref_df, col='P_obs')
-            elif error_method == 'rmse':
-                error = case.rmse_error(ref_df, col='P_obs')
-
-            if len(case.data) > 1:
-                actual_dt = case.data['Time'].iloc[1] - case.data['Time'].iloc[0]
-            else:
-                actual_dt = meta['dt'] 
-                
-            actual_dx = (case.C * actual_dt) / meta['cfl']
-            true_N = int(np.round((2 * np.pi * case.R) / actual_dx))
-            true_elements = true_N * true_N
+            error = case.l2_error(ref_df, col='P_obs') if error_method == 'l2' else case.rmse_error(ref_df, col='P_obs')
             
-            if use_doppler:
-                p_val = (1.0 / actual_dt) / (case.F_SOURCE / (1 - meta['mach']))
-                x_val = (case.LAMBDA_SOURCE * (1 - meta['mach'])) / actual_dx
-            else:
-                p_val = (1.0 / actual_dt) / case.F_SOURCE
-                x_val = case.LAMBDA_SOURCE / actual_dx
-                
             folder_data.append({
-                'mach': meta['mach'],
-                'cfl': meta['cfl'],
+                'mach': mach_val,
+                'cfl': cfl_val,
                 'dt': actual_dt,
                 'P': p_val,
                 'X': x_val,
                 'error': error,
                 'elements': true_elements,
-                'batch_name': folder_path.name
+                'batch_name': folder_path.name,
+                'observer': obs_id if obs_id else folder_path.name 
             })
             
-        if verbose:
-            print(f"\nDEBUG: Scanned {files_scanned} files. Successfully compiled {len(folder_data)} files.")
-            
         return folder_data
+
+
     
 class FWHPlotter:
     @staticmethod
