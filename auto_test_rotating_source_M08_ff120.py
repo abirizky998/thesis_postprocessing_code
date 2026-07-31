@@ -51,8 +51,8 @@ lines = [
 with open(source, 'w') as f:
     f.writelines(lines)
 
-x_values = [20.0, 40.0] # 40.0
-p_values = [80.0, 100.0] # 10 30 40
+x_values = [100.0] # 40.0
+p_values = [100.0] # 10 30 40
 
 T_sim = 1/(min(freq_har, freq_rot))
 
