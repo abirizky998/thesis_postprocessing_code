@@ -4,7 +4,11 @@
 # FW-H surface grid type
 Sphere
 # FW-H control surface grid radius [m] and number of grid lines (latitude and longitudinal) [-]
+<<<<<<< HEAD
 1.6900000000000002 39 39
+=======
+3.0 595 595
+>>>>>>> 2ec8fb8 (fixes to fwh_analysis to fix "normalised" argument within the  plot_pressure static method to include numerical values)
 # FW-H control surface grid motion
 Stationary
 # FW-H surface data type
@@ -12,7 +16,11 @@ Source
 # FW-H integration method
 Retarded_Time Time_Domain
 # FW-H integration time levels [-] and time step [s]
+<<<<<<< HEAD
 240 2.00199532e-04
+=======
+20 4.66200466e-04
+>>>>>>> 2ec8fb8 (fixes to fwh_analysis to fix "normalised" argument within the  plot_pressure static method to include numerical values)
 # Post-processing options
 F
 # Debugging level (0: no output, 1: basic info, 2: detailed info)

@@ -306,7 +306,7 @@ class FWHPlotter:
         ref_df = reference.data if hasattr(reference, 'data') else reference
 
         if x_axis == 'absolute':
-            ax.plot(ref_df['Time'], ref_df[ref_col] * scale, ls='-', c='black', label=f'Reference ({ref_col})')
+            ax.plot(ref_df['Time'], ref_df[ref_col] * scale, ls='-', c='black', label=f'Analytical Solution')
         elif x_axis == 'normalised':
             ax.plot(ref_df['Time'] / ref_df['Time'].max(), ref_df[ref_col] * scale, ls = '-', c='black', label=f'Reference ({ref_col})')
 
@@ -326,12 +326,18 @@ class FWHPlotter:
             c = colors[i % len(colors)]
 
             full_label = f'{labels[i]} (Error: {error * 100:.2f}%)'
-            ax.plot(comp_df['Time'], comp_df[comp_col] * scale, ls=ls, c=c, label=full_label)
+
+            if x_axis == 'absolute':
+                x_data = comp_df['Time']
+            elif x_axis == 'normalised':
+                x_data = comp_df['Time'] / ref_df['Time'].max()
+
+            ax.plot(x_data, comp_df[comp_col] * scale, ls=ls, c=c, label=full_label)
 
         if x_axis == 'absolute':
             ax.set_xlabel('Time (s)')
-        # elif x_axis == 'normalised':
-        #     ax.set_xlabel(f't/T, T={(ref_df['Time'].max() * 1000):.3f} ms')
+        elif x_axis == 'normalised':
+            ax.set_xlabel(f't/T, T={(ref_df["Time"].max() * 1000):.3f} ms')
 
         if scale == 1.0:
             ax.set_ylabel("Pressure (Pa)")

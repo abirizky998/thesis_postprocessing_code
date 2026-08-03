@@ -29,8 +29,8 @@ amps = np.array([3.39017904, 4.41553483, 4.33133909])
 phases = np.array([-0.53425042,  2.19246152, -1.4319258 ])
 num_harmonics = len(amps)
 
-output_dir = f"data_{date}/{n_source}Sources_{num_harmonics}Harmonics_xpsweep"
-os.makedirs(output_dir, exist_ok=True)
+# output_dir = f"data_{date}/{n_source}Sources_{num_harmonics}Harmonics_xpsweep"
+# os.makedirs(output_dir, exist_ok=True)
 
 # Orienting observer ring to match source coordinates (X-Y plane)
 observer_setup(observer, D_obs=r_obs, n=n_observer, normal='z')
@@ -73,7 +73,7 @@ for s in range(n_source):
 with open(source, 'w') as f:
     f.writelines(lines)
 
-x_values = [80, 100]
+x_values = [100]
 p_values = [20, 40, 60, 80, 100]
 T_sim = 1 / f_fundamental
 
@@ -81,12 +81,12 @@ total_runs = len(x_values) * len(p_values)
 current_run = 1
 
 for x in x_values:
-    n = grid_sizing(config, M=0.0, X=x, lambda_s=c / f_fundamental, R=1.3 * r_eff)
+    n = grid_sizing(config, M=0.0, X=x, lambda_s=c / f_fundamental, R=3.0)
     for p in p_values:
         timestep_sizing(config, M=0.0, P=p, f_s=f_fundamental, T_sim=T_sim)
 
         print(f"--- Running Case {current_run} / {total_runs} | X = {x} P = {p} | Grid Count = {n**2} Timestep Count = {T_sim * p * f_fundamental}")
-        subprocess.run(["mpirun", "-np", str(processes), '../bin/FWH_Sphere'], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        subprocess.run(["mpirun", "-np", str(processes), '../../bin/FWH_Sphere'], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         time.sleep(10)
 
         for i in range(1, n_observer + 1):
