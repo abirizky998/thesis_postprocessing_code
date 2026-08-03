@@ -19,7 +19,7 @@ n_observer = 3
 n_source = 1
 r_eff = 1.3 
 mach_number = 0.5
-freq_ratio = 3.0
+freq_ratio = 3
 
 
 Omega_rot = c * mach_number / r_eff
@@ -27,7 +27,7 @@ freq_rot = Omega_rot / (2 * np.pi)
 omega_har = Omega_rot * freq_ratio
 freq_har = omega_har / (2 * np.pi)
 
-output_dir = f"data_{date}/{mach_number}M_fratio{freq_ratio}"
+output_dir = f"data_{date}/M{mach_number}_fratio{freq_ratio}_rotatinggrid"
 os.makedirs(output_dir, exist_ok=True)
 observer_setup(observer, D_obs=r_obs, circle=1.0, n=n_observer, normal='z')
 
@@ -52,8 +52,8 @@ lines = [
 with open(source, 'w') as f:
     f.writelines(lines)
 
-x_values = [20.0, 40.0, 60.0, 80.0]#[20.0, 40.0, 60.0, 80.0, 100.0] # 40.0
-p_values = [20.0, 40.0, 60.0, 80.0] # 10 30 40
+x_values = [80.0]#[20.0, 40.0, 60.0, 80.0, 100.0] # 40.0
+p_values = [40.0, 60.0, 80.0] # 10 30 40
 
 
 T_sim = 1/(min(freq_har, freq_rot))
@@ -85,7 +85,7 @@ for x in x_values:
             ana_file = f"FWH_observer_time_{obs_str}_validation.dat" 
             ana_dest_file = os.path.join(output_dir, f"ana_spatial_{obs_str}.dat")
             
-            if current_run == 1 and os.path.exists(ana_file):
+            if current_run == total_runs and os.path.exists(ana_file):
                 shutil.move(ana_file, ana_dest_file)
             elif os.path.exists(ana_file):
                 os.remove(ana_file) # Delete duplicates from subsequent runs
