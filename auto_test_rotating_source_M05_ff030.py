@@ -27,7 +27,7 @@ freq_rot = Omega_rot / (2 * np.pi)
 omega_har = Omega_rot * freq_ratio
 freq_har = omega_har / (2 * np.pi)
 
-output_dir = f"data_{date}/M{mach_number}_fratio{freq_ratio}_rotatinggrid"
+output_dir = f"data_{date}/M{mach_number}_fratio{freq_ratio}_updatedanalytical_new"
 os.makedirs(output_dir, exist_ok=True)
 observer_setup(observer, D_obs=r_obs, circle=1.0, n=n_observer, normal='z')
 
@@ -45,7 +45,7 @@ lines = [
     f"{r_eff:.6f} 0.00000 0.000000\n",
     "# Source motion type and duration [s]\n",
     "Rotation 1000.0\n",
-    "Rotation angular velocity\n",
+    "# Rotation angular velocity\n",
     f"0.0 0.0 {Omega_rot:.6f}"
 ]
 
@@ -53,7 +53,7 @@ with open(source, 'w') as f:
     f.writelines(lines)
 
 x_values = [80.0]#[20.0, 40.0, 60.0, 80.0, 100.0] # 40.0
-p_values = [40.0, 60.0, 80.0] # 10 30 40
+p_values = [80.0] # 10 30 40
 
 
 T_sim = 1/(min(freq_har, freq_rot))
@@ -63,17 +63,20 @@ current_run = 1
 
 for x in x_values:
     n = grid_sizing(config, M=0.0, X=x, lambda_s=c / freq_har, R=1.3 * r_eff)
+    # n = grid_sizing(config, M=mach_number, X=x, lambda_s=c / freq_har, R=1.3 * r_eff)
     if n**2 >= 1e5: processes = 8
     elif n**2 >= 2e4: processes = 4
+    elif n**2 >= 1e4: processes = 2
     else: processes = 1
     for p in p_values:
         print(f"--- Running Case {current_run}/{total_runs} | X = {x}, P = {p} --- | Grid Count = {n**2} Time Step Count = {T_sim * p * freq_har}")
         
         # Update config file
+        # timestep_sizing(config, M=mach_number, P=p, f_s=freq_har, T_sim=T_sim)
         timestep_sizing(config, M=0.0, P=p, f_s=freq_har, T_sim=T_sim)
         
         # Execute solver
-        subprocess.run(["mpirun", "-np", str(processes), "../../bin/FWH_Sphere"], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        subprocess.run(["mpirun", "-np", str(processes), "../bin/FWH_Sphere"], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
         time.sleep(10)
         

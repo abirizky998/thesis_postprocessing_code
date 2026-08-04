@@ -11,5 +11,5 @@ Point
 1.300000 0.00000 0.000000
 # Source motion type and duration [s]
 Rotation 1000.0
-Rotation angular velocity
+# Rotation angular velocity
 0.0 0.0 130.769231
