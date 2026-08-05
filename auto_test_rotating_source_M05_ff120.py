@@ -51,7 +51,7 @@ lines = [
 with open(source, 'w') as f:
     f.writelines(lines)
 
-x_values = [80.0, 100.0] # 40.0
+x_values = [10480.0, 100.0] # 40.0
 p_values = [20.0, 40.0, 60.0, 80.0, 100.0] # 10 30 40
 
 

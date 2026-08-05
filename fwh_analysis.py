@@ -1012,8 +1012,8 @@ class FWHPlotter:
         # 4. Formatting
         title_prefix = "Doppler-Shifted " if use_doppler else "Non-Doppler Shifted "
         ax.set_title(f"{add_title}\n {title_prefix}Temporal vs Spatial Resolution Matrix\n Shaped by {shape_by.upper()}")
-        ax.set_xlabel(f"Spatial Resolution, X (Points Per Wavelength)")
-        ax.set_ylabel(f"Temporal Resolution, P (Points Per Period)")
+        ax.set_xlabel(f"Spatial Resolution, X (Grid Points Per Wavelength)")
+        ax.set_ylabel(f"Temporal Resolution, P (Time Steps Per Period)")
         
         # Colorbar
 
