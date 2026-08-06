@@ -8,7 +8,7 @@ import time
 config = 'input_config.txt'
 source = 'input_source.txt'
 observer = 'input_observer.txt'
-date = current_date()
+date = '260804' #current_date()
 
 c = 340.0
 rho = 1.2
@@ -51,8 +51,8 @@ lines = [
 with open(source, 'w') as f:
     f.writelines(lines)
 
-x_values = [10480.0, 100.0] # 40.0
-p_values = [20.0, 40.0, 60.0, 80.0, 100.0] # 10 30 40
+x_values = [20.0, 40.0, 60.0, 80.0, 100.0] # 40.0
+p_values = [120.0, 140.0, 160.0, 180.0] # 10 30 40
 
 
 T_sim = 1/(min(freq_har, freq_rot))
