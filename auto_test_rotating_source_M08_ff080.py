@@ -21,7 +21,7 @@ r_eff = 1.3
 mach_number = 0.8
 Omega_rot = c * mach_number / r_eff
 freq_rot = Omega_rot / (2 * np.pi)
-freq_ratio = 8.0
+freq_ratio = 8
 
 omega_har = Omega_rot * freq_ratio
 freq_har = omega_har / (2 * np.pi)
