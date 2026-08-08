@@ -8,7 +8,7 @@ import time
 config = 'input_config.txt'
 source = 'input_source.txt'
 observer = 'input_observer.txt'
-date = "260728" #current_date()
+date = current_date()
 
 c = 340.0
 rho = 1.2
@@ -26,7 +26,7 @@ freq_ratio = 12.0
 omega_har = Omega_rot * freq_ratio
 freq_har = omega_har / (2 * np.pi)
 
-output_dir = f"data_{date}/{mach_number}M_fratio{freq_ratio}"
+output_dir = f"data_{date}/M{mach_number}_fratio{freq_ratio}"
 os.makedirs(output_dir, exist_ok=True)
 observer_setup(observer, D_obs=r_obs, circle=1.0, n=n_observer, normal='z')
 
@@ -51,17 +51,17 @@ lines = [
 with open(source, 'w') as f:
     f.writelines(lines)
 
-x_values = [100.0] # 40.0
-p_values = [100.0] # 10 30 40
+x_values = [20.0, 40.0, 60.0, 80.0, 100.0]
+p_values = [20.0, 40.0, 60.0, 80.0, 100.0]
 
 T_sim = 1/(min(freq_har, freq_rot))
 
 total_runs = len(x_values) * len(p_values)
 current_run = 1
 
-for x in x_values[::-1]:
+for x in x_values:
     n = grid_sizing(config, M=0.0, X=x, lambda_s=c / freq_har, R=1.3 * r_eff)
-    for p in p_values[::-1]:
+    for p in p_values:
         print(f"--- Running Case {current_run}/{total_runs} | X = {x}, P = {p} --- | Grid Count = {n**2} Time Step Count = {T_sim * p * freq_har}")
         
         # Update config file
@@ -80,7 +80,7 @@ for x in x_values[::-1]:
             ana_file = f"FWH_observer_time_{obs_str}_validation.dat" 
             ana_dest_file = os.path.join(output_dir, f"ana_spatial_{obs_str}.dat")
             
-            if current_run == 1 and os.path.exists(ana_file):
+            if current_run == total_runs and os.path.exists(ana_file):
                 shutil.move(ana_file, ana_dest_file)
             elif os.path.exists(ana_file):
                 os.remove(ana_file) # Delete duplicates from subsequent runs
