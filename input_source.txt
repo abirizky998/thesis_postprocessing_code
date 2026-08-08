@@ -1,4 +1,4 @@
-# Single Rotating Harmonic Monopole
+# Single Harmonic Monopole
 # Number of source sets
 1
 # Source type
@@ -8,7 +8,7 @@ Monopole Harmonic
 # Source definition
 Point
 # Source initial location [m] (x, y, z)
-1.300000 0.00000 0.000000
+0.000000 0.00000 0.000000
 # Source motion type and duration [s]
 Rotation 1000.0
 Rotation angular velocity
