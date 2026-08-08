@@ -4,12 +4,12 @@
 # Source type
 Monopole Harmonic
 # Source frequency [rad/s], source strength, and source phase [rad]
-1569.2307692307693 1.0 0.0
+1046.1538461538462 1.0 0.0
 # Source definition
 Point
 # Source initial location [m] (x, y, z)
 1.300000 0.00000 0.000000
 # Source motion type and duration [s]
 Rotation 1000.0
-# Rotation angular velocity
-0.0 0.0 130.769231
+Rotation angular velocity
+0.0 0.0 209.230769

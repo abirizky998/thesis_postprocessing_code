@@ -8,7 +8,7 @@ import time
 config = 'input_config.txt'
 source = 'input_source.txt'
 observer = 'input_observer.txt'
-date = current_date()
+date = '260806' #current_date()
 
 c = 340.0
 rho = 1.2
@@ -51,8 +51,8 @@ lines = [
 with open(source, 'w') as f:
     f.writelines(lines)
 
-x_values = [20.0, 40.0, 60.0, 80.0, 100.0]#[20.0, 40.0, 60.0, 80.0, 100.0] # 40.0
-p_values = [20.0, 40.0, 60.0, 80.0, 100.0] # 10 30 40
+x_values = [60.0, 80.0]#[20.0, 40.0, 60.0, 80.0, 100.0] # 40.0
+p_values = [200.0, 400.0, 600.0, 800.0] # 10 30 40
 
 
 T_sim = 1/(min(freq_har, freq_rot))
@@ -62,11 +62,12 @@ current_run = 1
 
 for x in x_values:
     n = grid_sizing(config, M=0.0, X=x, lambda_s=c / freq_har, R=1.3 * r_eff)
-    if n**2 >= 1e5: processes = 8
-    elif n**2 >= 5e4: processes = 6
-    elif n**2 >= 2e4: processes = 4
-    elif n**2 >= 1e4: processes = 2
-    else: processes = 1
+    # if n**2 >= 1e5: processes = 8
+    # elif n**2 >= 5e4: processes = 6
+    # elif n**2 >= 2e4: processes = 4
+    # elif n**2 >= 1e4: processes = 2
+    # else: processes = 1
+    processes = 8
     for p in p_values:
         print(f"--- Running Case {current_run}/{total_runs} | X = {x}, P = {p} --- | Grid Count = {n**2} Time Step Count = {T_sim * p * freq_har}")
         
