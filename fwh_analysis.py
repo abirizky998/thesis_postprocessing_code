@@ -302,13 +302,13 @@ class FWHPlotter:
     def plot_pressure(reference, *comparisons, labels=None, title=None, scale=1.0, error_method='l2',
                       ref_col='P_analytical', comp_col='P_obs', legend=True, x_axis='absolute'):
         
-        fig, ax = plt.subplots(figsize=(8,5))
+        fig, ax = plt.subplots()
         ref_df = reference.data if hasattr(reference, 'data') else reference
 
         if x_axis == 'absolute':
             ax.plot(ref_df['Time'], ref_df[ref_col] * scale, ls='-', c='black', label=f'Analytical Solution')
         elif x_axis == 'normalised':
-            ax.plot(ref_df['Time'] / ref_df['Time'].max(), ref_df[ref_col] * scale, ls = '-', c='black', label=f'Reference ({ref_col})')
+            ax.plot(ref_df['Time'] / ref_df['Time'].max(), ref_df[ref_col] * scale, ls = '-', c='black', label=f'Analytical Solution')
 
         if not labels or len(labels) != len(comparisons):
             labels = [f'Dataset {i+1}' for i in range(len(comparisons))]
@@ -337,7 +337,10 @@ class FWHPlotter:
         if x_axis == 'absolute':
             ax.set_xlabel('Time (s)')
         elif x_axis == 'normalised':
-            ax.set_xlabel(f't/T, T={(ref_df["Time"].max() * 1000):.3f} ms')
+            if ref_df['Time'].max() < 1.0:
+                ax.set_xlabel(f't/T, T={(ref_df["Time"].max() * 1000):.3f} ms')
+            else:
+                ax.set_xlabel(f't/T, T={(ref_df["Time"].max()):.3f} s')
 
         if scale == 1.0:
             ax.set_ylabel("Pressure (Pa)")
@@ -349,7 +352,7 @@ class FWHPlotter:
             ax.set_title(title)
 
         ax.grid(True, linestyle='--', alpha=0.7)
-        if legend: ax.legend(loc='upper right', bbox_to_anchor=(1.35, 1))
+        if legend: ax.legend(loc='upper right')#, bbox_to_anchor=(1.35, 1))
         plt.tight_layout()
         plt.show()
 
