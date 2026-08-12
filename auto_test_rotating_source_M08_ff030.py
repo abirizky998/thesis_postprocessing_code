@@ -8,7 +8,7 @@ import time
 config = 'input_config.txt'
 source = 'input_source.txt'
 observer = 'input_observer.txt'
-date = '260805' #current_date()
+date = '260805'#current_date()
 
 c = 340.0
 rho = 1.2
@@ -32,7 +32,7 @@ observer_setup(observer, D_obs=r_obs, circle=1.0, n=n_observer, normal='z')
 
 lines = [
     "# Single Rotating Harmonic Monopole\n",
-    "# Number of source sets\n",
+    '# Number of source sets\n'
     f"{n_source}\n",
     "# Source type\n",
     "Monopole Harmonic\n",
@@ -44,15 +44,15 @@ lines = [
     f"{r_eff:.6f} 0.00000 0.000000\n",
     "# Source motion type and duration [s]\n",
     "Rotation 1000.0\n",
-    "Rotation angular velocity\n",
+    "# Rotation angular velocity\n",
     f"0.0 0.0 {Omega_rot:.6f}"
 ]
 
 with open(source, 'w') as f:
     f.writelines(lines)
 
-x_values = [60.0, 80.0]
-p_values = [200.0, 400.0, 600.0, 800.0]
+x_values = [100.0]
+p_values = [200, 400, 600, 800] # 
 
 
 T_sim = 1/(min(freq_har, freq_rot))
@@ -66,7 +66,6 @@ for x in x_values:
     elif n**2 >= 2e4: processes = 4
     elif n**2 >= 1e4: processes = 2
     else: processes = 1
-    # processes = 4
     for p in p_values:
         print(f"--- Running Case {current_run}/{total_runs} | X = {x}, P = {p} --- | Grid Count = {n**2} Time Step Count = {T_sim * p * freq_har}")
         
@@ -74,7 +73,9 @@ for x in x_values:
         timestep_sizing(config, M=0.0, P=p, f_s=freq_har, T_sim=T_sim)
         
         # Execute solver
-        subprocess.run(["mpirun", "-np", str(processes), "../bin/FWH_Sphere"], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        subprocess.run(["mpirun", "-np", str(1), "../../bin/FWH_Sphere"], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        # subprocess.run(["../../bin/FWH_Sphere"], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        # subprocess.run('../../bin/FWH_Sphere')
 
         time.sleep(10)
         
