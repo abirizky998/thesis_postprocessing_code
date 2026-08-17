@@ -18,7 +18,7 @@ processes = 1
 
 n_source = 1
 r_eff = 0.0
-mach_number = 0.5
+mach_number = 0.0
 ux = mach_number * c
 Omega_rot = 0
 # Omega_rot = c * mach_number / r_eff
@@ -29,6 +29,7 @@ Omega_rot = 0
 # freq_har = omega_har / (2 * np.pi)
 omega_har = 10 # rad/s
 freq_har = omega_har / (2 * np.pi)
+T_sim = 3/freq_har - (10 * np.sqrt(2) / c)
 
 output_dir = f"data_{date}/monopole_validation_stationary_AT"
 os.makedirs(output_dir, exist_ok=True)
@@ -56,10 +57,8 @@ with open(source, 'w') as f:
     f.writelines(lines)
 
 # p_values = [100, 170, 275] # 10 30 40
-p_values = [5, 15, 30]
+p_values = [100]
 x_values = [35, 100, 275] # 40.0
-
-T_sim = 3/freq_har
 
 total_runs = len(x_values) * len(p_values)
 current_run = 1
@@ -91,7 +90,7 @@ for x in x_values:
                 os.remove(ana_file) # Delete duplicates from subsequent runs
             
             # Save the numerical file with X and P tags
-            num_file = f'FWH_observer_time_{obs_str}_RT.dat'
+            num_file = f'FWH_observer_time_{obs_str}_AT.dat'
             num_dest_file = os.path.join(output_dir, f"X{int(x)}_P{int(p)}_{obs_str}.dat") 
             
             if os.path.exists(num_file):

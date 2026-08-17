@@ -8,7 +8,7 @@ import time
 config = 'input_config.txt'
 source = 'input_source.txt'
 observer = 'input_observer.txt'
-date = '260805'#current_date()
+date = current_date()
 
 c = 340.0
 rho = 1.2
@@ -21,12 +21,12 @@ r_eff = 1.3
 mach_number = 0.8
 Omega_rot = c * mach_number / r_eff
 freq_rot = Omega_rot / (2 * np.pi)
-freq_ratio = 3.0
+freq_ratio = 3
 
 omega_har = Omega_rot * freq_ratio
 freq_har = omega_har / (2 * np.pi)
 
-output_dir = f"data_{date}/M{mach_number}_fratio{freq_ratio}"
+output_dir = f"data_{date}/M{mach_number}_fratio{freq_ratio}_2rot_AT"
 os.makedirs(output_dir, exist_ok=True)
 observer_setup(observer, D_obs=r_obs, circle=1.0, n=n_observer, normal='z')
 
@@ -52,10 +52,10 @@ with open(source, 'w') as f:
     f.writelines(lines)
 
 x_values = [100.0]
-p_values = [200, 400, 600, 800] # 
+p_values = [200, 400] # 
 
 
-T_sim = 1/(min(freq_har, freq_rot))
+T_sim = 2/(min(freq_har, freq_rot))
 
 total_runs = len(x_values) * len(p_values)
 current_run = 1
@@ -73,10 +73,7 @@ for x in x_values:
         timestep_sizing(config, M=0.0, P=p, f_s=freq_har, T_sim=T_sim)
         
         # Execute solver
-        subprocess.run(["mpirun", "-np", str(1), "../../bin/FWH_Sphere"], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-        # subprocess.run(["../../bin/FWH_Sphere"], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-        # subprocess.run('../../bin/FWH_Sphere')
-
+        subprocess.run(["../bin/FWH_Sphere"], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         time.sleep(10)
         
         # Post-Process and Rename
@@ -93,7 +90,7 @@ for x in x_values:
                 os.remove(ana_file) # Delete duplicates from subsequent runs
             
             # Save the numerical file with X and P tags
-            num_file = f'FWH_observer_time_{obs_str}_RT.dat'
+            num_file = f'FWH_observer_time_{obs_str}_AT.dat'
             num_dest_file = os.path.join(output_dir, f"X{int(x)}_P{int(p)}_{obs_str}.dat") 
             
             if os.path.exists(num_file):
