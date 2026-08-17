@@ -30,7 +30,7 @@ Omega_rot = 0
 omega_har = 10 # rad/s
 freq_har = omega_har / (2 * np.pi)
 
-output_dir = f"data_{date}/monopole_validation_cotranslating"
+output_dir = f"data_{date}/monopole_validation_stationary_AT"
 os.makedirs(output_dir, exist_ok=True)
 # observer_setup(observer, D_obs=r_obs, circle=1.0, n=n_observer, normal='z')
 
