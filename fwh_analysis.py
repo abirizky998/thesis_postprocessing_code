@@ -82,7 +82,7 @@ class FWHDataset:
             return meta
             
         return meta
-    
+
     def l2_error(self, ref_data, col='P_obs'):
         ref_df = ref_data.data if hasattr(ref_data, 'data') else ref_data
 
@@ -295,20 +295,18 @@ class FWHDataset:
             
         return folder_data
 
-
-    
 class FWHPlotter:
     @staticmethod
     def plot_pressure(reference, *comparisons, labels=None, title=None, scale=1.0, error_method='l2',
-                      ref_col='P_analytical', comp_col='P_obs', legend=True, x_axis='absolute'):
+                      ref_col='P_analytical', comp_col='P_obs', legend=True, x_axis='absolute', time_method='RT'):
         
         fig, ax = plt.subplots()
         ref_df = reference.data if hasattr(reference, 'data') else reference
 
         if x_axis == 'absolute':
-            ax.plot(ref_df['Time'], ref_df[ref_col] * scale, ls='-', c='black', label=f'Analytical Solution')
+            ax.plot(ref_df['Time'], ref_df[ref_col] * scale, ls='-', c='black', label='Analytical Solution')
         elif x_axis == 'normalised':
-            ax.plot(ref_df['Time'] / ref_df['Time'].max(), ref_df[ref_col] * scale, ls = '-', c='black', label=f'Analytical Solution')
+            ax.plot(ref_df['Time'] / ref_df['Time'].max(), ref_df[ref_col] * scale, ls='-', c='black', label='Analytical Solution', alpha=0.7)
 
         if not labels or len(labels) != len(comparisons):
             labels = [f'Dataset {i+1}' for i in range(len(comparisons))]
@@ -318,14 +316,24 @@ class FWHPlotter:
 
         for i, comp in enumerate(comparisons):
             comp_df = comp.data if hasattr(comp, 'data') else comp
+            
+            # Clip the zero-padded buffer for Advanced Time
+            if time_method == 'AT':
+                t_max = ref_df['Time'].max()
+                comp_df = comp_df[comp_df['Time'] <= t_max]
+
             if error_method == 'l2':
                 error = comp.l2_error(reference, col=comp_col)
             elif error_method == 'rmse':
                 error = comp.rmse_error(reference, col=comp_col)
+            
             ls = styles[i % len(styles)]
             c = colors[i % len(colors)]
 
-            full_label = f'{labels[i]} (Error: {error * 100:.2f}%)'
+            if error_method == 'l2':
+                full_label = f'{labels[i]} (Error: {error * 100:.2f}%)' 
+            elif error_method == 'rmse':
+                full_label = f"{labels[i]} (RMSE: {error * 1e3:.2f}x$10^{{-3}}$ Pa)"
 
             if x_axis == 'absolute':
                 x_data = comp_df['Time']
@@ -352,9 +360,71 @@ class FWHPlotter:
             ax.set_title(title)
 
         ax.grid(True, linestyle='--', alpha=0.7)
-        if legend: ax.legend(loc='upper right')#, bbox_to_anchor=(1.35, 1))
+        if legend: ax.legend(loc='upper right')
         plt.tight_layout()
         plt.show()
+    
+
+
+
+# LATEST BEFORE ADVANCED TIME UPDATE  
+#     @staticmethod
+#     def plot_pressure(reference, *comparisons, labels=None, title=None, scale=1.0, error_method='l2',
+#                       ref_col='P_analytical', comp_col='P_obs', legend=True, x_axis='absolute'):
+        
+#         fig, ax = plt.subplots()
+#         ref_df = reference.data if hasattr(reference, 'data') else reference
+
+#         if x_axis == 'absolute':
+#             ax.plot(ref_df['Time'], ref_df[ref_col] * scale, ls='-', c='black', label=f'Analytical Solution')
+#         elif x_axis == 'normalised':
+#             ax.plot(ref_df['Time'] / ref_df['Time'].max(), ref_df[ref_col] * scale, ls = '-', c='black', label=f'Analytical Solution')
+
+#         if not labels or len(labels) != len(comparisons):
+#             labels = [f'Dataset {i+1}' for i in range(len(comparisons))]
+
+#         styles = [':', '-.', '--']
+#         colors = ['red', 'blue', 'green', 'orange', 'purple', 'cyan']
+
+#         for i, comp in enumerate(comparisons):
+#             comp_df = comp.data if hasattr(comp, 'data') else comp
+#             if error_method == 'l2':
+#                 error = comp.l2_error(reference, col=comp_col)
+#             elif error_method == 'rmse':
+#                 error = comp.rmse_error(reference, col=comp_col)
+#             ls = styles[i % len(styles)]
+#             c = colors[i % len(colors)]
+
+#             full_label = f'{labels[i]} (Error: {error * 100:.2f}%)'
+
+#             if x_axis == 'absolute':
+#                 x_data = comp_df['Time']
+#             elif x_axis == 'normalised':
+#                 x_data = comp_df['Time'] / ref_df['Time'].max()
+
+#             ax.plot(x_data, comp_df[comp_col] * scale, ls=ls, c=c, label=full_label)
+
+#         if x_axis == 'absolute':
+#             ax.set_xlabel('Time (s)')
+#         elif x_axis == 'normalised':
+#             if ref_df['Time'].max() < 1.0:
+#                 ax.set_xlabel(f't/T, T={(ref_df["Time"].max() * 1000):.3f} ms')
+#             else:
+#                 ax.set_xlabel(f't/T, T={(ref_df["Time"].max()):.3f} s')
+
+#         if scale == 1.0:
+#             ax.set_ylabel("Pressure (Pa)")
+#         else:
+#             scale_str = f"x10^{{{int(np.log10(scale))}}}" if scale >= 10 else f"x{scale}"
+#             ax.set_ylabel(f'Pressure ({scale_str} Pa)')
+
+#         if title:
+#             ax.set_title(title)
+
+#         ax.grid(True, linestyle='--', alpha=0.7)
+#         if legend: ax.legend(loc='upper right')#, bbox_to_anchor=(1.35, 1))
+#         plt.tight_layout()
+#         plt.show()
 
     # @staticmethod
     # def plot_directivity_snapshot(datasets, target_time, col='P_obs', is_polar=False, ylim=None, title=None):

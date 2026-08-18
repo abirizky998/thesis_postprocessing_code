@@ -8,7 +8,7 @@ import time
 config = 'input_config.txt'
 source = 'input_source.txt'
 observer = 'input_observer.txt'
-date = '260804' #current_date()
+date = current_date()
 
 c = 340.0
 rho = 1.2
@@ -25,8 +25,9 @@ Omega_rot = c * mach_number / r_eff
 freq_rot = Omega_rot / (2 * np.pi)
 omega_har = Omega_rot * freq_ratio
 freq_har = omega_har / (2 * np.pi)
+T_sim = 2/(min(freq_har, freq_rot))
 
-output_dir = f"data_{date}/M{mach_number}_fratio{freq_ratio}_xpsweep"
+output_dir = f"data_{date}/M{mach_number}_fratio{freq_ratio}_xpsweep_3rot_AT"
 os.makedirs(output_dir, exist_ok=True)
 observer_setup(observer, D_obs=r_obs, circle=1.0, n=n_observer, normal='z')
 
@@ -51,11 +52,8 @@ lines = [
 with open(source, 'w') as f:
     f.writelines(lines)
 
-x_values = [60.0, 80.0] # 40.0
-p_values = [200.0, 300.0, 400.0, 500.0] # 10 30 40
-
-
-T_sim = 1/(min(freq_har, freq_rot))
+x_values = [100.0] # 40.0
+p_values = [20] # 10 30 40
 
 total_runs = len(x_values) * len(p_values)
 current_run = 1
@@ -63,8 +61,7 @@ current_run = 1
 for x in x_values:
     n = grid_sizing(config, M=0.0, X=x, lambda_s=c / freq_har, R=1.3 * r_eff)
     # n = grid_sizing(config, M=mach_number, X=x, lambda_s=c / freq_har, R=1.3 * r_eff)
-    if n**2 >= 1e5: processes = 8
-    elif n**2 >= 5e4: processes = 6
+    if n**2 >= 5e4: processes = 8
     elif n**2 >= 2e4: processes = 2
     # elif n**2 >= 1e4: processes = 2
     else: processes = 1
@@ -76,7 +73,7 @@ for x in x_values:
         timestep_sizing(config, M=0.0, P=p, f_s=freq_har, T_sim=T_sim)
         
         # Execute solver
-        subprocess.run(["mpirun", "-np", str(processes), "../../bin/FWH_Sphere"], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        subprocess.run(["mpirun", "-np", str(processes), "../bin/FWH_Sphere"], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
         time.sleep(10)
         
@@ -94,7 +91,7 @@ for x in x_values:
                 os.remove(ana_file) # Delete duplicates from subsequent runs
             
             # Save the numerical file with X and P tags
-            num_file = f'FWH_observer_time_{obs_str}_RT.dat'
+            num_file = f'FWH_observer_time_{obs_str}_AT.dat'
             num_dest_file = os.path.join(output_dir, f"X{int(x)}_P{int(p)}_{obs_str}.dat") 
             
             if os.path.exists(num_file):
