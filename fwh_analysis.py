@@ -198,21 +198,30 @@ class FWHDataset:
             
     #     return folder_data
     @staticmethod
-    def compile_fwh_batch(directory, error_method='l2', use_doppler=True, verbose=False):
+    def compile_fwh_batch(directory, error_method='l2', use_doppler=True, verbose=False, t_start=None, t_end=None):
         folder_path = Path(directory)
         local_refs = {}
         
         # 1. Load Analytical References (Handles Old and New Formats)
         for ana_file in folder_path.glob("ana_*.dat"):
+            ds = FWHDataset(filepath=ana_file)
+            if t_start is not None or t_end is not None:
+                mask = pd.Series(True, index=ds.data.index)
+                if t_start is not None:
+                    mask &= (ds.data['Time'] >= t_start)
+                if t_end is not None:
+                    mask &= (ds.data['Time'] <= t_end)
+                ds.data = ds.data[mask]
+
             # Match old format: ana_M00.dat
             m_match = re.search(r"ana_M(\d+)", ana_file.name)
             if m_match:
-                local_refs[m_match.group(1)] = FWHDataset(filepath=ana_file)
+                local_refs[m_match.group(1)] = ds
                 
             # Match new format: ana_spatial_01.dat
             obs_match = re.search(r"ana_spatial_(\d+)", ana_file.name)
             if obs_match:
-                local_refs[f"obs_{obs_match.group(1)}"] = FWHDataset(filepath=ana_file)
+                local_refs[f"obs_{obs_match.group(1)}"] = ds
                 
         if verbose:
             print(f"DEBUG: Loaded References: {list(local_refs.keys())}")
@@ -225,6 +234,15 @@ class FWHDataset:
                 continue
                 
             case = FWHDataset(filepath=filepath)
+
+            if t_start is not None or t_end is not None:
+                mask = pd.Series(True, index=case.data.index)
+                if t_start is not None:
+                    mask &= (case.data['Time'] >= t_start)
+                if t_end is not None:
+                    mask &= (case.data['Time'] <= t_end)
+                case.data = case.data[mask]
+
             meta = case.metadata
             
             # Determine File Schema
@@ -298,15 +316,18 @@ class FWHDataset:
 class FWHPlotter:
     @staticmethod
     def plot_pressure(reference, *comparisons, labels=None, title=None, scale=1.0, error_method='l2',
-                      ref_col='P_analytical', comp_col='P_obs', legend=True, x_axis='absolute', time_method='RT'):
-        
+                      ref_col='P_analytical', comp_col='P_obs', legend=True, x_axis='absolute', time_method='RT', time_period=None):
+
         fig, ax = plt.subplots()
         ref_df = reference.data if hasattr(reference, 'data') else reference
+
+        if time_period is None:
+            time_period = ref_df['Time'].max()
 
         if x_axis == 'absolute':
             ax.plot(ref_df['Time'], ref_df[ref_col] * scale, ls='-', c='black', label='Analytical Solution')
         elif x_axis == 'normalised':
-            ax.plot(ref_df['Time'] / ref_df['Time'].max(), ref_df[ref_col] * scale, ls='-', c='black', label='Analytical Solution', alpha=0.7)
+            ax.plot(ref_df['Time'] / time_period, ref_df[ref_col] * scale, ls='-', c='black', label='Analytical Solution', alpha=0.7)
 
         if not labels or len(labels) != len(comparisons):
             labels = [f'Dataset {i+1}' for i in range(len(comparisons))]
@@ -338,17 +359,17 @@ class FWHPlotter:
             if x_axis == 'absolute':
                 x_data = comp_df['Time']
             elif x_axis == 'normalised':
-                x_data = comp_df['Time'] / ref_df['Time'].max()
+                    x_data = comp_df['Time'] / time_period
 
             ax.plot(x_data, comp_df[comp_col] * scale, ls=ls, c=c, label=full_label)
 
         if x_axis == 'absolute':
             ax.set_xlabel('Time (s)')
         elif x_axis == 'normalised':
-            if ref_df['Time'].max() < 1.0:
-                ax.set_xlabel(f't/T, T={(ref_df["Time"].max() * 1000):.3f} ms')
+            if time_period < 1.0:
+                ax.set_xlabel(f't/T, T={(time_period * 1000):.3f} ms')
             else:
-                ax.set_xlabel(f't/T, T={(ref_df["Time"].max()):.3f} s')
+                ax.set_xlabel(f't/T, T={time_period:.3f} s')
 
         if scale == 1.0:
             ax.set_ylabel("Pressure (Pa)")
@@ -425,6 +446,293 @@ class FWHPlotter:
 #         if legend: ax.legend(loc='upper right')#, bbox_to_anchor=(1.35, 1))
 #         plt.tight_layout()
 #         plt.show()
+
+    @staticmethod
+    def plot_dft_spectrum(reference, *comparisons, f_base, num_harmonics=10, 
+                          t_start=0.0, t_end=None, window='rectangular', 
+                          labels=None, title=None, ref_col='P_analytical', 
+                          comp_col='P_obs', y_axis='spl', show_error_bars=False,
+                          show_error_subplot=False):
+
+        if show_error_subplot:
+            fig, (ax, ax_err) = plt.subplots(2, 1, figsize=(12,8), sharex=True, gridspec_kw={'height_ratios':[3,1.2]})
+            fig.subplots_adjust(hspace=0.1)
+        else:
+            fig, ax = plt.subplots(figsize=(12, 8))
+            ax_err = None
+        
+        # Helper function for exact harmonic extraction
+        def extract_harmonics(df, col):
+            mask = df['Time'] >= t_start
+            if t_end is not None:
+                mask &= (df['Time'] <= t_end)
+                
+            t = df['Time'][mask].values
+            p = df[col][mask].values
+            
+            if len(t) < 2:
+                return np.zeros(num_harmonics), np.zeros(num_harmonics)
+                
+            T_period = t[-1] - t[0]
+            
+            if window == 'hanning':
+                w = np.hanning(len(p))
+                p = p * w
+                amp_corr = 2.0
+            else:
+                amp_corr = 1.0
+
+            freqs = np.zeros(num_harmonics)
+            amps = np.zeros(num_harmonics)
+
+            for n in range(1, num_harmonics + 1):
+                freqs[n-1] = n * f_base
+                omega_n = 2 * np.pi * freqs[n-1]
+
+                real = np.trapezoid(p * np.cos(omega_n * t), t) * (2.0 / T_period)
+                imag = np.trapezoid(p * np.sin(omega_n * t), t) * (2.0 / T_period)
+
+                amps[n-1] = np.sqrt(real**2 + imag**2) * amp_corr
+
+            return freqs, amps
+
+        # 1. Process Reference
+        ref_df = reference.data if hasattr(reference, 'data') else reference
+        freqs, ref_amps = extract_harmonics(ref_df, ref_col)
+        
+        p_ref = 2e-5
+        if y_axis.lower() == 'spl':
+            ref_y = 20 * np.log10((ref_amps / np.sqrt(2)) / p_ref + 1e-15)
+            ylabel = 'Sound Pressure Level (dB)'
+            err_unit = 'dB'
+        else:
+            ref_y = ref_amps
+            ylabel = 'Amplitude (Pa)'
+            err_unit = 'Pa'
+
+        # 2. Setup Grouped Bar Parameters
+        n_datasets = len(comparisons) + 1
+        bar_width = (f_base * 0.8) / n_datasets
+        offsets = np.linspace(-bar_width * (n_datasets-1)/2, bar_width * (n_datasets-1)/2, n_datasets)
+        
+        # Plot Reference
+        ax.bar(freqs + offsets[0], ref_y, width=bar_width, color='black', 
+               label='Analytical Solution', edgecolor='black', zorder=3)
+
+        if ax_err:
+            ax_err.axhline(0, color='black', ls='--', lw=1.2)
+
+        # 3. Process Comparisons
+        if not labels or len(labels) != len(comparisons):
+            labels = [f'Dataset {i+1}' for i in range(len(comparisons))]
+            
+        colors = ['red', 'blue', 'green', 'orange', 'purple', 'cyan', 'magenta']
+        
+        for i, comp in enumerate(comparisons):
+            comp_df = comp.data if hasattr(comp, 'data') else comp
+            _, comp_amps = extract_harmonics(comp_df, comp_col)
+            
+            if y_axis.lower() == 'spl':
+                comp_y = 20 * np.log10((comp_amps / np.sqrt(2)) / p_ref + 1e-15)
+            else:
+                comp_y = comp_amps
+
+            err_array = comp_y - ref_y
+            mean_abs_err = np.mean(np.abs(err_array))
+            updated_label = f"{labels[i]} (Mean $\Delta$: {mean_abs_err:.2f} {err_unit})"
+
+            c = colors[i % len(colors)]
+            
+            # Error Bar Logic
+            yerr = None
+            if show_error_bars:
+                # Calculate absolute deviation from the reference
+                yerr = np.abs(comp_y - ref_y)
+                # Ensure we only draw the error bar upwards for visibility
+                yerr = [np.zeros_like(yerr), yerr] 
+            
+            ax.bar(freqs + offsets[i+1], comp_y, width=bar_width, color=c, 
+                   label=labels[i], alpha=0.8, edgecolor='black', 
+                   yerr=yerr, ecolor='dimgray', capsize=3, zorder=3)
+
+            if ax_err:
+                ax_err.plot(freqs, err_array, marker='o', markersize=5,
+                            ls=':', color=c, alpha=0.8)
+
+        # 5. Formatting
+        ax.set_ylabel(ylabel, fontweight='bold')
+        ax.set_xticks(freqs)
+        
+        if not show_error_subplot:
+            ax.set_xticklabels([f"{int(round(f/f_base))}X" for f in freqs], rotation=45)
+            ax.set_xlabel(f'Order (Base Frequency={f_base:.1f} Hz)', fontweight='bold')
+        
+        if title:
+            ax.set_title(title)
+            
+        ax.grid(True, linestyle='--', alpha=0.6, zorder=0)
+        ax.legend(loc='upper right', fontsize=9)
+        
+        max_val = max(np.max(ref_y), np.max(comp_y))
+        min_val = min(np.min(ref_y), np.min(comp_y)) if y_axis.lower() == 'spl' else 0
+        y_pad = (max_val - min_val) * 0.15
+        ax.set_ylim(min_val - (y_pad if y_axis.lower() == 'spl' else 0), max_val + y_pad)
+
+        if ax_err:
+            ax_err.set_xticks(freqs)
+            ax_err.set_xticklabels([f"{int(round(f/f_base))}X" for f in freqs], rotation=45)
+            ax_err.set_xlabel(f'Order (Base Frequency={f_base:.1f} Hz)', fontweight='bold')
+            ax_err.set_ylabel(f"$\Delta$ {err_unit}", fontweight='bold')
+            ax_err.grid(True, ls='--', alpha=0.6)
+        
+        plt.tight_layout()
+        plt.show()
+
+    @staticmethod
+    def plot_fft_spectrum(reference, *comparisons, f_base, num_harmonics=10, 
+                          t_start=0.0, t_end=None, window='hanning', 
+                          labels=None, title=None, ref_col='P_analytical', 
+                          comp_col='P_obs', y_axis='spl', show_error_bars=False,
+                          show_error_subplot=False):
+        
+        # 1. Setup Layout
+        if show_error_subplot:
+            fig, (ax, ax_err) = plt.subplots(2, 1, figsize=(12, 8), sharex=True, 
+                                             gridspec_kw={'height_ratios': [3, 1.2]})
+            fig.subplots_adjust(hspace=0.1)
+        else:
+            fig, ax = plt.subplots(figsize=(12, 6))
+            ax_err = None
+            
+        def compute_fft_harmonics(df, col):
+            mask = df['Time'] >= t_start
+            if t_end is not None:
+                mask &= (df['Time'] <= t_end)
+                
+            t_raw = df['Time'][mask].values
+            p_raw = df[col][mask].values
+            
+            if len(t_raw) < 2:
+                return np.zeros(num_harmonics), np.zeros(num_harmonics)
+                
+            num_points = len(t_raw)
+            t_uniform = np.linspace(t_raw[0], t_raw[-1], num_points)
+            dt = t_uniform[1] - t_uniform[0]
+            
+            p_uniform = np.interp(t_uniform, t_raw, p_raw)
+            
+            if window == 'hanning':
+                w = np.hanning(num_points)
+                p_uniform = p_uniform * w
+                amp_corr = 2.0
+            else:
+                amp_corr = 1.0
+                
+            fft_vals = np.fft.rfft(p_uniform)
+            freqs = np.fft.rfftfreq(num_points, d=dt)
+            amp = np.abs(fft_vals) * (2.0 / num_points) * amp_corr
+            
+            # Extract specific harmonic peaks from the continuous FFT
+            harmonic_amps = np.zeros(num_harmonics)
+            harmonic_freqs = np.zeros(num_harmonics)
+            
+            for n in range(1, num_harmonics + 1):
+                target_f = n * f_base
+                # Find the index of the FFT frequency bin closest to our target harmonic
+                idx = np.argmin(np.abs(freqs - target_f))
+                harmonic_freqs[n-1] = target_f 
+                harmonic_amps[n-1] = amp[idx]
+                
+            return harmonic_freqs, harmonic_amps
+
+        # 2. Process Reference
+        ref_df = reference.data if hasattr(reference, 'data') else reference
+        freqs, ref_amps = compute_fft_harmonics(ref_df, ref_col)
+        
+        p_ref = 2e-5
+        if y_axis.lower() == 'spl':
+            ref_y = 20 * np.log10((ref_amps / np.sqrt(2)) / p_ref + 1e-15)
+            ylabel = 'Sound Pressure Level (dB)'
+            err_unit = 'dB'
+        else:
+            ref_y = ref_amps
+            ylabel = 'Amplitude (Pa)'
+            err_unit = 'Pa'
+
+        # 3. Setup Grouped Bar Parameters
+        n_datasets = len(comparisons) + 1
+        bar_width = (f_base * 0.8) / n_datasets
+        offsets = np.linspace(-bar_width * (n_datasets-1)/2, bar_width * (n_datasets-1)/2, n_datasets)
+        
+        # Plot Reference
+        ax.bar(freqs + offsets[0], ref_y, width=bar_width, color='black', 
+               label='Analytical Solution', edgecolor='black', zorder=3)
+
+        if ax_err:
+            ax_err.axhline(0, color='black', ls='--', lw=1.2)
+
+        # 4. Process Comparisons
+        if not labels or len(labels) != len(comparisons):
+            labels = [f'Dataset {i+1}' for i in range(len(comparisons))]
+            
+        colors = ['red', 'blue', 'green', 'orange', 'purple', 'cyan', 'magenta']
+        
+        for i, comp in enumerate(comparisons):
+            comp_df = comp.data if hasattr(comp, 'data') else comp
+            _, comp_amps = compute_fft_harmonics(comp_df, comp_col)
+            
+            if y_axis.lower() == 'spl':
+                comp_y = 20 * np.log10((comp_amps / np.sqrt(2)) / p_ref + 1e-15)
+            else:
+                comp_y = comp_amps
+
+            err_array = comp_y - ref_y
+            mean_abs_err = np.mean(np.abs(err_array))
+            updated_label = f"{labels[i]} (Mean $\Delta$: {mean_abs_err:.2f} {err_unit})"
+
+            c = colors[i % len(colors)]
+            
+            yerr = None
+            if show_error_bars:
+                yerr = np.abs(err_array)
+                yerr = [np.zeros_like(yerr), yerr] 
+            
+            ax.bar(freqs + offsets[i+1], comp_y, width=bar_width, color=c, 
+                   label=updated_label, alpha=0.8, edgecolor='black', 
+                   yerr=yerr, ecolor='dimgray', capsize=3, zorder=3)
+
+            if ax_err:
+                ax_err.plot(freqs, err_array, marker='o', markersize=5,
+                            ls=':', color=c, alpha=0.8)
+
+        # 5. Formatting
+        ax.set_ylabel(ylabel, fontweight='bold')
+        ax.set_xticks(freqs)
+        
+        if not show_error_subplot:
+            ax.set_xticklabels([f"{int(round(f/f_base))}X" for f in freqs], rotation=45)
+            ax.set_xlabel(f'Order (Base Frequency={f_base:.1f} Hz)', fontweight='bold')
+        
+        if title:
+            ax.set_title(title)
+            
+        ax.grid(True, linestyle='--', alpha=0.6, zorder=0)
+        ax.legend(loc='upper right', fontsize=9)
+        
+        max_val = max(np.max(ref_y), np.max(comp_y))
+        min_val = min(np.min(ref_y), np.min(comp_y)) if y_axis.lower() == 'spl' else 0
+        y_pad = (max_val - min_val) * 0.15
+        ax.set_ylim(min_val - (y_pad if y_axis.lower() == 'spl' else 0), max_val + y_pad)
+
+        if ax_err:
+            ax_err.set_xticks(freqs)
+            ax_err.set_xticklabels([f"{int(round(f/f_base))}X" for f in freqs], rotation=45)
+            ax_err.set_xlabel(f'Order (Base Frequency={f_base:.1f} Hz)', fontweight='bold')
+            ax_err.set_ylabel(f"$\Delta$ {err_unit}", fontweight='bold')
+            ax_err.grid(True, ls='--', alpha=0.6)
+        
+        plt.tight_layout()
+        plt.show()
 
     # @staticmethod
     # def plot_directivity_snapshot(datasets, target_time, col='P_obs', is_polar=False, ylim=None, title=None):

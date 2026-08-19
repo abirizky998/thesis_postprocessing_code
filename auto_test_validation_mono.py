@@ -8,7 +8,7 @@ import time
 config = 'input_config.txt'
 source = 'input_source.txt'
 observer = 'input_observer.txt'
-date = current_date()
+date = "260817" #current_date()
 
 c = 340.0
 rho = 1.2
@@ -29,7 +29,7 @@ Omega_rot = 0
 # freq_har = omega_har / (2 * np.pi)
 omega_har = 10 # rad/s
 freq_har = omega_har / (2 * np.pi)
-T_sim = 3/freq_har - (10 * np.sqrt(2) / c)
+T_sim = 3/freq_har
 
 output_dir = f"data_{date}/monopole_validation_stationary_AT"
 os.makedirs(output_dir, exist_ok=True)
@@ -57,7 +57,7 @@ with open(source, 'w') as f:
     f.writelines(lines)
 
 # p_values = [100, 170, 275] # 10 30 40
-p_values = [100]
+p_values = [5, 15, 30]
 x_values = [35, 100, 275] # 40.0
 
 total_runs = len(x_values) * len(p_values)
@@ -72,7 +72,7 @@ for x in x_values:
         timestep_sizing(config, M=0.0, P=p, f_s=freq_har, T_sim=T_sim)
         
         # Execute solver
-        subprocess.run(["../bin/FWH_Sphere"], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        subprocess.run(["../../bin/FWH_Sphere"], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
         # time.sleep(10)
         

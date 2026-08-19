@@ -13,7 +13,7 @@ date = current_date()
 c = 340.0
 rho = 1.2
 r_obs = 7.28
-n_observer = 3
+n_observer = 1
 # processes = 8
 
 n_source = 1
@@ -26,9 +26,9 @@ freq_ratio = 3
 omega_har = Omega_rot * freq_ratio
 freq_har = omega_har / (2 * np.pi)
 
-output_dir = f"data_{date}/M{mach_number}_fratio{freq_ratio}_2rot_AT"
+output_dir = f"data_{date}/M{mach_number}_fratio{freq_ratio}_4rot_AT"
 os.makedirs(output_dir, exist_ok=True)
-observer_setup(observer, D_obs=r_obs, circle=1.0, n=n_observer, normal='z')
+observer_setup(observer, D_obs=-r_obs, circle=1.0, n=n_observer, normal='z')
 
 lines = [
     "# Single Rotating Harmonic Monopole\n",
@@ -52,10 +52,10 @@ with open(source, 'w') as f:
     f.writelines(lines)
 
 x_values = [100.0]
-p_values = [200, 400] # 
+p_values = [800] # 
 
 
-T_sim = 2/(min(freq_har, freq_rot))
+T_sim = 4/(min(freq_har, freq_rot))
 
 total_runs = len(x_values) * len(p_values)
 current_run = 1
@@ -73,7 +73,7 @@ for x in x_values:
         timestep_sizing(config, M=0.0, P=p, f_s=freq_har, T_sim=T_sim)
         
         # Execute solver
-        subprocess.run(["../bin/FWH_Sphere"], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        subprocess.run(["mpirun", "-np", str(processes), "../../bin/FWH_Sphere"], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         time.sleep(10)
         
         # Post-Process and Rename

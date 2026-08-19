@@ -8,7 +8,7 @@ import time
 config = 'input_config.txt'
 source = 'input_source.txt'
 observer = 'input_observer.txt'
-date = '260806' #current_date()
+date = current_date()
 
 c = 340.0
 rho = 1.2
@@ -26,7 +26,7 @@ freq_ratio = 5
 omega_har = Omega_rot * freq_ratio
 freq_har = omega_har / (2 * np.pi)
 
-output_dir = f"data_{date}/M{mach_number}_fratio{freq_ratio}"
+output_dir = f"data_{date}/M{mach_number}_fratio{freq_ratio}_AT"
 os.makedirs(output_dir, exist_ok=True)
 observer_setup(observer, D_obs=r_obs, circle=1.0, n=n_observer, normal='z')
 
@@ -51,11 +51,11 @@ lines = [
 with open(source, 'w') as f:
     f.writelines(lines)
 
-x_values = [60.0, 80.0]#[20.0, 40.0, 60.0, 80.0, 100.0] # 40.0
-p_values = [200.0, 400.0, 600.0, 800.0] # 10 30 40
+x_values = [80.0]#[20.0, 40.0, 60.0, 80.0, 100.0] # 40.0
+p_values = [60.0, 80.0, 100.0, 200.0] # 10 30 40
 
 
-T_sim = 1/(min(freq_har, freq_rot))
+T_sim = 3/(min(freq_har, freq_rot))
 
 total_runs = len(x_values) * len(p_values)
 current_run = 1
@@ -84,16 +84,16 @@ for x in x_values:
             obs_str = f"{i:02d}"
             
             # The analytical file doesn't care about X, but we save it once as a baseline
-            ana_file = f"FWH_observer_time_{obs_str}_validation.dat" 
-            ana_dest_file = os.path.join(output_dir, f"ana_spatial_{obs_str}.dat")
+            # ana_file = f"FWH_observer_time_{obs_str}_validation.dat" 
+            # ana_dest_file = os.path.join(output_dir, f"ana_spatial_{obs_str}.dat")
             
-            if current_run == total_runs and os.path.exists(ana_file):
-                shutil.move(ana_file, ana_dest_file)
-            elif os.path.exists(ana_file):
-                os.remove(ana_file) # Delete duplicates from subsequent runs
+            # if current_run == total_runs and os.path.exists(ana_file):
+            #     shutil.move(ana_file, ana_dest_file)
+            # elif os.path.exists(ana_file):
+            #     os.remove(ana_file) # Delete duplicates from subsequent runs
             
             # Save the numerical file with X and P tags
-            num_file = f'FWH_observer_time_{obs_str}_RT.dat'
+            num_file = f'FWH_observer_time_{obs_str}_AT.dat'
             num_dest_file = os.path.join(output_dir, f"X{int(x)}_P{int(p)}_{obs_str}.dat") 
             
             if os.path.exists(num_file):
