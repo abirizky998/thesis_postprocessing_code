@@ -8,7 +8,7 @@ import time
 config = 'input_config.txt'
 source = 'input_source.txt'
 observer = 'input_observer.txt'
-date = "260817" #current_date()
+date = "260807" #current_date()
 
 c = 340.0
 rho = 1.2
@@ -18,7 +18,7 @@ processes = 1
 
 n_source = 1
 r_eff = 0.0
-mach_number = 0.0
+mach_number = 0.5
 ux = mach_number * c
 Omega_rot = 0
 # Omega_rot = c * mach_number / r_eff
@@ -31,7 +31,7 @@ omega_har = 10 # rad/s
 freq_har = omega_har / (2 * np.pi)
 T_sim = 3/freq_har
 
-output_dir = f"data_{date}/monopole_validation_stationary_AT"
+output_dir = f"data_{date}/monopole_validation_cotranslating"
 os.makedirs(output_dir, exist_ok=True)
 # observer_setup(observer, D_obs=r_obs, circle=1.0, n=n_observer, normal='z')
 
@@ -72,7 +72,7 @@ for x in x_values:
         timestep_sizing(config, M=0.0, P=p, f_s=freq_har, T_sim=T_sim)
         
         # Execute solver
-        subprocess.run(["../../bin/FWH_Sphere"], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        subprocess.run(["../bin/FWH_Sphere"], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
         # time.sleep(10)
         
@@ -90,7 +90,7 @@ for x in x_values:
                 os.remove(ana_file) # Delete duplicates from subsequent runs
             
             # Save the numerical file with X and P tags
-            num_file = f'FWH_observer_time_{obs_str}_AT.dat'
+            num_file = f'FWH_observer_time_{obs_str}_RT.dat'
             num_dest_file = os.path.join(output_dir, f"X{int(x)}_P{int(p)}_{obs_str}.dat") 
             
             if os.path.exists(num_file):
