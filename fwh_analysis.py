@@ -565,7 +565,7 @@ class FWHPlotter:
         
         if not show_error_subplot:
             ax.set_xticklabels([f"{int(round(f/f_base))}X" for f in freqs], rotation=45)
-            ax.set_xlabel(f'Order (Base Frequency={f_base:.1f} Hz)', fontweight='bold')
+            ax.set_xlabel(f'Mode (Base Frequency={f_base:.1f} Hz)', fontweight='bold')
         
         if title:
             ax.set_title(title)
@@ -581,7 +581,7 @@ class FWHPlotter:
         if ax_err:
             ax_err.set_xticks(freqs)
             ax_err.set_xticklabels([f"{int(round(f/f_base))}X" for f in freqs], rotation=45)
-            ax_err.set_xlabel(f'Order (Base Frequency={f_base:.1f} Hz)', fontweight='bold')
+            ax_err.set_xlabel(f'Mode (Base Frequency={f_base:.1f} Hz)', fontweight='bold')
             ax_err.set_ylabel(f"$\Delta$ {err_unit}", fontweight='bold')
             ax_err.grid(True, ls='--', alpha=0.6)
         
@@ -975,6 +975,95 @@ class FWHPlotter:
             step = 1 if n_obs <= 12 else (n_obs // 12 if n_obs <= 36 else n_obs // 8)
             ax.set_xticks(angles_deg[::step])
             ax.grid(True, linestyle='--', alpha=0.6)
+
+        plt.tight_layout()
+        plt.show()
+
+    @staticmethod
+    def plot_directivity(reference, *comparisons, labels=None, title=None, 
+                         col='P_obs', y_axis='spl', is_polar=True, 
+                         t_start=0.0, t_end=None, legend=True):
+        import numpy as np
+        import matplotlib.pyplot as plt
+
+        fig, ax = plt.subplots(figsize=(8, 8) if is_polar else (10, 6), 
+                               subplot_kw={'projection': 'polar'} if is_polar else {})
+
+        if not labels or len(labels) != len(comparisons):
+            labels = [f'Dataset {i+1}' for i in range(len(comparisons))]
+
+        n_obs = len(reference)
+        angles_rad = np.linspace(0, 2 * np.pi, n_obs, endpoint=False)
+        angles_deg = np.degrees(angles_rad)
+
+        def calc_metric(df):
+            mask = df['Time'] >= t_start
+            if t_end is not None:
+                mask &= (df['Time'] <= t_end)
+            
+            t = df['Time'][mask].values
+            p = df[col][mask].values
+            
+            if len(t) < 2:
+                return 0.0
+                
+            # Exact RMS calculation via trapezoidal integration
+            T_period = t[-1] - t[0]
+            p_rms = np.sqrt(np.trapezoid(p**2, t) / T_period)
+            
+            if y_axis.lower() == 'spl':
+                return 20 * np.log10(p_rms / 2e-5 + 1e-15)
+            return p_rms
+
+        # 1. Process Reference
+        ref_vals = [calc_metric(ds.data if hasattr(ds, 'data') else ds) for ds in reference]
+        
+        if is_polar:
+            # Wrap the array to close the polar loop visually
+            plot_angles = np.append(angles_rad, angles_rad[0])
+            plot_ref = np.append(ref_vals, ref_vals[0])
+            ax.plot(plot_angles, plot_ref, ls='-', c='black', lw=2, label='Analytical Solution', zorder=3)
+        else:
+            ax.plot(angles_deg, ref_vals, ls='-', c='black', lw=2, label='Analytical Solution', zorder=3)
+
+        # 2. Process Comparisons
+        styles = ['--', '-.', ':']
+        colors = ['red', 'blue', 'green', 'orange', 'purple', 'cyan']
+        
+        for i, comp in enumerate(comparisons):
+            comp_vals = [calc_metric(ds.data if hasattr(ds, 'data') else ds) for ds in comp]
+            
+            ls = styles[i % len(styles)]
+            c = colors[i % len(colors)]
+            
+            if is_polar:
+                plot_comp = np.append(comp_vals, comp_vals[0])
+                ax.plot(plot_angles, plot_comp, ls=ls, c=c, marker='o', markersize=5, label=labels[i], zorder=3)
+            else:
+                ax.plot(angles_deg, comp_vals, ls=ls, c=c, marker='o', markersize=5, label=labels[i], zorder=3)
+
+        # 3. Formatting
+        ylabel = 'OASPL (dB)' if y_axis.lower() == 'spl' else 'RMS Pressure (Pa)'
+        title_str = title or ("OASPL Directivity" if y_axis.lower() == 'spl' else "RMS Pressure Directivity")
+        
+        if is_polar:
+            ax.set_theta_zero_location('E') 
+            ax.set_title(title_str, pad=20, weight='bold')
+            ax.set_rlabel_position(45) 
+            ax.text(np.radians(45), ax.get_rmax() * 1.15, ylabel, ha='center', va='center', weight='bold')
+        else:
+            ax.set_title(title_str, weight='bold')
+            ax.set_xlabel("Observer Angle (Degrees)", weight='bold')
+            ax.set_ylabel(ylabel, weight='bold')
+            step = 1 if n_obs <= 12 else (n_obs // 12 if n_obs <= 36 else n_obs // 8)
+            ax.set_xticks(angles_deg[::step])
+
+        ax.grid(True, linestyle='--', alpha=0.6, zorder=0)
+        
+        if legend:
+            loc = 'upper right' if is_polar else 'best'
+            bbox = (1.1, 1.1) if is_polar else None
+            ax.legend(loc=loc, bbox_to_anchor=bbox)
 
         plt.tight_layout()
         plt.show()
