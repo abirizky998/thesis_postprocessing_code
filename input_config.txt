@@ -12,7 +12,7 @@ Source
 # FW-H integration method
 Advanced_Time Time_Domain
 # FW-H integration time levels [-] and time step [s]
-9600 2.00199532e-05
+19200 1.00099766e-05
 # Post-processing options
 F
 # Debugging level (0: no output, 1: basic info, 2: detailed info)
