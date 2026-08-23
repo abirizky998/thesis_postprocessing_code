@@ -4,8 +4,8 @@
 # obs 1
 Point
 # initial loc
-10.80000 10.000000 0.0
+500.0000 0.000000 0.0
 # motion type and duration
 General 1000.0
 # motion
-170.0 0.0 0.0 0.0 0.0 0.0
+0.0 0.0 0.0 0.0 0.0 0.0

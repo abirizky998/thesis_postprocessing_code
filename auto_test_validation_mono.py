@@ -8,7 +8,7 @@ import time
 config = 'input_config.txt'
 source = 'input_source.txt'
 observer = 'input_observer.txt'
-date = "260807" #current_date()
+date = current_date()
 
 c = 340.0
 rho = 1.2
@@ -57,8 +57,8 @@ with open(source, 'w') as f:
     f.writelines(lines)
 
 # p_values = [100, 170, 275] # 10 30 40
-p_values = [5, 15, 30]
-x_values = [35, 100, 275] # 40.0
+p_values = [30]
+x_values = [275] # 40.0
 
 total_runs = len(x_values) * len(p_values)
 current_run = 1
