@@ -1,11 +1,9 @@
 # Automatically generated observer file
 # N observer sets
-3
+1
 # obs 1
-Point
+Sphere
 # initial loc
-500.0000 0.000000 0.0
+50 40 40
 # motion type and duration
-General 1000.0
-# motion
-0.0 0.0 0.0 0.0 0.0 0.0
+Stationary 1000.0

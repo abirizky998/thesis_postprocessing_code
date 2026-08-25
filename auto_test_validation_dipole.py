@@ -8,7 +8,7 @@ import time
 config = 'input_config.txt'
 source = 'input_source.txt'
 observer = 'input_observer.txt'
-date = "260821" #current_date()
+date = current_date()
 
 c = 340.0
 rho = 1.2
@@ -32,7 +32,7 @@ freq_har = omega_har / (2 * np.pi)
 T_sim = 3/freq_har
 r_eff = 0.005 * ((c / freq_har) / (2 *np.pi))
 
-output_dir = f"data_{date}/dual_monopole_stationary_valid"
+output_dir = f"data_{date}/dual_monopole_directivity_stationary"
 os.makedirs(output_dir, exist_ok=True)
 # observer_setup(observer, D_obs=r_obs, circle=1.0, n=n_observer, normal='z')
 
@@ -41,9 +41,9 @@ lines = [
     "# Number of source sets\n",
     f"{n_source}\n",
     "# Source type\n",
-    "Dipole_stationary Harmonic\n",
+    "Monopole Harmonic\n",
     "# Source frequency [rad/s], source strength, and source phase [rad]\n"
-    f"{omega_har} 1.0 {-np.pi/2}\n",
+    f"{omega_har} 1.0 0.0\n",
     "# Source definition\n",
     "Point\n",
     "# Source initial location [m] (x, y, z)\n",
@@ -55,7 +55,7 @@ lines = [
     "# Source type\n",
     "Monopole Harmonic\n",
     "# Source frequency [rad/s], source strength, and source phase [rad]\n"
-    f"{omega_har} -1.0 {-np.pi/2}\n",
+    f"{omega_har} -1.0 0.0\n",
     "# Source definition\n",
     "Point\n",
     "# Source initial location [m] (x, y, z)\n",
@@ -83,9 +83,9 @@ for x in x_values:
         
         # Update config file
         timestep_sizing(config, M=0.0, P=p, f_s=freq_har, T_sim=T_sim)
-        
+        processes = 6
         # Execute solver
-        subprocess.run(["../bin/FWH_Sphere"], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        subprocess.run(["mpirun", "-np", str(processes), "../../bin/FWH_Sphere"])#, check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
         # time.sleep(10)
         
