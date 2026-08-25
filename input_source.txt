@@ -1,15 +1,15 @@
-# Single Harmonic Monopole
+# Single Rotating Harmonic Monopole
 # Number of source sets
 1
 # Source type
 Monopole Harmonic
 # Source frequency [rad/s], source strength, and source phase [rad]
-10 1.0 -1.5707963267948966
+2510.7692307692305 1.0 0.0
 # Source definition
 Point
 # Source initial location [m] (x, y, z)
-0.000000 0.00000 0.000000
+1.300000 0.00000 0.000000
 # Source motion type and duration [s]
-General 1000.0
-#Translational and Rotational Speed
-170.000000 0.0 0.0 0.0 0.0 0.000000
+Rotation 1000.0
+Rotation angular velocity
+0.0 0.0 209.230769

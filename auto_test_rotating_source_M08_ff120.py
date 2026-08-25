@@ -25,8 +25,9 @@ freq_ratio = 12.0
 
 omega_har = Omega_rot * freq_ratio
 freq_har = omega_har / (2 * np.pi)
+T_sim = 4/(min(freq_har, freq_rot))
 
-output_dir = f"data_{date}/M{mach_number}_fratio{freq_ratio}"
+output_dir = f"data_{date}/M{mach_number}_fratio{freq_ratio}_3rot_AT"
 os.makedirs(output_dir, exist_ok=True)
 observer_setup(observer, D_obs=r_obs, circle=1.0, n=n_observer, normal='z')
 
@@ -51,10 +52,8 @@ lines = [
 with open(source, 'w') as f:
     f.writelines(lines)
 
-x_values = [20.0, 40.0, 60.0, 80.0, 100.0]
-p_values = [20.0, 40.0, 60.0, 80.0, 100.0]
-
-T_sim = 1/(min(freq_har, freq_rot))
+x_values = [100.0, 200, 300, 400]
+p_values = [100.0, 200.0, 300, 400.0]
 
 total_runs = len(x_values) * len(p_values)
 current_run = 1
