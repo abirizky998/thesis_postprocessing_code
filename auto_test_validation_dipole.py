@@ -19,7 +19,7 @@ processes = 1
 n_source = 2
 # r_eff = 0.0
 mach_number = 0.0
-ux = mach_number * c
+ux = 5
 Omega_rot = 0
 # Omega_rot = c * mach_number / r_eff
 # freq_rot = Omega_rot / (2 * np.pi)
@@ -32,7 +32,7 @@ freq_har = omega_har / (2 * np.pi)
 T_sim = 3/freq_har
 r_eff = 0.005 * ((c / freq_har) / (2 *np.pi))
 
-output_dir = f"data_{date}/dual_monopole_directivity_stationary"
+output_dir = f"data_{date}/dual_monopole_directivity_translating"
 os.makedirs(output_dir, exist_ok=True)
 # observer_setup(observer, D_obs=r_obs, circle=1.0, n=n_observer, normal='z')
 
@@ -47,7 +47,7 @@ lines = [
     "# Source definition\n",
     "Point\n",
     "# Source initial location [m] (x, y, z)\n",
-    f"{r_eff:.6f} 0.00000 0.000000\n",
+    f"0.00000 {r_eff:.6f} 0.000000\n",
     "# Source motion type and duration [s]\n",
     "General 1000.0\n",
     "#Translational and Rotational Speed\n",
@@ -59,7 +59,7 @@ lines = [
     "# Source definition\n",
     "Point\n",
     "# Source initial location [m] (x, y, z)\n",
-    f"{- r_eff:.6f} 0.0 0.000000\n",
+    f"0.00000 {- r_eff:.6f} 0.000000\n",
     "# Source motion type and duration [s]\n",
     "General 1000.0\n",
     "#Translational and Rotational Speed\n",
@@ -85,7 +85,7 @@ for x in x_values:
         timestep_sizing(config, M=0.0, P=p, f_s=freq_har, T_sim=T_sim)
         processes = 6
         # Execute solver
-        subprocess.run(["mpirun", "-np", str(processes), "../../bin/FWH_Sphere"])#, check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        subprocess.run(["mpirun", "-np", str(processes), "../bin/FWH_Sphere"], check=True)#, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
         # time.sleep(10)
         
@@ -103,7 +103,7 @@ for x in x_values:
                 os.remove(ana_file) # Delete duplicates from subsequent runs
             
             # Save the numerical file with X and P tags
-            num_file = f'FWH_observer_time_{obs_str}_RT.dat'
+            num_file = f'FWH_observer_time_{obs_str}_AT.dat'
             num_dest_file = os.path.join(output_dir, f"X{int(x)}_P{int(p)}_{obs_str}.dat") 
             
             if os.path.exists(num_file):
