@@ -8,11 +8,11 @@ Monopole Harmonic
 # Source definition
 Point
 # Source initial location [m] (x, y, z)
-0.00000 0.170000 0.000000
+0.170000 0.00000 0.000000
 # Source motion type and duration [s]
 General 1000.0
 #Translational and Rotational Speed
-5.000000 0.0 0.0 0.0 0.0 0.000000
+0.0 0.0 10.000000 0.0 0.0 0.000000
 # Source type
 Monopole Harmonic
 # Source frequency [rad/s], source strength, and source phase [rad]
@@ -20,8 +20,8 @@ Monopole Harmonic
 # Source definition
 Point
 # Source initial location [m] (x, y, z)
-0.00000 -0.170000 0.000000
+-0.170000 0.00000 0.000000
 # Source motion type and duration [s]
 General 1000.0
 #Translational and Rotational Speed
-5.000000 0.0 0.0 0.0 0.0 0.000000
+0.0 0.0 10.000000 0.0 0.0 0.000000

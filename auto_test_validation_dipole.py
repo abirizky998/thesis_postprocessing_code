@@ -19,7 +19,7 @@ processes = 1
 n_source = 2
 # r_eff = 0.0
 mach_number = 0.0
-ux = 5
+ux = 10
 Omega_rot = 0
 # Omega_rot = c * mach_number / r_eff
 # freq_rot = Omega_rot / (2 * np.pi)
@@ -47,11 +47,11 @@ lines = [
     "# Source definition\n",
     "Point\n",
     "# Source initial location [m] (x, y, z)\n",
-    f"0.00000 {r_eff:.6f} 0.000000\n",
+    f"{r_eff:.6f} 0.00000 0.000000\n",
     "# Source motion type and duration [s]\n",
     "General 1000.0\n",
     "#Translational and Rotational Speed\n",
-    f"{ux:6f} 0.0 0.0 0.0 0.0 {Omega_rot:.6f}\n",
+    f"0.0 0.0 {ux:6f} 0.0 0.0 {Omega_rot:.6f}\n",
     "# Source type\n",
     "Monopole Harmonic\n",
     "# Source frequency [rad/s], source strength, and source phase [rad]\n"
@@ -59,11 +59,11 @@ lines = [
     "# Source definition\n",
     "Point\n",
     "# Source initial location [m] (x, y, z)\n",
-    f"0.00000 {- r_eff:.6f} 0.000000\n",
+    f"{- r_eff:.6f} 0.00000 0.000000\n",
     "# Source motion type and duration [s]\n",
     "General 1000.0\n",
     "#Translational and Rotational Speed\n",
-    f"{ux:6f} 0.0 0.0 0.0 0.0 {Omega_rot:.6f}"
+    f"0.0 0.0 {ux:6f} 0.0 0.0 {Omega_rot:.6f}"
 ]
 
 with open(source, 'w') as f:
@@ -71,21 +71,22 @@ with open(source, 'w') as f:
 
 # p_values = [100, 170, 275] # 10 30 40
 p_values = [30]
-x_values = [275] # 40.0 
+x_values = [100] # 40.0 
 
 total_runs = len(x_values) * len(p_values)
 current_run = 1
 
 for x in x_values:
-    n = grid_sizing(config, M=0.0, X=x, lambda_s=c / freq_har, R=5.0)
+    n = grid_sizing(config, M=0.0, X=x, lambda_s=c / freq_har, R=20.0)
     for p in p_values:
         print(f"--- Running Case {current_run}/{total_runs} | X = {x}, P = {p} --- | Grid Count = {n**2} Time Step Count = {T_sim * p * freq_har}")
         
         # Update config file
         timestep_sizing(config, M=0.0, P=p, f_s=freq_har, T_sim=T_sim)
-        processes = 6
+        processes = 4
+
         # Execute solver
-        subprocess.run(["mpirun", "-np", str(processes), "../bin/FWH_Sphere"], check=True)#, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        subprocess.run(["mpirun", "-np", str(processes), "../../bin/FWH_Sphere"], check=True)#, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
         # time.sleep(10)
         
