@@ -4,18 +4,8 @@
 # obs 1
 Point
 # initial loc
-7.280000 0.000000 0.0
+500.0000 0.000000 0.0
 # motion type and duration
-Stationary 1000.0
-# obs 2
-Point
-# initial loc
--3.640000 6.304665 0.0
-# motion type and duration
-Stationary 1000.0
-# obs 3
-Point
-# initial loc
--3.640000 -6.304665 0.0
-# motion type and duration
-Stationary 1000.0
+General 1000.0
+# motion
+0.0 0.0 0.0 0.0 0.0 0.0
