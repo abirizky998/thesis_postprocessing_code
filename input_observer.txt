@@ -2,8 +2,8 @@
 # N observer sets
 1
 # obs 1
-Sphere
+Point
 # initial loc
-50 40 40
+-7.280000 -0.000000 0.0
 # motion type and duration
 Stationary 1000.0
