@@ -13,7 +13,7 @@ date = current_date()
 c = 340.0
 rho = 1.2
 r_obs = 7.28
-n_observer = 3
+n_observer = 1
 # processes = 6
 
 n_source = 1
@@ -21,15 +21,14 @@ r_eff = 1.3
 mach_number = 0.5
 freq_ratio = 3
 
-
 Omega_rot = c * mach_number / r_eff
 freq_rot = Omega_rot / (2 * np.pi)
 omega_har = Omega_rot * freq_ratio
 freq_har = omega_har / (2 * np.pi)
 
-output_dir = f"data_{date}/M{mach_number}_fratio{freq_ratio}_xpsweep"
+output_dir = f"data_{date}/M{mach_number}_fratio{freq_ratio}"
 os.makedirs(output_dir, exist_ok=True)
-observer_setup(observer, D_obs=r_obs, circle=1.0, n=n_observer, normal='z')
+observer_setup(observer, D_obs=-r_obs, circle=1.0, n=n_observer, normal='z')
 
 lines = [
     "# Single Rotating Harmonic Monopole\n",
@@ -52,11 +51,10 @@ lines = [
 with open(source, 'w') as f:
     f.writelines(lines)
 
-x_values = [80.0, 100.0] # 40.0
-p_values = [20.0, 40.0, 60.0, 80.0, 100.0] # 10 30 40
+x_values = [100.0] # 40.0
+p_values = [100.0] # 10 30 40
 
-
-T_sim = 1/(min(freq_har, freq_rot))
+T_sim = 3/(min(freq_har, freq_rot))
 
 total_runs = len(x_values) * len(p_values)
 current_run = 1
@@ -77,7 +75,7 @@ for x in x_values:
         timestep_sizing(config, M=0.0, P=p, f_s=freq_har, T_sim=T_sim)
         
         # Execute solver
-        subprocess.run(["mpirun", "-np", str(processes), "../../bin/FWH_Sphere"], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        subprocess.run(["mpirun", "-np", str(processes), "../bin/FWH_Sphere"], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
         time.sleep(10)
         
@@ -95,7 +93,7 @@ for x in x_values:
                 os.remove(ana_file) # Delete duplicates from subsequent runs
             
             # Save the numerical file with X and P tags
-            num_file = f'FWH_observer_time_{obs_str}_RT.dat'
+            num_file = f'FWH_observer_time_{obs_str}_AT.dat'
             num_dest_file = os.path.join(output_dir, f"X{int(x)}_P{int(p)}_{obs_str}.dat") 
             
             if os.path.exists(num_file):

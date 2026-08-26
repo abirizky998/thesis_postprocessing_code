@@ -1,6 +1,6 @@
 # Automatically generated 2-Source Dense Phased Array
 # Number of source sets
-2
+1
 # Source type
 Monopole Harmonic
 # Source frequency [rad/s], source strength, and source phase [rad]

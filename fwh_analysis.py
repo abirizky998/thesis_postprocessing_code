@@ -711,7 +711,7 @@ class FWHPlotter:
         
         if not show_error_subplot:
             ax.set_xticklabels([f"{int(round(f/f_base))}X" for f in freqs], rotation=45)
-            ax.set_xlabel(f'Order (Base Frequency={f_base:.1f} Hz)', fontweight='bold')
+            ax.set_xlabel(f'Harmonic (Base Frequency={f_base:.1f} Hz)', fontweight='bold')
         
         if title:
             ax.set_title(title)
@@ -727,7 +727,7 @@ class FWHPlotter:
         if ax_err:
             ax_err.set_xticks(freqs)
             ax_err.set_xticklabels([f"{int(round(f/f_base))}X" for f in freqs], rotation=45)
-            ax_err.set_xlabel(f'Order (Base Frequency={f_base:.1f} Hz)', fontweight='bold')
+            ax_err.set_xlabel(f'Harmonic (Base Frequency={f_base:.1f} Hz)', fontweight='bold')
             ax_err.set_ylabel(f"$\Delta$ {err_unit}", fontweight='bold')
             ax_err.grid(True, ls='--', alpha=0.6)
         
