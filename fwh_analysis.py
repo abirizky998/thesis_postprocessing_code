@@ -979,6 +979,8 @@ class FWHPlotter:
         plt.tight_layout()
         plt.show()
 
+        return angles_rad, dict(zip(time_labels, ref_pressures))
+
     @staticmethod
     def plot_directivity(reference, *comparisons, labels=None, title=None, 
                          col='P_obs', y_axis='spl', is_polar=True, 

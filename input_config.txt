@@ -10,10 +10,10 @@ Stationary
 # FW-H surface data type
 Source
 # FW-H integration method
-Advanced_Time Time_Domain
+Retarded_Time Time_Domain
 # FW-H integration time levels [-] and time step [s]
-90 2.09439510e-02
+400 1.20119719e-04
 # Post-processing options
-T
+F
 # Debugging level (0: no output, 1: basic info, 2: detailed info)
 0
