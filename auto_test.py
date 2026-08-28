@@ -137,6 +137,9 @@ def observer_setup(config_path, D_obs, n, circle = 1.0, is_dipole=False, offset_
     elif normal == 'x':
         y = D_obs * np.cos(angles)
         z = D_obs * np.sin(angles)
+    elif normal == 'y':
+        x = D_obs * np.cos(angles)
+        z = D_obs * np.sin(angles)
 
     lines = [
         "# Automatically generated observer file\n",
@@ -160,6 +163,15 @@ def observer_setup(config_path, D_obs, n, circle = 1.0, is_dipole=False, offset_
                 "Point\n",
                 "# initial loc\n",
                 f"0.0 {y[i]:.6f} {z[i]:.6f}\n",
+                "# motion type and duration\n",
+                "Stationary 1000.0\n"
+            ])
+        elif normal == 'y':
+            lines.extend([
+                f"# obs {i+1}\n",
+                "Point\n",
+                "# initial loc\n",
+                f"{x[i]:.6f} 0.0 {z[i]:.6f}\n",
                 "# motion type and duration\n",
                 "Stationary 1000.0\n"
             ])

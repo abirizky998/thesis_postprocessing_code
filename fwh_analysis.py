@@ -880,7 +880,7 @@ class FWHPlotter:
     ### LATEST LATEST!!!
     @staticmethod
     def plot_directivity_snapshot(reference, *comparisons, target_time, col='P_obs', labels=None, 
-                                  is_polar=False, title=None, legend=True, ylim=None):
+                                  is_polar=False, title=None, legend=True, ylim=None, scale=None):
         import numpy as np
         import matplotlib.pyplot as plt
         import matplotlib.lines as mlines
@@ -919,7 +919,7 @@ class FWHPlotter:
             for ds in reference:
                 df = ds.data if hasattr(ds, 'data') else ds
                 idx = (np.abs(df['Time'] - t_val)).argmin()
-                ref_pressures.append(df[col].iloc[idx])
+                ref_pressures.append(df[col].iloc[idx] * scale)
                 
             if is_polar:
                 plot_angles = np.append(angles_rad, angles_rad[0])
@@ -940,20 +940,20 @@ class FWHPlotter:
                 
                 if is_polar:
                     plot_comp = np.append(comp_pressures, comp_pressures[0])
-                    ax.plot(plot_angles, plot_comp, ls=ls, c=c_time, marker='o', markersize=5)
+                    ax.plot(plot_angles, plot_comp * scale, ls=ls, c=c_time, marker='o', markersize=5)
                 else:
-                    ax.plot(angles_deg, comp_pressures, ls=ls, c=c_time, marker='o', markersize=5)
+                    ax.plot(angles_deg, comp_pressures * scale, ls=ls, c=c_time, marker='o', markersize=5)
 
         # 3. Custom Legend Construction
         if legend:
             # Dataset mappings
-            legend_elements = [mlines.Line2D([], [], color='k', ls='-', lw=2, label='Reference')]
-            for i, label in enumerate(labels):
-                legend_elements.append(mlines.Line2D([], [], color='k', ls=styles[i % len(styles)], marker='o', markersize=5, label=label))
-            
+            # legend_elements = [mlines.Line2D([], [], color='k', ls='-', lw=2, label='Reference')]
+            # for i, label in enumerate(labels):
+                # legend_elements.append(mlines.Line2D([], [], color='k', ls=styles[i % len(styles)], marker='o', markersize=5, label=label))
+            legend_elements = []
             # Time mappings
             if num_times > 1:
-                legend_elements.append(mlines.Line2D([], [], color='w', label=' ')) # Spacer
+                # legend_elements.append(mlines.Line2D([], [], color='w', label=' ')) # Spacer
                 for i, t_label in enumerate(time_labels):
                     legend_elements.append(mlines.Line2D([], [], color=colors[i], ls='-', lw=2, label=t_label))
 
