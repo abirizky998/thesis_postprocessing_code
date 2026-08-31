@@ -16,8 +16,8 @@ r_obs = 7.28
 n_observer = 360
 mach_number = [0.5, 0.8]
 
-n_source = [1, 2, 4, 8, 16]
-f_ratio = [2, 3, 5, 8]
+n_source = [1]
+f_ratio = [2, 3]
 r_eff = 1.3
 
 observer_setup_scatter(observer, D_obs=r_obs, n_observer=n_observer)
@@ -31,7 +31,7 @@ for n in n_source:
             f_source = nu * f_rot
             T_sim = 1 / f_rot
 
-            output_dir = f"data_{date}/{n}Sources_M{M}_fratio{nu}_singlecount"
+            output_dir = f"data_{date}/{n}Sources_M{M}_fratio{nu}_phaselagged"
             os.makedirs(output_dir, exist_ok=True)
 
             lines = [
@@ -46,7 +46,7 @@ for n in n_source:
                 y_b = r_eff * np.sin(theta_s)
 
                 omega_n = 2 * np.pi * f_source    
-                phase_shift = 0.0
+                phase_shift = theta_s
 
                 lines.extend([
                     "# Source type\n",
@@ -71,16 +71,16 @@ for n in n_source:
             print(f"--- Running Case {current_run} / {total_runs} | Timestep Count = {T_sim * 100 * f_source}")
             subprocess.run(['../bin/FWH_Sphere'], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
-            # for i in range(1, n_observer + 1):
-            #     obs_str = f"{i:02d}"
+            for i in range(1, n_observer + 1):
+                obs_str = f"{i:02d}"
 
-                # ana_file = f"FWH_observer_time_{obs_str}_validation.dat"
+                ana_file = f"FWH_observer_time_{obs_str}_validation.dat"
             ana_file = "FWH_observer_time_01_validation.dat"
             slice_scatter_output(ana_file, output_dir)
-            # ana_dest_file = os.path.join(output_dir, f"rotating_{obs_str}.dat")
+            ana_dest_file = os.path.join(output_dir, f"rotating_{obs_str}.dat")
 
-            # shutil.move(ana_file, ana_dest_file)
-            os.remove(ana_file)
+            shutil.move(ana_file, ana_dest_file)
+            # os.remove(ana_file)
 
             current_run += 1
 

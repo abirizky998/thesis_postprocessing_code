@@ -957,9 +957,9 @@ class FWHPlotter:
                 for i, t_label in enumerate(time_labels):
                     legend_elements.append(mlines.Line2D([], [], color=colors[i], ls='-', lw=2, label=t_label))
 
-            loc = 'upper right' if is_polar else 'center left'
+            loc = 'upper right' if is_polar else 'lower right'
             bbox = (1.35, 1.1) if is_polar else (1.05, 0.5)
-            ax.legend(handles=legend_elements, loc=loc, bbox_to_anchor=bbox)
+            ax.legend(handles=legend_elements, loc=loc)#, bbox_to_anchor=bbox)
 
         # 4. Formatting
         title_str = title or "Pressure Lobes"
@@ -968,13 +968,14 @@ class FWHPlotter:
             ax.set_title(title_str, pad=20, weight='bold')
             ax.grid(True, linestyle='--', alpha=0.7)
         else:
-            ax.set_title(title_str, weight='bold')
+            ax.set_title(title_str)
             ax.set_xlabel("Observer Angle (Degrees)")
             ax.set_ylabel("Pressure (Pa)")
             if ylim: ax.set_ylim(bottom=-ylim, top=ylim)
-            ax.set_xlim(left=0.0, right=2*np.pi + np.pi/8)
+            # ax.set_xlim(left=0.0, right=2*np.pi)
             step = 1 if n_obs <= 12 else (n_obs // 12 if n_obs <= 36 else n_obs // 8)
             ax.set_xticks(angles_deg[::step])
+
             ax.grid(True, linestyle='--', alpha=0.6)
 
         plt.tight_layout()
