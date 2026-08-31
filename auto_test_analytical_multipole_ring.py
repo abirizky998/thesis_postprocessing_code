@@ -39,11 +39,11 @@ phases = np.array([-0.52553536,  2.15796003, -1.44996874,  1.24464607, -2.375491
 num_harmonics = len(amps)
 n_source = num_harmonics * 6
 
-output_dir = f"data_{date}/{n_source}Sources_{num_harmonics}Harmonics_SinglePeriod_X_Observers"
+output_dir = f"data_{date}/{n_source}Sources_{num_harmonics}Harmonics_SinglePeriod_Y_Observers"
 os.makedirs(output_dir, exist_ok=True)
 
 # Orienting observer ring to match source coordinates (X-Y plane)
-observer_setup(observer, D_obs=-r_obs, n=n_observer, normal='x')
+observer_setup(observer, D_obs=-r_obs, n=n_observer, normal='y')
 
 lines = [
     f"# Automatically generated {n_source}-Source Dense Phased Array\n",

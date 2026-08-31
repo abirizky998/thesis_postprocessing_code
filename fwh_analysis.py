@@ -972,6 +972,7 @@ class FWHPlotter:
             ax.set_xlabel("Observer Angle (Degrees)")
             ax.set_ylabel("Pressure (Pa)")
             if ylim: ax.set_ylim(bottom=-ylim, top=ylim)
+            ax.set_xlim(left=0.0, right=2*np.pi + np.pi/8)
             step = 1 if n_obs <= 12 else (n_obs // 12 if n_obs <= 36 else n_obs // 8)
             ax.set_xticks(angles_deg[::step])
             ax.grid(True, linestyle='--', alpha=0.6)

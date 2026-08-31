@@ -179,6 +179,37 @@ def observer_setup(config_path, D_obs, n, circle = 1.0, is_dipole=False, offset_
     with open(config_path, 'w') as f:
         f.writelines(lines)
 
+import numpy as np
+
+def observer_setup_scatter(filename, D_obs, n_observer):
+    lines = [
+        "# Header comment\n",
+        "# Number of observers\n",
+        "1\n",                     # We are creating ONE observer object...
+        "# Definition\n",
+        "Scatter\n",               # ...of type SCATTER
+        "# Number of points\n",
+        f"{n_observer}\n",         # ...containing 360 points
+        "# Observer initial positions (x, y, z)\n"
+    ]
+    
+    # Generate the ring of points
+    for i in range(n_observer):
+        theta = i * (2 * np.pi / n_observer)
+        x = D_obs * np.cos(theta)
+        y = D_obs * np.sin(theta)
+        z = 0.0
+        lines.append(f"{x:.6f} {y:.6f} {z:.6f}\n")
+        
+    # Apply motion to the entire scatter group
+    lines.extend([
+        "# Motion type and duration\n",
+        "Stationary 1000.0\n"
+    ])
+    
+    with open(filename, 'w') as f:
+        f.writelines(lines)
+
 def naca0012_thickness(x_norm, t_max):
     # Analytical thickness distribution for NACA 0012
     # x_norm is the normalized chord position from 0 (LE) to 1 (TE)
@@ -235,3 +266,38 @@ def source_setup_chordwise_array(config_path, R_p, eta, chord, beta_c_deg, t_max
             
     with open(config_path, 'w') as f:
         f.writelines(lines)
+
+def slice_scatter_output(scatter_filepath, output_dir):
+    with open(scatter_filepath, 'r') as f:
+        lines = f.readlines()
+
+    header_lines = []
+    current_block = []
+    obs_index = 1
+    in_data = False
+
+    for line in lines:
+        # Detect the start of a new observer block (e.g., "# Point 1")
+        if "Point" in line and line.strip().startswith("#"):
+            if in_data:
+                # Save the completed block to its own file
+                dest_file = os.path.join(output_dir, f"rotating_{obs_index:03d}.dat")
+                with open(dest_file, 'w') as out_f:
+                    out_f.writelines(header_lines + current_block)
+                obs_index += 1
+                current_block = []
+            
+            in_data = True
+            current_block.append(line)
+            
+        elif not in_data:
+            # Capture any global headers/variable definitions at the top of the file
+            header_lines.append(line)
+        else:
+            current_block.append(line)
+
+    # Save the final block
+    if current_block:
+        dest_file = os.path.join(output_dir, f"rotating_{obs_index:03d}.dat")
+        with open(dest_file, 'w') as out_f:
+            out_f.writelines(header_lines + current_block)
