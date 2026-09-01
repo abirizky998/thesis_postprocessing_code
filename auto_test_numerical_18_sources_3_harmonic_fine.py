@@ -8,7 +8,7 @@ import time
 config = 'input_config.txt'
 source = 'input_source.txt'
 observer = 'input_observer.txt'
-date = current_date()
+date = "260729" #current_date()
 
 # Physical Constants
 c = 340.0
@@ -21,7 +21,7 @@ n_source = 18
 n_blades = 3       
 r_eff = 1.3         
 f_fundamental = 107.25
-processes = 32
+processes = 1
 
 
 # Target DFT Arrays
@@ -29,11 +29,11 @@ amps = np.array([3.39017904, 4.41553483, 4.33133909])
 phases = np.array([-0.53425042,  2.19246152, -1.4319258 ])
 num_harmonics = len(amps)
 
-# output_dir = f"data_{date}/{n_source}Sources_{num_harmonics}Harmonics_xpsweep"
-# os.makedirs(output_dir, exist_ok=True)
+output_dir = f"data_{date}/{n_source}Sources_{num_harmonics}Harmonics_xpsweep_NEWDATA"
+os.makedirs(output_dir, exist_ok=True)
 
 # Orienting observer ring to match source coordinates (X-Y plane)
-observer_setup(observer, D_obs=r_obs, n=n_observer, normal='z')
+observer_setup(observer, D_obs=r_obs, n=n_observer, normal='x')
 
 lines = [
     f"# Automatically generated {n_source}-Source Dense Phased Array\n",
@@ -73,7 +73,7 @@ for s in range(n_source):
 with open(source, 'w') as f:
     f.writelines(lines)
 
-x_values = [100]
+x_values = [5, 10]
 p_values = [20, 40, 60, 80, 100]
 T_sim = 1 / f_fundamental
 
@@ -92,13 +92,13 @@ for x in x_values:
         for i in range(1, n_observer + 1):
             obs_str = f"{i:02d}"
 
-            ana_file = f"FWH_observer_time_{obs_str}_validation.dat"
-            ana_dest_file = os.path.join(output_dir, f"ana_spatial_{obs_str}.dat")
+            # ana_file = f"FWH_observer_time_{obs_str}_validation.dat"
+            # ana_dest_file = os.path.join(output_dir, f"ana_spatial_{obs_str}.dat")
 
-            if p==p_values[-1]:
-                shutil.move(ana_file, ana_dest_file)
-            elif os.path.exists(ana_file):
-                os.remove(ana_file)
+            # if p==p_values[-1]:
+            #     shutil.move(ana_file, ana_dest_file)
+            # elif os.path.exists(ana_file):
+            #     os.remove(ana_file)
 
             num_file = f"FWH_observer_time_{obs_str}_RT.dat"
             num_dest_file = os.path.join(output_dir, f"X{int(x)}_P{int(p)}_{obs_str}.dat")

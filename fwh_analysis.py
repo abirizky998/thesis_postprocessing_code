@@ -880,7 +880,7 @@ class FWHPlotter:
     ### LATEST LATEST!!!
     @staticmethod
     def plot_directivity_snapshot(reference, *comparisons, target_time, col='P_obs', labels=None, 
-                                  is_polar=False, title=None, legend=True, ylim=None, scale=None):
+                                  is_polar=False, title=None, legend=True, ylim=None, scale=1.0):
         import numpy as np
         import matplotlib.pyplot as plt
         import matplotlib.lines as mlines
@@ -1485,9 +1485,10 @@ class FWHPlotter:
 
         # 4. Formatting
         title_prefix = "Doppler-Shifted " if use_doppler else "Non-Doppler Shifted "
-        ax.set_title(f"{add_title}\n {title_prefix}Temporal vs Spatial Resolution Matrix\n Shaped by {shape_by.upper()}")
-        ax.set_xlabel(f"Spatial Resolution, X (Grid Points Per Wavelength)")
-        ax.set_ylabel(f"Temporal Resolution, P (Time Steps Per Period)")
+        ax.set_title(f"{add_title}\n Temporal vs Spatial Resolution Matrix", fontsize=16)
+
+        ax.set_xlabel(f"Spatial Resolution, X (Grid Points Per Wavelength)", fontsize=14)
+        ax.set_ylabel(f"Temporal Resolution, P (Time Steps Per Period)", fontsize=14)
         
         # Colorbar
 
