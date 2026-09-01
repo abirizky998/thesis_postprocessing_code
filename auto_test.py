@@ -181,32 +181,72 @@ def observer_setup(config_path, D_obs, n, circle = 1.0, is_dipole=False, offset_
 
 import numpy as np
 
-def observer_setup_scatter(filename, D_obs, n_observer):
+# def observer_setup_scatter(filename, D_obs, n_observer):
+#     lines = [
+#         "# Header comment\n",
+#         "# Number of observers\n",
+#         "1\n",                     # We are creating ONE observer object...
+#         "# Definition\n",
+#         "Scatter\n",               # ...of type SCATTER
+#         "# Number of points\n",
+#         f"{n_observer}\n",         # ...containing 360 points
+#         "# Observer initial positions (x, y, z)\n"
+#     ]
+    
+#     # Generate the ring of points
+#     for i in range(n_observer):
+#         theta = i * (2 * np.pi / n_observer)
+#         x = D_obs * np.cos(theta)
+#         y = D_obs * np.sin(theta)
+#         z = 0.0
+#         lines.append(f"{x:.6f} {y:.6f} {z:.6f}\n")
+        
+#     # Apply motion to the entire scatter group
+#     lines.extend([
+#         "# Motion type and duration\n",
+#         "Stationary 1000.0\n"
+#     ])
+    
+#     with open(filename, 'w') as f:
+#         f.writelines(lines)
+
+def observer_setup_scatter(filename, D_obs, n_observer, normals=['z']):
     lines = [
         "# Header comment\n",
-        "# Number of observers\n",
-        "1\n",                     # We are creating ONE observer object...
-        "# Definition\n",
-        "Scatter\n",               # ...of type SCATTER
-        "# Number of points\n",
-        f"{n_observer}\n",         # ...containing 360 points
-        "# Observer initial positions (x, y, z)\n"
+        "# Number of observer set\n",
+        f"{len(normals)}\n"
     ]
     
-    # Generate the ring of points
-    for i in range(n_observer):
-        theta = i * (2 * np.pi / n_observer)
-        x = D_obs * np.cos(theta)
-        y = D_obs * np.sin(theta)
-        z = 0.0
-        lines.append(f"{x:.6f} {y:.6f} {z:.6f}\n")
+    for normal in normals:
+        normal = normal.lower()
+        lines.extend([
+            "# Definition\n",
+            "Scatter\n",
+            "# Number of points\n",
+            f"{n_observer}\n",
+            "# Observer initial positions (x, y, z)\n"
+        ])
         
-    # Apply motion to the entire scatter group
-    lines.extend([
-        "# Motion type and duration\n",
-        "Stationary 1000.0\n"
-    ])
-    
+        for i in range(n_observer):
+            theta = i * (2 * np.pi / n_observer)
+            
+            # Map the ring coordinates based on the normal vector
+            if normal == 'z':
+                x, y, z = D_obs * np.cos(theta), D_obs * np.sin(theta), 0.0
+            elif normal == 'x':
+                x, y, z = 0.0, D_obs * np.cos(theta), D_obs * np.sin(theta)
+            elif normal == 'y':
+                x, y, z = D_obs * np.cos(theta), 0.0, D_obs * np.sin(theta)
+            else:
+                raise ValueError(f"Normal axis '{normal}' not supported. Use 'x', 'y', or 'z'.")
+                
+            lines.append(f"{x:.6f} {y:.6f} {z:.6f}\n")
+            
+        lines.extend([
+            "# Motion type and duration\n",
+            "Stationary 1000.0\n"
+        ])
+        
     with open(filename, 'w') as f:
         f.writelines(lines)
 
@@ -267,7 +307,7 @@ def source_setup_chordwise_array(config_path, R_p, eta, chord, beta_c_deg, t_max
     with open(config_path, 'w') as f:
         f.writelines(lines)
 
-def slice_scatter_output(scatter_filepath, output_dir):
+def slice_scatter_output(scatter_filepath, output_dir, prefix="rotating"):
     with open(scatter_filepath, 'r') as f:
         lines = f.readlines()
 
@@ -280,8 +320,8 @@ def slice_scatter_output(scatter_filepath, output_dir):
         # Detect the start of a new observer block (e.g., "# Point 1")
         if "Point" in line and line.strip().startswith("#"):
             if in_data:
-                # Save the completed block to its own file
-                dest_file = os.path.join(output_dir, f"rotating_{obs_index:03d}.dat")
+                # Save the completed block to its own file using the dynamic prefix
+                dest_file = os.path.join(output_dir, f"{prefix}_{obs_index:03d}.dat")
                 with open(dest_file, 'w') as out_f:
                     out_f.writelines(header_lines + current_block)
                 obs_index += 1
@@ -298,6 +338,6 @@ def slice_scatter_output(scatter_filepath, output_dir):
 
     # Save the final block
     if current_block:
-        dest_file = os.path.join(output_dir, f"rotating_{obs_index:03d}.dat")
+        dest_file = os.path.join(output_dir, f"{prefix}_{obs_index:03d}.dat")
         with open(dest_file, 'w') as out_f:
             out_f.writelines(header_lines + current_block)
