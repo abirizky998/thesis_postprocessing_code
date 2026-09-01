@@ -8,7 +8,7 @@ import time
 config = 'input_config.txt'
 source = 'input_source.txt'
 observer = 'input_observer.txt'
-date = "260729" #current_date()
+date = "260803" #current_date()
 
 # Physical Constants
 c = 340.0
@@ -33,7 +33,7 @@ output_dir = f"data_{date}/{n_source}Sources_{num_harmonics}Harmonics_xpsweep_NE
 os.makedirs(output_dir, exist_ok=True)
 
 # Orienting observer ring to match source coordinates (X-Y plane)
-observer_setup(observer, D_obs=r_obs, n=n_observer, normal='x')
+observer_setup(observer, D_obs=r_obs, n=n_observer, normal='z')
 
 lines = [
     f"# Automatically generated {n_source}-Source Dense Phased Array\n",
@@ -81,9 +81,9 @@ total_runs = len(x_values) * len(p_values)
 current_run = 1
 
 for x in x_values:
-    n = grid_sizing(config, M=0.0, X=x, lambda_s=c / f_fundamental, R=3.0)
+    n = grid_sizing(config, M=0.0, X=x, lambda_s=c / (3 *f_fundamental), R=3.0)
     for p in p_values:
-        timestep_sizing(config, M=0.0, P=p, f_s=f_fundamental, T_sim=T_sim)
+        timestep_sizing(config, M=0.0, P=p, f_s=3 *f_fundamental, T_sim=T_sim)
 
         print(f"--- Running Case {current_run} / {total_runs} | X = {x} P = {p} | Grid Count = {n**2} Timestep Count = {T_sim * p * f_fundamental}")
         subprocess.run(["mpirun", "-np", str(processes), '../../bin/FWH_Sphere'], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)

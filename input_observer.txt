@@ -4,216 +4,216 @@
 # obs 1
 Point
 # initial loc
-0.0 7.280000 0.000000
+7.280000 0.000000 0.0
 # motion type and duration
 Stationary 1000.0
 # obs 2
 Point
 # initial loc
-0.0 7.169400 1.264159
+7.169400 1.264159 0.0
 # motion type and duration
 Stationary 1000.0
 # obs 3
 Point
 # initial loc
-0.0 6.840962 2.489907
+6.840962 2.489907 0.0
 # motion type and duration
 Stationary 1000.0
 # obs 4
 Point
 # initial loc
-0.0 6.304665 3.640000
+6.304665 3.640000 0.0
 # motion type and duration
 Stationary 1000.0
 # obs 5
 Point
 # initial loc
-0.0 5.576804 4.679494
+5.576804 4.679494 0.0
 # motion type and duration
 Stationary 1000.0
 # obs 6
 Point
 # initial loc
-0.0 4.679494 5.576804
+4.679494 5.576804 0.0
 # motion type and duration
 Stationary 1000.0
 # obs 7
 Point
 # initial loc
-0.0 3.640000 6.304665
+3.640000 6.304665 0.0
 # motion type and duration
 Stationary 1000.0
 # obs 8
 Point
 # initial loc
-0.0 2.489907 6.840962
+2.489907 6.840962 0.0
 # motion type and duration
 Stationary 1000.0
 # obs 9
 Point
 # initial loc
-0.0 1.264159 7.169400
+1.264159 7.169400 0.0
 # motion type and duration
 Stationary 1000.0
 # obs 10
 Point
 # initial loc
-0.0 0.000000 7.280000
+0.000000 7.280000 0.0
 # motion type and duration
 Stationary 1000.0
 # obs 11
 Point
 # initial loc
-0.0 -1.264159 7.169400
+-1.264159 7.169400 0.0
 # motion type and duration
 Stationary 1000.0
 # obs 12
 Point
 # initial loc
-0.0 -2.489907 6.840962
+-2.489907 6.840962 0.0
 # motion type and duration
 Stationary 1000.0
 # obs 13
 Point
 # initial loc
-0.0 -3.640000 6.304665
+-3.640000 6.304665 0.0
 # motion type and duration
 Stationary 1000.0
 # obs 14
 Point
 # initial loc
-0.0 -4.679494 5.576804
+-4.679494 5.576804 0.0
 # motion type and duration
 Stationary 1000.0
 # obs 15
 Point
 # initial loc
-0.0 -5.576804 4.679494
+-5.576804 4.679494 0.0
 # motion type and duration
 Stationary 1000.0
 # obs 16
 Point
 # initial loc
-0.0 -6.304665 3.640000
+-6.304665 3.640000 0.0
 # motion type and duration
 Stationary 1000.0
 # obs 17
 Point
 # initial loc
-0.0 -6.840962 2.489907
+-6.840962 2.489907 0.0
 # motion type and duration
 Stationary 1000.0
 # obs 18
 Point
 # initial loc
-0.0 -7.169400 1.264159
+-7.169400 1.264159 0.0
 # motion type and duration
 Stationary 1000.0
 # obs 19
 Point
 # initial loc
-0.0 -7.280000 0.000000
+-7.280000 0.000000 0.0
 # motion type and duration
 Stationary 1000.0
 # obs 20
 Point
 # initial loc
-0.0 -7.169400 -1.264159
+-7.169400 -1.264159 0.0
 # motion type and duration
 Stationary 1000.0
 # obs 21
 Point
 # initial loc
-0.0 -6.840962 -2.489907
+-6.840962 -2.489907 0.0
 # motion type and duration
 Stationary 1000.0
 # obs 22
 Point
 # initial loc
-0.0 -6.304665 -3.640000
+-6.304665 -3.640000 0.0
 # motion type and duration
 Stationary 1000.0
 # obs 23
 Point
 # initial loc
-0.0 -5.576804 -4.679494
+-5.576804 -4.679494 0.0
 # motion type and duration
 Stationary 1000.0
 # obs 24
 Point
 # initial loc
-0.0 -4.679494 -5.576804
+-4.679494 -5.576804 0.0
 # motion type and duration
 Stationary 1000.0
 # obs 25
 Point
 # initial loc
-0.0 -3.640000 -6.304665
+-3.640000 -6.304665 0.0
 # motion type and duration
 Stationary 1000.0
 # obs 26
 Point
 # initial loc
-0.0 -2.489907 -6.840962
+-2.489907 -6.840962 0.0
 # motion type and duration
 Stationary 1000.0
 # obs 27
 Point
 # initial loc
-0.0 -1.264159 -7.169400
+-1.264159 -7.169400 0.0
 # motion type and duration
 Stationary 1000.0
 # obs 28
 Point
 # initial loc
-0.0 -0.000000 -7.280000
+-0.000000 -7.280000 0.0
 # motion type and duration
 Stationary 1000.0
 # obs 29
 Point
 # initial loc
-0.0 1.264159 -7.169400
+1.264159 -7.169400 0.0
 # motion type and duration
 Stationary 1000.0
 # obs 30
 Point
 # initial loc
-0.0 2.489907 -6.840962
+2.489907 -6.840962 0.0
 # motion type and duration
 Stationary 1000.0
 # obs 31
 Point
 # initial loc
-0.0 3.640000 -6.304665
+3.640000 -6.304665 0.0
 # motion type and duration
 Stationary 1000.0
 # obs 32
 Point
 # initial loc
-0.0 4.679494 -5.576804
+4.679494 -5.576804 0.0
 # motion type and duration
 Stationary 1000.0
 # obs 33
 Point
 # initial loc
-0.0 5.576804 -4.679494
+5.576804 -4.679494 0.0
 # motion type and duration
 Stationary 1000.0
 # obs 34
 Point
 # initial loc
-0.0 6.304665 -3.640000
+6.304665 -3.640000 0.0
 # motion type and duration
 Stationary 1000.0
 # obs 35
 Point
 # initial loc
-0.0 6.840962 -2.489907
+6.840962 -2.489907 0.0
 # motion type and duration
 Stationary 1000.0
 # obs 36
 Point
 # initial loc
-0.0 7.169400 -1.264159
+7.169400 -1.264159 0.0
 # motion type and duration
 Stationary 1000.0
