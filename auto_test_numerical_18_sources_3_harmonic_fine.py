@@ -73,8 +73,8 @@ for s in range(n_source):
 with open(source, 'w') as f:
     f.writelines(lines)
 
-x_values = [5, 10]
-p_values = [20, 40, 60, 80, 100]
+x_values = [10]
+p_values = [80, 100]
 T_sim = 1 / f_fundamental
 
 total_runs = len(x_values) * len(p_values)
