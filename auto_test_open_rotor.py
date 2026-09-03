@@ -8,15 +8,15 @@ import time
 config = 'input_config.txt'
 source = 'input_source.txt'
 observer = 'input_observer.txt'
-date = current_date()
+date = "260902"#current_date()
 
 c = 340.0
 rho = 1.2
 r_obs = 7.28
-n_observer = 180
+n_observer = 1
 x = 15
-p = 30
-processes=64
+p = 80
+# processes=64
 
 B = 12
 V = 8
@@ -39,14 +39,15 @@ planes = ['z']
 observer_setup_scatter(observer, D_obs=r_obs, n_observer=n_observer, normals=planes)
 
 # Account for advanced time algorithm
-T_sim = 2 / f_rot 
+T_sim = 4 / f_rot
+
 # Usually 2 x BPF1 + 1 x BPF2 is the inter-rotor frequency of interest
 interaction_frequency = (2 * B * f_rot) 
 
 n = grid_sizing(config, M=0.0, X=x, lambda_s=c/interaction_frequency, R=1.3 * r_eff)
 timestep_sizing(config, M=0.0, P=p, f_s=interaction_frequency, T_sim=T_sim)
 
-output_dir = f"data_{date}/OpenFan_Fratio_Omega"
+output_dir = f"data_{date}/OpenFan_XPSweep_NEW"
 os.makedirs(output_dir, exist_ok=True)
 
 lines = [
