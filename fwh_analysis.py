@@ -588,16 +588,163 @@ class FWHPlotter:
         plt.tight_layout()
         plt.show()
 
+    # @staticmethod
+    # def plot_fft_spectrum(reference, *comparisons, f_base, num_harmonics=10, 
+    #                       t_start=0.0, t_end=None, window='hanning', 
+    #                       labels=None, title=None, ref_col='P_analytical', 
+    #                       comp_col='P_obs', y_axis='spl', show_error_bars=False,
+    #                       show_error_subplot=False):
+        
+    #     # 1. Setup Layout
+    #     if show_error_subplot:
+    #         fig, (ax, ax_err) = plt.subplots(2, 1, figsize=(12, 8), sharex=True, 
+    #                                          gridspec_kw={'height_ratios': [3, 1.2]})
+    #         fig.subplots_adjust(hspace=0.1)
+    #     else:
+    #         fig, ax = plt.subplots(figsize=(12, 6))
+    #         ax_err = None
+            
+    #     def compute_fft_harmonics(df, col):
+    #         mask = df['Time'] >= t_start
+    #         if t_end is not None:
+    #             mask &= (df['Time'] <= t_end)
+                
+    #         t_raw = df['Time'][mask].values
+    #         p_raw = df[col][mask].values
+            
+    #         if len(t_raw) < 2:
+    #             return np.zeros(num_harmonics), np.zeros(num_harmonics)
+                
+    #         num_points = len(t_raw)
+    #         t_uniform = np.linspace(t_raw[0], t_raw[-1], num_points)
+    #         dt = t_uniform[1] - t_uniform[0]
+            
+    #         p_uniform = np.interp(t_uniform, t_raw, p_raw)
+            
+    #         if window == 'hanning':
+    #             w = np.hanning(num_points)
+    #             p_uniform = p_uniform * w
+    #             amp_corr = 2.0
+    #         else:
+    #             amp_corr = 1.0
+                
+    #         fft_vals = np.fft.rfft(p_uniform)
+    #         freqs = np.fft.rfftfreq(num_points, d=dt)
+    #         amp = np.abs(fft_vals) * (2.0 / num_points) * amp_corr
+            
+    #         # Extract specific harmonic peaks from the continuous FFT
+    #         harmonic_amps = np.zeros(num_harmonics)
+    #         harmonic_freqs = np.zeros(num_harmonics)
+            
+    #         for n in range(1, num_harmonics + 1):
+    #             target_f = n * f_base
+    #             # Find the index of the FFT frequency bin closest to our target harmonic
+    #             idx = np.argmin(np.abs(freqs - target_f))
+    #             harmonic_freqs[n-1] = target_f 
+    #             harmonic_amps[n-1] = amp[idx]
+                
+    #         return harmonic_freqs, harmonic_amps
+
+    #     # 2. Process Reference
+    #     ref_df = reference.data if hasattr(reference, 'data') else reference
+    #     freqs, ref_amps = compute_fft_harmonics(ref_df, ref_col)
+        
+    #     p_ref = 2e-5
+    #     if y_axis.lower() == 'spl':
+    #         ref_y = 20 * np.log10((ref_amps / np.sqrt(2)) / p_ref + 1e-15)
+    #         ylabel = 'Sound Pressure Level (dB)'
+    #         err_unit = 'dB'
+    #     else:
+    #         ref_y = ref_amps
+    #         ylabel = 'Amplitude (Pa)'
+    #         err_unit = 'Pa'
+
+    #     # 3. Setup Grouped Bar Parameters
+    #     n_datasets = len(comparisons) + 1
+    #     bar_width = (f_base * 0.8) / n_datasets
+    #     offsets = np.linspace(-bar_width * (n_datasets-1)/2, bar_width * (n_datasets-1)/2, n_datasets)
+        
+    #     # Plot Reference
+    #     ax.bar(freqs + offsets[0], ref_y, width=bar_width, color='black', 
+    #            label='Analytical Solution', edgecolor='black', zorder=3)
+
+    #     if ax_err:
+    #         ax_err.axhline(0, color='black', ls='--', lw=1.2)
+
+    #     # 4. Process Comparisons
+    #     if not labels or len(labels) != len(comparisons):
+    #         labels = [f'Dataset {i+1}' for i in range(len(comparisons))]
+            
+    #     colors = ['red', 'blue', 'green', 'orange', 'purple', 'cyan', 'magenta']
+        
+    #     for i, comp in enumerate(comparisons):
+    #         comp_df = comp.data if hasattr(comp, 'data') else comp
+    #         _, comp_amps = compute_fft_harmonics(comp_df, comp_col)
+            
+    #         if y_axis.lower() == 'spl':
+    #             comp_y = 20 * np.log10((comp_amps / np.sqrt(2)) / p_ref + 1e-15)
+    #         else:
+    #             comp_y = comp_amps
+
+    #         err_array = comp_y - ref_y
+    #         mean_abs_err = np.mean(np.abs(err_array))
+    #         updated_label = f"{labels[i]} (Mean $\Delta$: {mean_abs_err:.2f} {err_unit})"
+
+    #         c = colors[i % len(colors)]
+            
+    #         yerr = None
+    #         if show_error_bars:
+    #             yerr = np.abs(err_array)
+    #             yerr = [np.zeros_like(yerr), yerr] 
+            
+    #         ax.bar(freqs + offsets[i+1], comp_y, width=bar_width, color=c, 
+    #                label=updated_label, alpha=0.8, edgecolor='black', 
+    #                yerr=yerr, ecolor='dimgray', capsize=3, zorder=3)
+
+    #         if ax_err:
+    #             ax_err.plot(freqs, err_array, marker='o', markersize=5,
+    #                         ls=':', color=c, alpha=0.8)
+
+    #     # 5. Formatting
+    #     ax.set_ylabel(ylabel, fontweight='bold')
+    #     ax.set_xticks(freqs)
+        
+    #     if not show_error_subplot:
+    #         ax.set_xticklabels([f"{int(round(f/f_base))}X" for f in freqs], rotation=45)
+    #         ax.set_xlabel(f'Harmonic (Base Frequency={f_base:.1f} Hz)', fontweight='bold')
+        
+    #     if title:
+    #         ax.set_title(title)
+            
+    #     ax.grid(True, linestyle='--', alpha=0.6, zorder=0)
+    #     ax.legend(loc='upper right', fontsize=9)
+        
+    #     max_val = max(np.max(ref_y), np.max(comp_y))
+    #     min_val = min(np.min(ref_y), np.min(comp_y)) if y_axis.lower() == 'spl' else 0
+    #     y_pad = (max_val - min_val) * 0.15
+    #     ax.set_ylim(min_val - (y_pad if y_axis.lower() == 'spl' else 0), max_val + y_pad)
+
+    #     if ax_err:
+    #         ax_err.set_xticks(freqs)
+    #         ax_err.set_xticklabels([f"{int(round(f/f_base))}X" for f in freqs], rotation=45)
+    #         ax_err.set_xlabel(f'Harmonic (Base Frequency={f_base:.1f} Hz)', fontweight='bold')
+    #         ax_err.set_ylabel(f"$\Delta$ {err_unit}", fontweight='bold')
+    #         ax_err.grid(True, ls='--', alpha=0.6)
+        
+    #     plt.tight_layout()
+    #     plt.show()
+
     @staticmethod
     def plot_fft_spectrum(reference, *comparisons, f_base, num_harmonics=10, 
                           t_start=0.0, t_end=None, window='hanning', 
                           labels=None, title=None, ref_col='P_analytical', 
                           comp_col='P_obs', y_axis='spl', show_error_bars=False,
-                          show_error_subplot=False):
+                          show_error_subplot=False, bottom_y=None, top_y=None,
+                          figsize=None):
         
         # 1. Setup Layout
         if show_error_subplot:
-            fig, (ax, ax_err) = plt.subplots(2, 1, figsize=(12, 8), sharex=True, 
+            fig, (ax, ax_err) = plt.subplots(2, 1, figsize=(12, 8) if figsize is None else figsize, sharex=True, 
                                              gridspec_kw={'height_ratios': [3, 1.2]})
             fig.subplots_adjust(hspace=0.1)
         else:
@@ -638,7 +785,6 @@ class FWHPlotter:
             
             for n in range(1, num_harmonics + 1):
                 target_f = n * f_base
-                # Find the index of the FFT frequency bin closest to our target harmonic
                 idx = np.argmin(np.abs(freqs - target_f))
                 harmonic_freqs[n-1] = target_f 
                 harmonic_amps[n-1] = amp[idx]
@@ -647,26 +793,35 @@ class FWHPlotter:
 
         # 2. Process Reference
         ref_df = reference.data if hasattr(reference, 'data') else reference
-        freqs, ref_amps = compute_fft_harmonics(ref_df, ref_col)
+        _, ref_amps = compute_fft_harmonics(ref_df, ref_col)
         
         p_ref = 2e-5
         if y_axis.lower() == 'spl':
             ref_y = 20 * np.log10((ref_amps / np.sqrt(2)) / p_ref + 1e-15)
             ylabel = 'Sound Pressure Level (dB)'
             err_unit = 'dB'
+            threshold = 20
         else:
             ref_y = ref_amps
             ylabel = 'Amplitude (Pa)'
             err_unit = 'Pa'
+            threshold = 1e-5
 
-        # 3. Setup Grouped Bar Parameters
-        n_datasets = len(comparisons) + 1
-        bar_width = (f_base * 0.8) / n_datasets
-        offsets = np.linspace(-bar_width * (n_datasets-1)/2, bar_width * (n_datasets-1)/2, n_datasets)
+        # 3. Setup X-axis and Plot Reference
+        x_vals = np.arange(1, num_harmonics + 1)
         
-        # Plot Reference
-        ax.bar(freqs + offsets[0], ref_y, width=bar_width, color='black', 
-               label='Analytical Solution', edgecolor='black', zorder=3)
+        # Plot reference dotted lines and markers
+        ax.vlines(x_vals, ymin=0, ymax=ref_y, color='black', ls=':', zorder=1)
+        ax.plot(x_vals, ref_y, marker='s', color='none', markeredgecolor='black', 
+                ls='', label='Analytical Solution', zorder=3)
+
+        # Annotate reference peaks
+        # for x, y in zip(x_vals, ref_y):
+        #     y_offset = max(ref_y) * 0.05
+        #     if y < 0:
+        #         y = 0
+        #     if y > threshold:
+        #         ax.text(x, y + y_offset, f"{y:.2f}", ha='center', va='bottom', fontsize=10, rotation=90)
 
         if ax_err:
             ax_err.axhline(0, color='black', ls='--', lw=1.2)
@@ -676,6 +831,9 @@ class FWHPlotter:
             labels = [f'Dataset {i+1}' for i in range(len(comparisons))]
             
         colors = ['red', 'blue', 'green', 'orange', 'purple', 'cyan', 'magenta']
+        markers = ['o', '^', 'D', 'v', 'p', '*', 'h']
+        
+        all_comp_y = []
         
         for i, comp in enumerate(comparisons):
             comp_df = comp.data if hasattr(comp, 'data') else comp
@@ -685,55 +843,65 @@ class FWHPlotter:
                 comp_y = 20 * np.log10((comp_amps / np.sqrt(2)) / p_ref + 1e-15)
             else:
                 comp_y = comp_amps
+                
+            all_comp_y.append(comp_y)
 
             err_array = comp_y - ref_y
             mean_abs_err = np.mean(np.abs(err_array))
             updated_label = f"{labels[i]} (Mean $\Delta$: {mean_abs_err:.2f} {err_unit})"
 
             c = colors[i % len(colors)]
+            m = markers[i % len(markers)]
             
-            yerr = None
+            # Add error bars if requested
             if show_error_bars:
                 yerr = np.abs(err_array)
                 yerr = [np.zeros_like(yerr), yerr] 
+                ax.errorbar(x_vals, comp_y, yerr=yerr, fmt='none', ecolor=c, alpha=0.5, capsize=3, zorder=2)
             
-            ax.bar(freqs + offsets[i+1], comp_y, width=bar_width, color=c, 
-                   label=updated_label, alpha=0.8, edgecolor='black', 
-                   yerr=yerr, ecolor='dimgray', capsize=3, zorder=3)
+            # Plot comparison markers only (no vertical lines)
+            ax.plot(x_vals, comp_y, marker=m, color='none', markeredgecolor=c, 
+                    ls='', label=updated_label, zorder=4)
 
             if ax_err:
-                ax_err.plot(freqs, err_array, marker='o', markersize=5,
-                            ls=':', color=c, alpha=0.8)
+                ax_err.plot(x_vals, err_array, marker=m, markersize=5,
+                            ls=':', color=c, alpha=0.8, markerfacecolor='none')
 
         # 5. Formatting
-        ax.set_ylabel(ylabel, fontweight='bold')
-        ax.set_xticks(freqs)
+        ax.set_ylabel(ylabel, fontsize=14)
+        ax.set_xticks(x_vals)
         
         if not show_error_subplot:
-            ax.set_xticklabels([f"{int(round(f/f_base))}X" for f in freqs], rotation=45)
-            ax.set_xlabel(f'Harmonic (Base Frequency={f_base:.1f} Hz)', fontweight='bold')
+            ax.set_xticklabels([f"{x}X" for x in x_vals])
+            ax.set_xlabel(f'Harmonic Order (Base Frequency={f_base:.1f} Hz)', fontsize=14)
         
         if title:
             ax.set_title(title)
             
-        ax.grid(True, linestyle='--', alpha=0.6, zorder=0)
-        ax.legend(loc='upper right', fontsize=9)
+        ax.grid(True, linestyle=':', alpha=0.6, zorder=0)
         
-        max_val = max(np.max(ref_y), np.max(comp_y))
-        min_val = min(np.min(ref_y), np.min(comp_y)) if y_axis.lower() == 'spl' else 0
-        y_pad = (max_val - min_val) * 0.15
-        ax.set_ylim(min_val - (y_pad if y_axis.lower() == 'spl' else 0), max_val + y_pad)
+        # Moved legend to lower right or upper left so it doesn't block the tall peaks
+        ax.legend(loc='lower right', fontsize=10)
+
+        
+        # FIXED Y-AXIS SCALING: Lock bottom to 0, scale top to 1.2x max value
+        max_val = np.max([np.max(ref_y)] + [np.max(c) for c in all_comp_y])
+        ax.set_ylim(bottom=0 if bottom_y is None else bottom_y, 
+                    top=max_val * 1.2 if top_y is None else top_y)
 
         if ax_err:
-            ax_err.set_xticks(freqs)
-            ax_err.set_xticklabels([f"{int(round(f/f_base))}X" for f in freqs], rotation=45)
-            ax_err.set_xlabel(f'Harmonic (Base Frequency={f_base:.1f} Hz)', fontweight='bold')
-            ax_err.set_ylabel(f"$\Delta$ {err_unit}", fontweight='bold')
-            ax_err.grid(True, ls='--', alpha=0.6)
+            ax_err.set_xticks(x_vals)
+            ax_err.set_xticklabels([f"{x}X" for x in x_vals])
+            ax_err.set_xlabel(f'Harmonic Order (Base Frequency={f_base:.1f} Hz)', fontsize=14)
+            ax_err.set_ylabel(f"$\Delta$ {err_unit}", fontsize=14)
+            ax_err.grid(True, ls=':', alpha=0.6)
+            
+            # Add a bit of padding to the error subplot so markers don't clip the edges
+            err_max = np.max(np.abs(ax_err.get_ylim()))
+            ax_err.set_ylim(-err_max * 1.2, err_max * 1.2)
         
         plt.tight_layout()
         plt.show()
-
     # @staticmethod
     # def plot_directivity_snapshot(datasets, target_time, col='P_obs', is_polar=False, ylim=None, title=None):
     #     import numpy as np
@@ -1442,7 +1610,7 @@ class FWHPlotter:
         contour_lines = ax.contour(XI, PI, ZI, levels=major_levels, colors='black', linewidths=1.2, alpha=0.5, zorder=1)
         
         # Stamp the labels directly onto the lines (inline=True breaks the line so the text is readable)
-        ax.clabel(contour_lines, inline=True, fontsize=10, fmt='%.1e', colors='black')
+        ax.clabel(contour_lines, inline=True, fontsize=14, fmt='%.1e', colors='black')
         # ---------------------------------------------------------
 
         # Dynamic Marker Shapes based on the toggle
@@ -1494,9 +1662,10 @@ class FWHPlotter:
 
         sm = plt.cm.ScalarMappable(cmap=cmap, norm=norm)
         sm.set_array([])
-        cbar = fig.colorbar(sm, ax=ax)
+        cbar = fig.colorbar(sm, ax=ax, shrink=0.8, anchor=(-0.2, 0.0))
+
         # cbar = fig.colorbar(contour, ax=ax)
-        cbar.set_label('Log L2 Error (%)')
+        cbar.set_label('Log L2 Error (%)', fontsize=14)
         
         # Dynamic Legend
         legend_title = r'$\bf{Element\ Count}$' if shape_by == 'elements' else r'$\bf{Time\ Step\ (\Delta t)}$'
@@ -1509,8 +1678,10 @@ class FWHPlotter:
             Line2D([0], [0], marker='^', color='w', markerfacecolor='gray', markeredgecolor='black', markersize=8, label=lbls[2]),
             Line2D([0], [0], marker='D', color='w', markerfacecolor='gray', markeredgecolor='black', markersize=8, label=lbls[3])
         ]
-        ax.legend(handles=legend_elements, loc='upper left', bbox_to_anchor=(1.15, 1.0))
-
+        ax.legend(handles=legend_elements, loc='upper left', bbox_to_anchor=(1.0, 1.01),
+                  fontsize=10)
+        ax.tick_params(axis='both', labelsize=12)
+        cbar.ax.tick_params(labelsize=12)
         plt.tight_layout()
         plt.show()
 
