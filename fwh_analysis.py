@@ -761,7 +761,7 @@ class FWHPlotter:
                                              gridspec_kw={'height_ratios': [3, 1.2]})
             fig.subplots_adjust(hspace=0.1)
         else:
-            fig, ax = plt.subplots(figsize=(12, 6))
+            fig, ax = plt.subplots(figsize=(12, 6) if figsize is None else figsize)
             ax_err = None
             
         def compute_fft_harmonics(df, col):
@@ -861,7 +861,7 @@ class FWHPlotter:
 
             err_array = comp_y - ref_y
             mean_abs_err = np.mean(np.abs(err_array))
-            updated_label = f"{labels[i]} (Mean $\Delta$: {mean_abs_err:.2f} {err_unit})"
+            updated_label = f"{labels[i]}"# (Mean $\Delta$: {mean_abs_err:.2f} {err_unit})"
 
             c = colors[i % len(colors)]
             m = markers[i % len(markers)]
@@ -885,8 +885,8 @@ class FWHPlotter:
         ax.set_xticks(x_vals)
         
         if not show_error_subplot:
-            ax.set_xticklabels([f"{x}X" for x in x_vals])
-            ax.set_xlabel(f'Harmonic Order (Base Frequency={f_base:.1f} Hz)', fontsize=14)
+            ax.set_xticklabels([f"{x}" for x in x_vals])
+            ax.set_xlabel(f'Harmonic Order (Base Frequency={f_base:.2f} Hz)', fontsize=14)
         
         if title:
             ax.set_title(title)
@@ -894,7 +894,7 @@ class FWHPlotter:
         ax.grid(True, linestyle=':', alpha=0.6, zorder=0)
         
         # Moved legend to lower right or upper left so it doesn't block the tall peaks
-        ax.legend(loc='lower right', fontsize=10)
+        ax.legend(loc='lower left', fontsize=10)
 
         
         # FIXED Y-AXIS SCALING: Lock bottom to 0, scale top to 1.2x max value
