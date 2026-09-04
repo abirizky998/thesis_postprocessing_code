@@ -12,7 +12,7 @@ Source
 # FW-H integration method
 Retarded_Time Time_Domain
 # FW-H integration time levels [-] and time step [s]
-1440 8.47744998e-05
+7681 3.17904374e-05
 # Post-processing options
 F
 # Debugging level (0: no output, 1: basic info, 2: detailed info)

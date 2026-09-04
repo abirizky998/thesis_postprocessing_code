@@ -46,19 +46,32 @@ class FWHDataset:
         }
         
         # 1. NEW MATRIX FORMAT: Pxx_Xxx_Mxx.dat
-        px_mach_match = re.search(r"P(\d+)_X(\d+)_M(\d+)", self.name)
-        if px_mach_match:
-            p_val = float(px_mach_match.group(1))
-            x_val = float(px_mach_match.group(2))
-            meta['mach_str'] = px_mach_match.group(3)
-            meta['mach'] = float(meta['mach_str']) / 100.0
+        # px_mach_match = re.search(r"P(\d+)_X(\d+)_M(\d+)", self.name)
+        # if px_mach_match:
+        #     p_val = float(px_mach_match.group(1))
+        #     x_val = float(px_mach_match.group(2))
+        #     meta['mach_str'] = px_mach_match.group(3)
+        #     meta['mach'] = float(meta['mach_str']) / 100.0
             
+        #     meta['cfl'] = x_val / p_val
+        #     meta['dx'] = self.C * (1 - meta['mach']) / (x_val * self.F_SOURCE)
+        #     meta['dt'] = (1 - meta['mach']) / (p_val * self.F_SOURCE)
+        #     meta['grid'] = int(np.round((2 * np.pi * self.R) / meta['dx']))
+        #     return meta
+        # 1.5 NEW PX FORMAT (NO MACH): Pxx_Xxx_OBS.dat
+        px_obs_match = re.search(r"P(\d+)_X(\d+)_(\d+)", self.name)
+        if px_obs_match:
+            p_val = float(px_obs_match.group(1))
+            x_val = float(px_obs_match.group(2))
+            
+            meta['mach'] = 0.0  # Hardcoded for Open Fan hover
+            meta['mach_str'] = "00"
             meta['cfl'] = x_val / p_val
-            meta['dx'] = self.C * (1 - meta['mach']) / (x_val * self.F_SOURCE)
-            meta['dt'] = (1 - meta['mach']) / (p_val * self.F_SOURCE)
+            meta['dx'] = self.C / (x_val * self.F_SOURCE)
+            meta['dt'] = 1.0 / (p_val * self.F_SOURCE)
             meta['grid'] = int(np.round((2 * np.pi * self.R) / meta['dx']))
             return meta
-
+        
         # 2. OLD CFL FORMAT: cflXXX_MXX.dat
         cfl_mach_match = re.search(r"cfl(\d+)_M(\d+)", self.name)
         if cfl_mach_match:
